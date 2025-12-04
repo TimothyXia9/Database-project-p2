@@ -40,15 +40,20 @@ const AdminContentPage = () => {
 	const [feedbackSearch, setFeedbackSearch] = useState("");
 	// Relations - Affiliations
 	const [affiliations, setAffiliations] = useState([]);
+	const [affiliationSearch, setAffiliationSearch] = useState("");
 	// Relations - Telecasts
 	const [telecasts, setTelecasts] = useState([]);
+	const [telecastSearch, setTelecastSearch] = useState("");
 	const [episodesList, setEpisodesList] = useState([]);
 	// Relations - Contracts
 	const [contracts, setContracts] = useState([]);
+	const [contractSearch, setContractSearch] = useState("");
 	// Relations - Subtitle Languages
 	const [subtitleLanguages, setSubtitleLanguages] = useState([]);
+	const [subtitleSearch, setSubtitleSearch] = useState("");
 	// Relations - Releases
 	const [releases, setReleases] = useState([]);
+	const [releaseSearch, setReleaseSearch] = useState("");
 
 	// Modal state
 	const [showModal, setShowModal] = useState(false);
@@ -147,10 +152,10 @@ const AdminContentPage = () => {
 		}
 	};
 
-	const fetchAffiliations = async () => {
+	const fetchAffiliations = async (search = "") => {
 		try {
 			setLoading(true);
-			const data = await contentService.getAllAffiliations();
+			const data = await contentService.getAllAffiliations({ search });
 			setAffiliations(data.affiliations || []);
 		} catch (error) {
 			console.error("Failed to fetch affiliations:", error);
@@ -160,10 +165,10 @@ const AdminContentPage = () => {
 		}
 	};
 
-	const fetchTelecasts = async () => {
+	const fetchTelecasts = async (search = "") => {
 		try {
 			setLoading(true);
-			const data = await contentService.getAllTelecasts();
+			const data = await contentService.getAllTelecasts({ search });
 			setTelecasts(data.telecasts || []);
 		} catch (error) {
 			console.error("Failed to fetch telecasts:", error);
@@ -182,10 +187,10 @@ const AdminContentPage = () => {
 		}
 	};
 
-	const fetchContracts = async () => {
+	const fetchContracts = async (search = "") => {
 		try {
 			setLoading(true);
-			const data = await contentService.getAllContracts();
+			const data = await contentService.getAllContracts({ search });
 			setContracts(data.contracts || []);
 		} catch (error) {
 			console.error("Failed to fetch contracts:", error);
@@ -195,10 +200,10 @@ const AdminContentPage = () => {
 		}
 	};
 
-	const fetchSubtitleLanguages = async () => {
+	const fetchSubtitleLanguages = async (search = "") => {
 		try {
 			setLoading(true);
-			const data = await contentService.getAllSubtitleLanguages();
+			const data = await contentService.getAllSubtitleLanguages({ search });
 			setSubtitleLanguages(data.subtitle_languages || []);
 		} catch (error) {
 			console.error("Failed to fetch subtitle languages:", error);
@@ -208,10 +213,10 @@ const AdminContentPage = () => {
 		}
 	};
 
-	const fetchReleases = async () => {
+	const fetchReleases = async (search = "") => {
 		try {
 			setLoading(true);
-			const data = await contentService.getAllReleases();
+			const data = await contentService.getAllReleases({ search });
 			setReleases(data.releases || []);
 		} catch (error) {
 			console.error("Failed to fetch releases:", error);
@@ -481,6 +486,76 @@ const AdminContentPage = () => {
 				console.error("Failed to delete subtitle language:", error);
 				alert("删除失败: " + (error.error || error.message || "未知错误"));
 			}
+		}
+	};
+
+	const handleContractSearchInputChange = (e) => {
+		setContractSearch(e.target.value);
+	};
+
+	const handleContractSearchClick = () => {
+		fetchContracts(contractSearch);
+	};
+
+	const handleContractSearchKeyPress = (e) => {
+		if (e.key === "Enter") {
+			fetchContracts(contractSearch);
+		}
+	};
+
+	const handleAffiliationSearchInputChange = (e) => {
+		setAffiliationSearch(e.target.value);
+	};
+
+	const handleAffiliationSearchClick = () => {
+		fetchAffiliations(affiliationSearch);
+	};
+
+	const handleAffiliationSearchKeyPress = (e) => {
+		if (e.key === "Enter") {
+			fetchAffiliations(affiliationSearch);
+		}
+	};
+
+	const handleTelecastSearchInputChange = (e) => {
+		setTelecastSearch(e.target.value);
+	};
+
+	const handleTelecastSearchClick = () => {
+		fetchTelecasts(telecastSearch);
+	};
+
+	const handleTelecastSearchKeyPress = (e) => {
+		if (e.key === "Enter") {
+			fetchTelecasts(telecastSearch);
+		}
+	};
+
+	const handleSubtitleSearchInputChange = (e) => {
+		setSubtitleSearch(e.target.value);
+	};
+
+	const handleSubtitleSearchClick = () => {
+		fetchSubtitleLanguages(subtitleSearch);
+	};
+
+	const handleSubtitleSearchKeyPress = (e) => {
+		if (e.key === "Enter") {
+			fetchSubtitleLanguages(subtitleSearch);
+		}
+	};
+
+	const handleReleaseSearchInputChange = (e) => {
+		setReleaseSearch(e.target.value);
+	};
+
+	const handleReleaseSearchClick = () => {
+		fetchReleases(releaseSearch);
+	};
+
+	const handleReleaseSearchKeyPress = (e) => {
+		if (e.key === "Enter") {
+			fetchReleases(releaseSearch);
 		}
 	};
 
@@ -835,11 +910,19 @@ const AdminContentPage = () => {
 						<div className="admin-table-container">
 							<div className="table-header">
 								<h2>制片人关联列表（共 {affiliations.length} 条）</h2>
-								{permissions.canCreateProducer && (
-									<button className="btn btn-primary" onClick={openCreateModal}>
-										<AddIcon /> 新增关联
-									</button>
-								)}
+								<div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+									<div className="search-container">
+										<input type="text" placeholder="搜索关联..." className="search-input" value={affiliationSearch} onChange={handleAffiliationSearchInputChange} onKeyPress={handleAffiliationSearchKeyPress} />
+										<button className="btn btn-primary" onClick={handleAffiliationSearchClick}>
+											<SearchIcon /> 搜索
+										</button>
+									</div>
+									{permissions.canCreateProducer && (
+										<button className="btn btn-primary" onClick={openCreateModal}>
+											<AddIcon /> 新增关联
+										</button>
+									)}
+								</div>
 							</div>
 
 							{affiliations.length > 0 ? (
@@ -889,11 +972,19 @@ const AdminContentPage = () => {
 						<div className="admin-table-container">
 							<div className="table-header">
 								<h2>播出记录列表（共 {telecasts.length} 条）</h2>
-								{permissions.canCreateEpisode && (
-									<button className="btn btn-primary" onClick={openCreateModal}>
-										<AddIcon /> 新增播出记录
-									</button>
-								)}
+								<div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+									<div className="search-container">
+										<input type="text" placeholder="搜索播出记录..." className="search-input" value={telecastSearch} onChange={handleTelecastSearchInputChange} onKeyPress={handleTelecastSearchKeyPress} />
+										<button className="btn btn-primary" onClick={handleTelecastSearchClick}>
+											<SearchIcon /> 搜索
+										</button>
+									</div>
+									{permissions.canCreateEpisode && (
+										<button className="btn btn-primary" onClick={openCreateModal}>
+											<AddIcon /> 新增播出记录
+										</button>
+									)}
+								</div>
 							</div>
 
 							{telecasts.length > 0 ? (
@@ -950,11 +1041,19 @@ const AdminContentPage = () => {
 						<div className="admin-table-container">
 							<div className="table-header">
 								<h2>合同列表（共 {contracts.length} 条）</h2>
-								{permissions.canCreateSeries && (
-									<button className="btn btn-primary" onClick={openCreateModal}>
-										<AddIcon /> 新增合同
-									</button>
-								)}
+								<div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+									<div className="search-container">
+										<input type="text" placeholder="搜索合同..." className="search-input" value={contractSearch} onChange={handleContractSearchInputChange} onKeyPress={handleContractSearchKeyPress} />
+										<button className="btn btn-primary" onClick={handleContractSearchClick}>
+											<SearchIcon /> 搜索
+										</button>
+									</div>
+									{permissions.canCreateSeries && (
+										<button className="btn btn-primary" onClick={openCreateModal}>
+											<AddIcon /> 新增合同
+										</button>
+									)}
+								</div>
 							</div>
 
 							{contracts.length > 0 ? (
@@ -1015,11 +1114,19 @@ const AdminContentPage = () => {
 						<div className="admin-table-container">
 							<div className="table-header">
 								<h2>字幕语言列表（共 {subtitleLanguages.length} 条）</h2>
-								{permissions.canCreateSeries && (
-									<button className="btn btn-primary" onClick={openCreateModal}>
-										<AddIcon /> 新增字幕语言
-									</button>
-								)}
+								<div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+									<div className="search-container">
+										<input type="text" placeholder="搜索字幕语言..." className="search-input" value={subtitleSearch} onChange={handleSubtitleSearchInputChange} onKeyPress={handleSubtitleSearchKeyPress} />
+										<button className="btn btn-primary" onClick={handleSubtitleSearchClick}>
+											<SearchIcon /> 搜索
+										</button>
+									</div>
+									{permissions.canCreateSeries && (
+										<button className="btn btn-primary" onClick={openCreateModal}>
+											<AddIcon /> 新增字幕语言
+										</button>
+									)}
+								</div>
 							</div>
 
 							{subtitleLanguages.length > 0 ? (
@@ -1063,11 +1170,19 @@ const AdminContentPage = () => {
 						<div className="admin-table-container">
 							<div className="table-header">
 								<h2>发行记录列表（共 {releases.length} 条）</h2>
-								{permissions.canCreateSeries && (
-									<button className="btn btn-primary" onClick={openCreateModal}>
-										<AddIcon /> 新增发行记录
-									</button>
-								)}
+								<div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+									<div className="search-container">
+										<input type="text" placeholder="搜索发行记录..." className="search-input" value={releaseSearch} onChange={handleReleaseSearchInputChange} onKeyPress={handleReleaseSearchKeyPress} />
+										<button className="btn btn-primary" onClick={handleReleaseSearchClick}>
+											<SearchIcon /> 搜索
+										</button>
+									</div>
+									{permissions.canCreateSeries && (
+										<button className="btn btn-primary" onClick={openCreateModal}>
+											<AddIcon /> 新增发行记录
+										</button>
+									)}
+								</div>
 							</div>
 
 							{releases.length > 0 ? (

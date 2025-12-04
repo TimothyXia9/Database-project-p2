@@ -34,8 +34,30 @@ def get_all_affiliations():
 
         page = request.args.get("page", 1, type=int)
         per_page = request.args.get("per_page", 100, type=int)
+        producer_id = request.args.get("producer_id", "", type=str)
+        house_id = request.args.get("house_id", "", type=str)
+        search = request.args.get("search", "", type=str)
 
-        pagination = ProducerAffiliation.query.paginate(
+        query = ProducerAffiliation.query
+
+        # Filter by producer_id
+        if producer_id:
+            query = query.filter(ProducerAffiliation.producer_id == producer_id)
+
+        # Filter by house_id
+        if house_id:
+            query = query.filter(ProducerAffiliation.house_id == house_id)
+
+        # Search by producer_id or house_id
+        if search:
+            query = query.filter(
+                db.or_(
+                    ProducerAffiliation.producer_id.like(f"%{search}%"),
+                    ProducerAffiliation.house_id.like(f"%{search}%")
+                )
+            )
+
+        pagination = query.paginate(
             page=page, per_page=per_page, error_out=False
         )
 
@@ -175,8 +197,25 @@ def get_all_telecasts():
 
         page = request.args.get("page", 1, type=int)
         per_page = request.args.get("per_page", 100, type=int)
+        episode_id = request.args.get("episode_id", "", type=str)
+        search = request.args.get("search", "", type=str)
 
-        pagination = Telecast.query.paginate(
+        query = Telecast.query
+
+        # Filter by episode_id
+        if episode_id:
+            query = query.filter(Telecast.episode_id == episode_id)
+
+        # Search by telecast_id or episode_id
+        if search:
+            query = query.filter(
+                db.or_(
+                    Telecast.telecast_id.like(f"%{search}%"),
+                    Telecast.episode_id.like(f"%{search}%")
+                )
+            )
+
+        pagination = query.paginate(
             page=page, per_page=per_page, error_out=False
         )
 
@@ -334,8 +373,30 @@ def get_all_contracts():
 
         page = request.args.get("page", 1, type=int)
         per_page = request.args.get("per_page", 100, type=int)
+        webseries_id = request.args.get("webseries_id", "", type=str)
+        status = request.args.get("status", "", type=str)
+        search = request.args.get("search", "", type=str)
 
-        pagination = SeriesContract.query.paginate(
+        query = SeriesContract.query
+
+        # Filter by webseries_id
+        if webseries_id:
+            query = query.filter(SeriesContract.webseries_id == webseries_id)
+
+        # Filter by status
+        if status:
+            query = query.filter(SeriesContract.status == status)
+
+        # Search by contract_id or webseries_id
+        if search:
+            query = query.filter(
+                db.or_(
+                    SeriesContract.contract_id.like(f"%{search}%"),
+                    SeriesContract.webseries_id.like(f"%{search}%")
+                )
+            )
+
+        pagination = query.paginate(
             page=page, per_page=per_page, error_out=False
         )
 
@@ -496,8 +557,25 @@ def get_all_subtitle_languages():
 
         page = request.args.get("page", 1, type=int)
         per_page = request.args.get("per_page", 100, type=int)
+        webseries_id = request.args.get("webseries_id", "", type=str)
+        search = request.args.get("search", "", type=str)
 
-        pagination = SubtitleLanguage.query.paginate(
+        query = SubtitleLanguage.query
+
+        # Filter by webseries_id
+        if webseries_id:
+            query = query.filter(SubtitleLanguage.webseries_id == webseries_id)
+
+        # Search by webseries_id or language_name
+        if search:
+            query = query.filter(
+                db.or_(
+                    SubtitleLanguage.webseries_id.like(f"%{search}%"),
+                    SubtitleLanguage.language_name.like(f"%{search}%")
+                )
+            )
+
+        pagination = query.paginate(
             page=page, per_page=per_page, error_out=False
         )
 
@@ -624,8 +702,30 @@ def get_all_releases():
 
         page = request.args.get("page", 1, type=int)
         per_page = request.args.get("per_page", 100, type=int)
+        webseries_id = request.args.get("webseries_id", "", type=str)
+        country_name = request.args.get("country_name", "", type=str)
+        search = request.args.get("search", "", type=str)
 
-        pagination = WebSeriesRelease.query.paginate(
+        query = WebSeriesRelease.query
+
+        # Filter by webseries_id
+        if webseries_id:
+            query = query.filter(WebSeriesRelease.webseries_id == webseries_id)
+
+        # Filter by country_name
+        if country_name:
+            query = query.filter(WebSeriesRelease.country_name == country_name)
+
+        # Search by webseries_id or country_name
+        if search:
+            query = query.filter(
+                db.or_(
+                    WebSeriesRelease.webseries_id.like(f"%{search}%"),
+                    WebSeriesRelease.country_name.like(f"%{search}%")
+                )
+            )
+
+        pagination = query.paginate(
             page=page, per_page=per_page, error_out=False
         )
 

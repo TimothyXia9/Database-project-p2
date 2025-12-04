@@ -113,9 +113,9 @@ export const deleteFeedback = async (feedbackId) => {
 // ==================== Producer Affiliation ====================
 
 export const getAllAffiliations = async (params = {}) => {
-	const { page = 1, per_page = 100 } = params;
+	const { page = 1, per_page = 100, producer_id = "", house_id = "", search = "" } = params;
 	const response = await api.get("/relations/producer-affiliations", {
-		params: { page, per_page },
+		params: { page, per_page, producer_id, house_id, search },
 	});
 	return response.data;
 };
@@ -133,9 +133,9 @@ export const deleteAffiliation = async (producerId, houseId) => {
 // ==================== Telecast ====================
 
 export const getAllTelecasts = async (params = {}) => {
-	const { page = 1, per_page = 100 } = params;
+	const { page = 1, per_page = 100, episode_id = "", search = "" } = params;
 	const response = await api.get("/relations/telecasts", {
-		params: { page, per_page },
+		params: { page, per_page, episode_id, search },
 	});
 	return response.data;
 };
@@ -158,9 +158,9 @@ export const deleteTelecast = async (telecastId) => {
 // ==================== Series Contract ====================
 
 export const getAllContracts = async (params = {}) => {
-	const { page = 1, per_page = 100 } = params;
+	const { page = 1, per_page = 100, webseries_id = "", status = "", search = "" } = params;
 	const response = await api.get("/relations/contracts", {
-		params: { page, per_page },
+		params: { page, per_page, webseries_id, status, search },
 	});
 	return response.data;
 };
@@ -183,9 +183,9 @@ export const deleteContract = async (contractId) => {
 // ==================== Subtitle Language ====================
 
 export const getAllSubtitleLanguages = async (params = {}) => {
-	const { page = 1, per_page = 100 } = params;
+	const { page = 1, per_page = 100, webseries_id = "", search = "" } = params;
 	const response = await api.get("/relations/subtitle-languages", {
-		params: { page, per_page },
+		params: { page, per_page, webseries_id, search },
 	});
 	return response.data;
 };
@@ -203,9 +203,9 @@ export const deleteSubtitleLanguage = async (webseriesId, language) => {
 // ==================== Web Series Release ====================
 
 export const getAllReleases = async (params = {}) => {
-	const { page = 1, per_page = 100 } = params;
+	const { page = 1, per_page = 100, webseries_id = "", country_name = "", search = "" } = params;
 	const response = await api.get("/relations/releases", {
-		params: { page, per_page },
+		params: { page, per_page, webseries_id, country_name, search },
 	});
 	return response.data;
 };
