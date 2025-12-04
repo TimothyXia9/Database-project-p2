@@ -1,140 +1,131 @@
 .hero {
-  position: relative;
-  height: 600px;
-  display: flex;
-  align-items: center;
-  background-size: cover;
-  background-position: center;
-  padding-top: 70px;
+	position: relative;
+	height: 600px;
+	display: flex;
+	align-items: center;
+	background-size: cover;
+	background-position: center;
+	padding-top: 70px;
 }
 
 .hero-content {
-  max-width: 600px;
-  padding: 0 60px;
-  z-index: 2;
-  animation: fadeIn 1s ease-in;
+	max-width: 600px;
+	padding: 0 60px;
+	z-index: 2;
+	animation: fadeIn 0.75s ease-in;
 }
 
 .hero-title {
-  font-size: 64px;
-  font-weight: 700;
-  margin-bottom: 16px;
-  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
-  line-height: 1.1;
+	font-size: 64px;
+	font-weight: 700;
+	margin-bottom: 16px;
+	text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+	line-height: 1.1;
 }
 
 .hero-info {
-  display: flex;
-  gap: 16px;
-  margin-bottom: 16px;
-  font-size: 16px;
-  color: var(--netflix-light-gray);
+	display: flex;
+	gap: 16px;
+	margin-bottom: 16px;
+	font-size: 16px;
+	color: var(--netflix-light-gray);
 }
 
 .hero-type {
-  padding: 4px 8px;
-  background-color: var(--netflix-red);
-  color: var(--netflix-white);
-  border-radius: 4px;
-  font-weight: 500;
+	padding: 4px 8px;
+	background-color: var(--netflix-red);
+	color: var(--netflix-white);
+	border-radius: 4px;
+	font-weight: 500;
 }
 
 .hero-description {
-  font-size: 18px;
-  line-height: 1.6;
-  margin-bottom: 24px;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-  color: var(--netflix-white);
+	font-size: 18px;
+	line-height: 1.6;
+	margin-bottom: 24px;
+	text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+	color: var(--netflix-white);
 }
 
 .hero-buttons {
-  display: flex;
-  gap: 16px;
+	display: flex;
+	gap: 16px;
 }
 
 .hero-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 14px 32px;
-  font-size: 18px;
-  font-weight: 600;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 14px 32px;
+	font-size: 18px;
+	font-weight: 600;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 .hero-btn svg {
-  font-size: 28px;
+	font-size: 28px;
 }
 
 .hero-fade {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 120px;
-  background: linear-gradient(
-    180deg,
-    transparent,
-    rgba(20, 20, 20, 0.6),
-    var(--netflix-black)
-  );
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	height: 120px;
+	background: linear-gradient(180deg, transparent, rgba(20, 20, 20, 0.6), var(--netflix-black));
 }
 
 .hero-skeleton {
-  height: 600px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(
-    135deg,
-    var(--netflix-dark-gray),
-    var(--netflix-black)
-  );
+	height: 600px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: linear-gradient(135deg, var(--netflix-dark-gray), var(--netflix-black));
 }
 
 @media (max-width: 1024px) {
-  .hero {
-    height: 500px;
-  }
+	.hero {
+		height: 500px;
+	}
 
-  .hero-title {
-    font-size: 48px;
-  }
+	.hero-title {
+		font-size: 48px;
+	}
 
-  .hero-content {
-    max-width: 500px;
-    padding: 0 40px;
-  }
+	.hero-content {
+		max-width: 500px;
+		padding: 0 40px;
+	}
 
-  .hero-description {
-    font-size: 16px;
-  }
+	.hero-description {
+		font-size: 16px;
+	}
 }
 
 @media (max-width: 768px) {
-  .hero {
-    height: 400px;
-  }
+	.hero {
+		height: 400px;
+	}
 
-  .hero-title {
-    font-size: 32px;
-  }
+	.hero-title {
+		font-size: 32px;
+	}
 
-  .hero-content {
-    max-width: 100%;
-    padding: 0 20px;
-  }
+	.hero-content {
+		max-width: 100%;
+		padding: 0 20px;
+	}
 
-  .hero-description {
-    font-size: 14px;
-  }
+	.hero-description {
+		font-size: 14px;
+	}
 
-  .hero-buttons {
-    flex-direction: column;
-  }
+	.hero-buttons {
+		flex-direction: column;
+	}
 
-  .hero-btn {
-    width: 100%;
-    justify-content: center;
-  }
+	.hero-btn {
+		width: 100%;
+		justify-content: center;
+	}
 }

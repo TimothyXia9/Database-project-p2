@@ -11,6 +11,8 @@ import SeriesDetailPage from "./pages/SeriesDetailPage";
 import DashboardPage from "./pages/DashboardPage";
 import AdminSeriesPage from "./pages/AdminSeriesPage";
 import AdminUsersPage from "./pages/AdminUsersPage";
+import AdminSystemPage from "./pages/AdminSystemPage";
+import AdminContentPage from "./pages/AdminContentPage";
 
 // Protected Route Component
 const ProtectedRoute = ({ children, allowedRoles = [] }) => {
@@ -48,11 +50,30 @@ const AppRoutes = () => {
       />
 
       {/* Protected Routes - Employee and Admin only */}
+      {/* Redirect /admin to /admin/series */}
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute allowedRoles={["Employee", "Admin"]}>
+            <Navigate to="/admin/series" replace />
+          </ProtectedRoute>
+        }
+      />
+
       <Route
         path="/admin/series"
         element={
           <ProtectedRoute allowedRoles={["Employee", "Admin"]}>
             <AdminSeriesPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/admin/content"
+        element={
+          <ProtectedRoute allowedRoles={["Employee", "Admin"]}>
+            <AdminContentPage />
           </ProtectedRoute>
         }
       />
@@ -63,6 +84,15 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute allowedRoles={["Admin"]}>
             <AdminUsersPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/admin/system"
+        element={
+          <ProtectedRoute allowedRoles={["Admin"]}>
+            <AdminSystemPage />
           </ProtectedRoute>
         }
       />

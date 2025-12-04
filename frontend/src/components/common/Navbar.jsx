@@ -66,7 +66,7 @@ const Navbar = () => {
                 {(user?.account_type === "Employee" ||
                   user?.account_type === "Admin") && (
                   <li>
-                    <Link to="/admin">管理</Link>
+                    <Link to="/admin/content">管理</Link>
                   </li>
                 )}
               </>

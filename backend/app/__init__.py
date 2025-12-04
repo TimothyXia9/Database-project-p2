@@ -50,6 +50,8 @@ def create_app(config_name="default"):
     from app.routes.feedback import feedback_bp
     from app.routes.production_house import production_house_bp
     from app.routes.producer import producer_bp
+    from app.routes.admin import admin_bp
+    from app.routes.relations import relations_bp
 
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
     app.register_blueprint(series_bp, url_prefix="/api/series")
@@ -57,6 +59,8 @@ def create_app(config_name="default"):
     app.register_blueprint(feedback_bp, url_prefix="/api/feedback")
     app.register_blueprint(production_house_bp, url_prefix="/api/production-houses")
     app.register_blueprint(producer_bp, url_prefix="/api/producers")
+    app.register_blueprint(admin_bp, url_prefix="/api/admin")
+    app.register_blueprint(relations_bp, url_prefix="/api/relations")
 
     # Error handlers
     @app.errorhandler(404)

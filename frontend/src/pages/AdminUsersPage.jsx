@@ -1,28 +1,112 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "../components/common/Navbar";
 import usePermissions from "../hooks/usePermissions";
 import PeopleIcon from "@mui/icons-material/People";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import LockResetIcon from "@mui/icons-material/LockReset";
 import "./AdminPages.css";
+import * as adminService from "../services/adminService";
 
 const AdminUsersPage = () => {
 	const { permissions } = usePermissions();
 	const [users, setUsers] = useState([]);
+	const [loading, setLoading] = useState(true);
+	const [searchTerm, setSearchTerm] = useState("");
+	const [stats, setStats] = useState({
+		total: 0,
+		customers: 0,
+		employees: 0,
+		admins: 0,
+	});
 
-	// TODO: Fetch users data from API
+	useEffect(() => {
+		fetchUsers();
+		fetchStats();
+	}, []);
 
-	const handleChangeRole = (userId, newRole) => {
-		if (window.confirm(`确定要将用户角色更改为 ${newRole} 吗？`)) {
-			// TODO: Implement role change API call
-			console.log("Change role:", userId, newRole);
+	const fetchUsers = async (search = "") => {
+		try {
+			setLoading(true);
+			const data = await adminService.getAllUsers({ search, per_page: 100 });
+			setUsers(data.users);
+		} catch (error) {
+			console.error("Failed to fetch users:", error);
+			alert("获取用户列表失败: " + (error.message || "未知错误"));
+		} finally {
+			setLoading(false);
 		}
 	};
 
-	const handleDeleteUser = (userId) => {
+	const fetchStats = async () => {
+		try {
+			const data = await adminService.getSystemStats();
+			setStats(data.users);
+		} catch (error) {
+			console.error("Failed to fetch stats:", error);
+		}
+	};
+
+	const handleSearch = (e) => {
+		const value = e.target.value;
+		setSearchTerm(value);
+		fetchUsers(value);
+	};
+
+	const handleChangeRole = async (userId, newRole) => {
+		if (window.confirm(`确定要将用户角色更改为 ${newRole} 吗？`)) {
+			try {
+				await adminService.changeUserRole(userId, newRole);
+				alert("角色更新成功");
+				fetchUsers(searchTerm);
+				fetchStats();
+			} catch (error) {
+				console.error("Failed to change role:", error);
+				alert("角色更新失败: " + (error.error || error.message || "未知错误"));
+			}
+		}
+	};
+
+	const handleToggleStatus = async (userId, currentStatus) => {
+		const newStatus = !currentStatus;
+		const action = newStatus ? "激活" : "禁用";
+
+		if (window.confirm(`确定要${action}该用户吗？`)) {
+			try {
+				await adminService.toggleUserStatus(userId, newStatus);
+				alert(`用户${action}成功`);
+				fetchUsers(searchTerm);
+			} catch (error) {
+				console.error("Failed to toggle status:", error);
+				alert(`用户${action}失败: ` + (error.error || error.message || "未知错误"));
+			}
+		}
+	};
+
+	const handleDeleteUser = async (userId) => {
 		if (window.confirm("确定要删除该用户吗？此操作无法撤销。")) {
-			// TODO: Implement delete user API call
-			console.log("Delete user:", userId);
+			try {
+				await adminService.deleteUser(userId);
+				alert("用户删除成功");
+				fetchUsers(searchTerm);
+				fetchStats();
+			} catch (error) {
+				console.error("Failed to delete user:", error);
+				alert("用户删除失败: " + (error.error || error.message || "未知错误"));
+			}
+		}
+	};
+
+	const handleResetPassword = async (userId) => {
+		const newPassword = prompt("请输入新密码（至少8位，包含大小写字母和数字）：");
+		if (newPassword) {
+			try {
+				await adminService.resetUserPassword(userId, newPassword);
+				alert("密码重置成功");
+			} catch (error) {
+				console.error("Failed to reset password:", error);
+				alert("密码重置失败: " + (error.error || error.message || "未知错误"));
+			}
 		}
 	};
 
@@ -57,19 +141,19 @@ const AdminUsersPage = () => {
 				<div className="admin-content">
 					<div className="admin-stats">
 						<div className="stat-box">
-							<h3>0</h3>
+							<h3>{stats.total}</h3>
 							<p>总用户数</p>
 						</div>
 						<div className="stat-box">
-							<h3>0</h3>
+							<h3>{stats.customers}</h3>
 							<p>观众</p>
 						</div>
 						<div className="stat-box">
-							<h3>0</h3>
+							<h3>{stats.employees}</h3>
 							<p>员工</p>
 						</div>
 						<div className="stat-box">
-							<h3>0</h3>
+							<h3>{stats.admins}</h3>
 							<p>管理员</p>
 						</div>
 					</div>
@@ -77,8 +161,14 @@ const AdminUsersPage = () => {
 					<div className="admin-table-container">
 						<div className="table-header">
 							<h2>用户列表</h2>
-							<input type="text" placeholder="搜索用户..." className="search-input" />
+							<input type="text" placeholder="搜索用户..." className="search-input" value={searchTerm} onChange={handleSearch} />
 						</div>
+
+						{loading && (
+							<div className="loading-state">
+								<p>加载中...</p>
+							</div>
+						)}
 
 						{users.length > 0 ? (
 							<table className="admin-table">
@@ -109,12 +199,14 @@ const AdminUsersPage = () => {
 												</select>
 											</td>
 											<td>
-												<span className={`status-badge ${user.is_active ? "active" : "inactive"}`}>{user.is_active ? "活跃" : "未激活"}</span>
+												<span className={`status-badge ${user.is_active ? "active" : "inactive"}`} onClick={() => handleToggleStatus(user.account_id, user.is_active)} style={{ cursor: "pointer" }} title="点击切换状态">
+													{user.is_active ? "活跃" : "未激活"}
+												</span>
 											</td>
 											<td>{user.open_date}</td>
 											<td className="action-buttons">
-												<button className="btn-icon" title="编辑">
-													<EditIcon />
+												<button className="btn-icon" title="重置密码" onClick={() => handleResetPassword(user.account_id)}>
+													<LockResetIcon />
 												</button>
 												{permissions.canDeleteUsers && (
 													<button className="btn-icon" title="删除" onClick={() => handleDeleteUser(user.account_id)} style={{ color: "#f44336" }}>

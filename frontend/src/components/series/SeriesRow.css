@@ -1,6 +1,7 @@
 .series-row {
   margin: 40px 0;
   padding: 0 60px;
+  overflow: visible;
 }
 
 .series-row-title {
@@ -14,15 +15,16 @@
   position: relative;
   display: flex;
   align-items: center;
+  overflow: visible;
 }
 
 .series-row-posters {
   display: flex;
   gap: 8px;
   overflow-x: scroll;
-  overflow-y: hidden;
+  overflow-y: visible;
   scroll-behavior: smooth;
-  padding: 20px 0;
+  padding: 30px 10px;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
@@ -39,11 +41,16 @@
   overflow: hidden;
   cursor: pointer;
   transition: var(--transition);
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  border: 2px solid rgba(229, 9, 20, 0.5);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
 
 .series-row-poster-large {
   min-width: 250px;
   height: 375px;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  border: 2px solid rgba(229, 9, 20, 0.6);
 }
 
 .series-row-poster img {
@@ -54,8 +61,10 @@
 }
 
 .series-row-poster:hover {
-  transform: scale(1.08);
+  transform: scale(1.03);
   z-index: 100;
+  border-color: rgba(229, 9, 20, 1);
+  box-shadow: 0 8px 16px rgba(229, 9, 20, 0.4);
 }
 
 .series-row-poster:hover img {
@@ -70,16 +79,21 @@
   padding: 16px;
   background: linear-gradient(
     to top,
-    rgba(0, 0, 0, 0.9),
-    rgba(0, 0, 0, 0.7),
-    transparent
+    rgba(0, 0, 0, 0.95),
+    rgba(0, 0, 0, 0.8),
+    rgba(0, 0, 0, 0.3)
   );
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  opacity: 1;
+  transition: all 0.3s ease;
 }
 
 .series-row-poster:hover .series-row-poster-info {
-  opacity: 1;
+  background: linear-gradient(
+    to top,
+    rgba(229, 9, 20, 0.9),
+    rgba(229, 9, 20, 0.7),
+    rgba(0, 0, 0, 0.3)
+  );
 }
 
 .poster-title {
@@ -98,11 +112,14 @@
   margin-bottom: 4px;
 }
 
-.poster-type {
+.poster-type-badge {
   font-size: 12px;
-  padding: 2px 6px;
+  padding: 4px 8px;
   background-color: var(--netflix-red);
-  border-radius: 3px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-bottom: 8px;
+  font-weight: 500;
 }
 
 .poster-rating {
