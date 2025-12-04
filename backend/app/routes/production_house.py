@@ -8,7 +8,7 @@ from app.utils.security import generate_id
 production_house_bp = Blueprint("production_house", __name__)
 
 
-@production_house_bp.route("/", methods=["GET"])
+@production_house_bp.route("", methods=["GET"])
 def get_all_production_houses():
     """Get all production houses"""
     try:
@@ -38,7 +38,7 @@ def get_all_production_houses():
         )
 
 
-@production_house_bp.route("/<house_id>", methods=["GET"])
+@production_house_bp.route("<house_id>", methods=["GET"])
 def get_production_house(house_id):
     """Get single production house"""
     try:
@@ -56,7 +56,7 @@ def get_production_house(house_id):
         )
 
 
-@production_house_bp.route("/", methods=["POST"])
+@production_house_bp.route("", methods=["POST"])
 @jwt_required()
 def create_production_house():
     """Create new production house (Admin only)"""

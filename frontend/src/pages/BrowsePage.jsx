@@ -81,27 +81,19 @@ const BrowsePage = () => {
                   className="browse-card"
                   onClick={() => handleSeriesClick(series.webseries_id)}
                 >
-                  <div className="browse-card-image">
-                    <img
-                      src={`https://source.unsplash.com/400x600/?${encodeURIComponent(
-                        series.title
-                      )},series`}
-                      alt={series.title}
-                      loading="lazy"
-                    />
-                  </div>
                   <div className="browse-card-content">
-                    <h3 className="browse-card-title">{series.title}</h3>
+                    <div className="browse-card-header">
+                      <h3 className="browse-card-title">{series.title}</h3>
+                      <div className="browse-card-type-badge">{series.type}</div>
+                    </div>
                     <div className="browse-card-meta">
-                      <span className="browse-card-type">{series.type}</span>
                       <div className="browse-card-rating">
                         <StarIcon fontSize="small" />
-                        <span>{series.rating || "N/A"}</span>
+                        <span>{series.rating || "暂无评分"}</span>
                       </div>
+                      <span className="browse-card-episodes">{series.num_episodes} 集</span>
                     </div>
-                    <p className="browse-card-episodes">
-                      {series.num_episodes} 集
-                    </p>
+                    <p className="browse-card-id">ID: {series.webseries_id}</p>
                   </div>
                 </div>
               ))}

@@ -30,13 +30,16 @@ def create_app(config_name="default"):
     migrate.init_app(app, db)
 
     # Configure CORS
-    CORS(app, resources={
-        r"/api/*": {
-            "origins": app.config["CORS_ORIGINS"],
-            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-            "allow_headers": ["Content-Type", "Authorization"]
-        }
-    })
+    CORS(
+        app,
+        resources={
+            r"/api/*": {
+                "origins": app.config["CORS_ORIGINS"],
+                "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+                "allow_headers": ["Content-Type", "Authorization"],
+            }
+        },
+    )
 
     # Register blueprints
     from app.routes.auth import auth_bp
@@ -44,12 +47,14 @@ def create_app(config_name="default"):
     from app.routes.episode import episode_bp
     from app.routes.feedback import feedback_bp
     from app.routes.production_house import production_house_bp
+    from app.routes.producer import producer_bp
 
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
     app.register_blueprint(series_bp, url_prefix="/api/series")
     app.register_blueprint(episode_bp, url_prefix="/api/episodes")
     app.register_blueprint(feedback_bp, url_prefix="/api/feedback")
     app.register_blueprint(production_house_bp, url_prefix="/api/production-houses")
+    app.register_blueprint(producer_bp, url_prefix="/api/producers")
 
     # Error handlers
     @app.errorhandler(404)

@@ -37,11 +37,6 @@ const LoginPage = () => {
 
 	return (
 		<div className="auth-page">
-			<div className="auth-background">
-				<img src="https://source.unsplash.com/1920x1080/?cinema,theater,entertainment" alt="Background" />
-				<div className="auth-overlay"></div>
-			</div>
-
 			<div className="auth-navbar">
 				<Link to="/" className="auth-logo">
 					NEWS

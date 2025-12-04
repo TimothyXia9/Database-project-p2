@@ -28,8 +28,8 @@ class Feedback(db.Model):
         db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
     )
 
-    def to_dict(self):
-        return {
+    def to_dict(self, include_viewer=True):
+        result = {
             "feedback_id": self.feedback_id,
             "rating": self.rating,
             "feedback_text": self.feedback_text,
@@ -38,9 +38,18 @@ class Feedback(db.Model):
             ),
             "account_id": self.account_id,
             "webseries_id": self.webseries_id,
-            "viewer_name": f"{self.viewer.first_name} {self.viewer.last_name}",
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }
+
+        if include_viewer and self.viewer:
+            result["viewer_account"] = {
+                "account_id": self.viewer.account_id,
+                "first_name": self.viewer.first_name,
+                "last_name": self.viewer.last_name,
+                "email": self.viewer.email,
+            }
+
+        return result
 
     def __repr__(self):
         return f"<Feedback {self.feedback_id}>"

@@ -281,7 +281,263 @@
   font-weight: 500;
 }
 
-.reviews-section,
+.reviews-section {
+  padding: 20px;
+}
+
+.feedback-submit-section {
+  margin-bottom: 40px;
+  padding: 30px;
+  background-color: var(--netflix-dark-gray);
+  border-radius: 8px;
+}
+
+.feedback-form {
+  max-width: 800px;
+}
+
+.feedback-form h3 {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  color: var(--netflix-white);
+}
+
+.rating-input {
+  margin-bottom: 24px;
+}
+
+.rating-input label {
+  display: block;
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 12px;
+  color: var(--netflix-white);
+}
+
+.star-rating {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.star-rating .star {
+  color: var(--netflix-gray);
+  transition: all 0.2s ease;
+}
+
+.star-rating .star.active {
+  color: #ffd700;
+  transform: scale(1.1);
+}
+
+.star-rating .star:hover {
+  transform: scale(1.2);
+}
+
+.comment-input {
+  margin-bottom: 24px;
+}
+
+.comment-input label {
+  display: block;
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 12px;
+  color: var(--netflix-white);
+}
+
+.comment-input textarea {
+  width: 100%;
+  padding: 16px;
+  background-color: rgba(0, 0, 0, 0.6);
+  border: 1px solid var(--netflix-gray);
+  border-radius: 6px;
+  color: var(--netflix-white);
+  font-size: 16px;
+  font-family: inherit;
+  line-height: 1.6;
+  resize: vertical;
+  transition: border-color 0.2s ease;
+}
+
+.comment-input textarea:focus {
+  outline: none;
+  border-color: var(--netflix-red);
+}
+
+.comment-input textarea::placeholder {
+  color: var(--netflix-light-gray);
+}
+
+.comment-input textarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.character-count {
+  text-align: right;
+  font-size: 12px;
+  color: var(--netflix-light-gray);
+  margin-top: 4px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.btn-secondary {
+  padding: 12px 32px;
+  background-color: var(--netflix-gray);
+  color: var(--netflix-white);
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background-color: var(--netflix-light-gray);
+}
+
+.btn-primary:disabled,
+.btn-secondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primary:disabled:hover,
+.btn-secondary:disabled:hover {
+  transform: none;
+  background-color: var(--netflix-red);
+}
+
+.btn-secondary:disabled:hover {
+  background-color: var(--netflix-gray);
+}
+
+.login-prompt {
+  padding: 40px 20px;
+  text-align: center;
+  background-color: var(--netflix-dark-gray);
+  border-radius: 8px;
+  margin-bottom: 40px;
+}
+
+.login-prompt p {
+  font-size: 18px;
+  color: var(--netflix-light-gray);
+  margin-bottom: 20px;
+}
+
+.reviews-list {
+  margin-top: 40px;
+}
+
+.review-card {
+  background-color: var(--netflix-dark-gray);
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 20px;
+  transition: all 0.2s ease;
+}
+
+.review-card:hover {
+  background-color: var(--netflix-gray);
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.review-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.review-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: var(--netflix-gray);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--netflix-white);
+}
+
+.review-user-info h4 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: var(--netflix-white);
+}
+
+.review-date {
+  font-size: 12px;
+  color: var(--netflix-light-gray);
+}
+
+.review-rating {
+  display: flex;
+  gap: 4px;
+}
+
+.review-rating svg {
+  font-size: 20px;
+  color: #ffd700;
+}
+
+.review-content {
+  margin-top: 16px;
+}
+
+.review-comment {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--netflix-white);
+  margin-bottom: 16px;
+}
+
+.review-actions {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--netflix-gray);
+}
+
+.review-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: var(--netflix-light-gray);
+  font-size: 14px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.review-action-btn:hover {
+  color: var(--netflix-white);
+}
+
+.review-action-btn svg {
+  font-size: 18px;
+}
+
 .empty-state {
   padding: 60px 20px;
   text-align: center;
@@ -344,5 +600,49 @@
 
   .info-grid {
     grid-template-columns: 1fr;
+  }
+
+  .feedback-submit-section {
+    padding: 20px;
+  }
+
+  .feedback-form h3 {
+    font-size: 20px;
+  }
+
+  .star-rating {
+    justify-content: center;
+  }
+
+  .form-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .form-actions button {
+    width: 100%;
+  }
+
+  .reviews-section {
+    padding: 10px;
+  }
+
+  .review-card {
+    padding: 16px;
+  }
+
+  .review-header {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .review-avatar {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+
+  .review-actions {
+    flex-wrap: wrap;
   }
 }

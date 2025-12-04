@@ -8,7 +8,7 @@ from app.utils.security import generate_id
 episode_bp = Blueprint("episode", __name__)
 
 
-@episode_bp.route("/", methods=["GET"])
+@episode_bp.route("", methods=["GET"])
 def get_all_episodes():
     """Get all episodes"""
     try:
@@ -54,7 +54,7 @@ def get_episode(episode_id):
         return jsonify({"error": "Failed to fetch episode", "message": str(e)}), 500
 
 
-@episode_bp.route("/", methods=["POST"])
+@episode_bp.route("", methods=["POST"])
 @jwt_required()
 def create_episode():
     """Create new episode (Employee/Admin only)"""

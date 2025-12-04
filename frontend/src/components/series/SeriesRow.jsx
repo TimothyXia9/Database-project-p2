@@ -64,23 +64,16 @@ const SeriesRow = ({ title, series, isLargeRow = false }) => {
               }`}
               onClick={() => handleClick(item.webseries_id)}
             >
-              <img
-                src={`https://source.unsplash.com/400x${
-                  isLargeRow ? "600" : "225"
-                }/?${encodeURIComponent(item.title)},series`}
-                alt={item.title}
-                loading="lazy"
-              />
               <div className="series-row-poster-info">
                 <h3 className="poster-title">{item.title}</h3>
+                <span className="poster-type-badge">{item.type}</span>
                 <div className="poster-meta">
-                  <span className="poster-type">{item.type}</span>
                   <div className="poster-rating">
                     <StarIcon fontSize="small" />
-                    <span>{item.rating || "N/A"}</span>
+                    <span>{item.rating || "暂无评分"}</span>
                   </div>
+                  <p className="poster-episodes">{item.num_episodes} 集</p>
                 </div>
-                <p className="poster-episodes">{item.num_episodes} 集</p>
               </div>
             </div>
           ))}

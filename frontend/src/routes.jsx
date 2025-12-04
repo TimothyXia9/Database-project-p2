@@ -9,6 +9,8 @@ import RegisterPage from "./pages/RegisterPage";
 import BrowsePage from "./pages/BrowsePage";
 import SeriesDetailPage from "./pages/SeriesDetailPage";
 import DashboardPage from "./pages/DashboardPage";
+import AdminSeriesPage from "./pages/AdminSeriesPage";
+import AdminUsersPage from "./pages/AdminUsersPage";
 
 // Protected Route Component
 const ProtectedRoute = ({ children, allowedRoles = [] }) => {
@@ -35,12 +37,32 @@ const AppRoutes = () => {
       <Route path="/browse" element={<BrowsePage />} />
       <Route path="/series/:id" element={<SeriesDetailPage />} />
 
-      {/* Protected Routes */}
+      {/* Protected Routes - All authenticated users */}
       <Route
         path="/dashboard"
         element={
           <ProtectedRoute>
             <DashboardPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Protected Routes - Employee and Admin only */}
+      <Route
+        path="/admin/series"
+        element={
+          <ProtectedRoute allowedRoles={["Employee", "Admin"]}>
+            <AdminSeriesPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Protected Routes - Admin only */}
+      <Route
+        path="/admin/users"
+        element={
+          <ProtectedRoute allowedRoles={["Admin"]}>
+            <AdminUsersPage />
           </ProtectedRoute>
         }
       />

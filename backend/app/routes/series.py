@@ -9,7 +9,7 @@ from sqlalchemy import or_
 series_bp = Blueprint("series", __name__)
 
 
-@series_bp.route("/", methods=["GET"])
+@series_bp.route("", methods=["GET"])
 def get_all_series():
     """Get all series with pagination and search"""
     try:
@@ -54,7 +54,7 @@ def get_all_series():
         return jsonify({"error": "Failed to fetch series", "message": str(e)}), 500
 
 
-@series_bp.route("/<series_id>", methods=["GET"])
+@series_bp.route("<series_id>", methods=["GET"])
 def get_series(series_id):
     """Get single series details"""
     try:
@@ -69,7 +69,7 @@ def get_series(series_id):
         return jsonify({"error": "Failed to fetch series", "message": str(e)}), 500
 
 
-@series_bp.route("/", methods=["POST"])
+@series_bp.route("", methods=["POST"])
 @jwt_required()
 def create_series():
     """Create new series (Employee/Admin only)"""
@@ -105,7 +105,10 @@ def create_series():
 
         return (
             jsonify(
-                {"message": "Series created successfully", "series": new_series.to_dict()}
+                {
+                    "message": "Series created successfully",
+                    "series": new_series.to_dict(),
+                }
             ),
             201,
         )

@@ -143,12 +143,23 @@
   position: absolute;
   top: 100%;
   right: 0;
-  margin-top: 20px;
+  margin-top: 12px;
   background-color: rgba(0, 0, 0, 0.95);
   border: 1px solid var(--netflix-gray);
   border-radius: 4px;
   min-width: 200px;
   animation: fadeIn 0.3s ease;
+}
+
+/* Create invisible bridge between icon and dropdown to prevent mouse leave */
+.profile-dropdown::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  height: 12px;
+  background: transparent;
 }
 
 .profile-dropdown::before {
@@ -161,6 +172,7 @@
   border-left: 8px solid transparent;
   border-right: 8px solid transparent;
   border-bottom: 8px solid var(--netflix-gray);
+  z-index: 1;
 }
 
 .profile-info {

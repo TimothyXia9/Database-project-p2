@@ -8,7 +8,7 @@ from datetime import date
 feedback_bp = Blueprint("feedback", __name__)
 
 
-@feedback_bp.route("/", methods=["GET"])
+@feedback_bp.route("", methods=["GET"])
 def get_all_feedback():
     """Get all feedback"""
     try:
@@ -54,7 +54,7 @@ def get_feedback(feedback_id):
         return jsonify({"error": "Failed to fetch feedback", "message": str(e)}), 500
 
 
-@feedback_bp.route("/", methods=["POST"])
+@feedback_bp.route("", methods=["POST"])
 @jwt_required()
 def create_feedback():
     """Create new feedback"""
@@ -62,21 +62,57 @@ def create_feedback():
         current_user_id = get_jwt_identity()
         data = request.get_json()
 
+        print(f"[DEBUG] Create feedback request from user: {current_user_id}")
+        print(f"[DEBUG] Request data: {data}")
+
+        # Validate JSON data
+        if not data:
+            return jsonify({"error": "No data provided"}), 400
+
         required_fields = ["rating", "feedback_text", "webseries_id"]
         for field in required_fields:
-            if not data.get(field):
-                return jsonify({"error": f"{field} is required"}), 400
+            if field not in data or data.get(field) is None or data.get(field) == "":
+                return jsonify({"error": f"{field} is required", "field": field}), 400
 
         # Validate rating
-        if not 1 <= data["rating"] <= 5:
+        try:
+            rating = int(data["rating"])
+        except (ValueError, TypeError):
+            return jsonify({"error": "Rating must be a number"}), 400
+
+        if not 1 <= rating <= 5:
             return jsonify({"error": "Rating must be between 1 and 5"}), 400
 
+        # Validate feedback_text length
+        feedback_text = str(data["feedback_text"]).strip()
+        if len(feedback_text) > 128:
+            return (
+                jsonify({"error": "Feedback text must not exceed 128 characters"}),
+                400,
+            )
+        if len(feedback_text) == 0:
+            return jsonify({"error": "Feedback text cannot be empty"}), 400
+
+        # Check if user already submitted feedback for this series
+        existing_feedback = Feedback.query.filter_by(
+            account_id=current_user_id, webseries_id=data["webseries_id"]
+        ).first()
+
+        if existing_feedback:
+            return (
+                jsonify(
+                    {"error": "You have already submitted feedback for this series"}
+                ),
+                409,
+            )
+
         feedback_id = generate_id("FB", 8)
+        print(f"[DEBUG] Generated feedback_id: {feedback_id}")
 
         new_feedback = Feedback(
             feedback_id=feedback_id,
-            rating=data["rating"],
-            feedback_text=data["feedback_text"],
+            rating=rating,
+            feedback_text=feedback_text,
             feedback_date=date.today(),
             account_id=current_user_id,
             webseries_id=data["webseries_id"],
@@ -84,6 +120,8 @@ def create_feedback():
 
         db.session.add(new_feedback)
         db.session.commit()
+
+        print(f"[DEBUG] Feedback created successfully: {feedback_id}")
 
         return (
             jsonify(
@@ -97,6 +135,10 @@ def create_feedback():
 
     except Exception as e:
         db.session.rollback()
+        print(f"[ERROR] Failed to create feedback: {str(e)}")
+        import traceback
+
+        traceback.print_exc()
         return jsonify({"error": "Failed to create feedback", "message": str(e)}), 500
 
 
