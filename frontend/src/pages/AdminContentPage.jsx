@@ -64,13 +64,13 @@ const AdminContentPage = () => {
 			fetchProductionHouses(productionHouseSearch);
 		} else if (activeTab === "producers") {
 			fetchProducers(producerSearch);
-			if (productionHouses.length === 0) fetchProductionHouses();
+			if (productionHouses.length === 0) fetchProductionHouses("");
 		} else if (activeTab === "feedback") {
 			fetchFeedback(feedbackSearch);
 		} else if (activeTab === "affiliations") {
 			fetchAffiliations();
-			if (producers.length === 0) fetchProducers();
-			if (productionHouses.length === 0) fetchProductionHouses();
+			if (producers.length === 0) fetchProducers("");
+			if (productionHouses.length === 0) fetchProductionHouses("");
 		} else if (activeTab === "telecasts") {
 			fetchTelecasts();
 			if (episodesList.length === 0) fetchEpisodesList();
@@ -258,7 +258,7 @@ const AdminContentPage = () => {
 					await contentService.updateEpisode(currentItem.episode_id, formData);
 					alert("集数更新成功");
 				}
-				fetchEpisodes();
+				fetchEpisodes(episodeSearch);
 			} else if (activeTab === "production") {
 				if (modalMode === "create") {
 					await contentService.createProductionHouse(formData);
@@ -267,7 +267,7 @@ const AdminContentPage = () => {
 					await contentService.updateProductionHouse(currentItem.house_id, formData);
 					alert("制作公司更新成功");
 				}
-				fetchProductionHouses();
+				fetchProductionHouses(productionHouseSearch);
 			} else if (activeTab === "producers") {
 				if (modalMode === "create") {
 					await contentService.createProducer(formData);
@@ -329,7 +329,7 @@ const AdminContentPage = () => {
 			try {
 				await contentService.deleteEpisode(episodeId);
 				alert("删除成功");
-				fetchEpisodes();
+				fetchEpisodes(episodeSearch);
 			} catch (error) {
 				console.error("Failed to delete episode:", error);
 				alert("删除失败: " + (error.error || error.message || "未知错误"));
@@ -342,7 +342,7 @@ const AdminContentPage = () => {
 			try {
 				await contentService.deleteProductionHouse(houseId);
 				alert("删除成功");
-				fetchProductionHouses();
+				fetchProductionHouses(productionHouseSearch);
 			} catch (error) {
 				console.error("Failed to delete production house:", error);
 				alert("删除失败: " + (error.error || error.message || "未知错误"));
@@ -368,7 +368,7 @@ const AdminContentPage = () => {
 			try {
 				await contentService.deleteFeedback(feedbackId);
 				alert("删除成功");
-				fetchFeedback();
+				fetchFeedback(feedbackSearch);
 			} catch (error) {
 				console.error("Failed to delete feedback:", error);
 				alert("删除失败: " + (error.error || error.message || "未知错误"));
