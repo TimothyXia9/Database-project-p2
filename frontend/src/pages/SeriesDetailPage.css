@@ -1,0 +1,348 @@
+.detail-page {
+  min-height: 100vh;
+  background-color: var(--netflix-black);
+}
+
+.detail-loading,
+.detail-error {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.error-content {
+  text-align: center;
+}
+
+.error-content h1 {
+  font-size: 32px;
+  margin-bottom: 24px;
+}
+
+.detail-hero {
+  position: relative;
+  height: 600px;
+  display: flex;
+  align-items: center;
+  background-size: cover;
+  background-position: center;
+  padding-top: 70px;
+}
+
+.detail-hero-content {
+  max-width: 800px;
+  padding: 0 60px;
+  z-index: 2;
+}
+
+.detail-title {
+  font-size: 64px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+}
+
+.detail-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+  font-size: 16px;
+}
+
+.detail-type {
+  padding: 6px 12px;
+  background-color: var(--netflix-red);
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.detail-rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.detail-rating svg {
+  color: #ffd700;
+  font-size: 20px;
+}
+
+.detail-description {
+  font-size: 18px;
+  line-height: 1.6;
+  margin-bottom: 24px;
+  max-width: 600px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.detail-actions {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.detail-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 32px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.detail-btn svg {
+  font-size: 28px;
+}
+
+.btn-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid var(--netflix-white);
+  background: rgba(0, 0, 0, 0.6);
+  color: var(--netflix-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.btn-icon:hover {
+  background: var(--netflix-white);
+  color: var(--netflix-black);
+}
+
+.detail-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px 60px;
+}
+
+.detail-tabs {
+  display: flex;
+  gap: 32px;
+  border-bottom: 2px solid var(--netflix-gray);
+  margin-bottom: 32px;
+}
+
+.tab-btn {
+  padding: 16px 0;
+  background: none;
+  border: none;
+  color: var(--netflix-light-gray);
+  font-size: 18px;
+  font-weight: 500;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s ease;
+}
+
+.tab-btn:hover {
+  color: var(--netflix-white);
+}
+
+.tab-btn.active {
+  color: var(--netflix-white);
+}
+
+.tab-btn.active::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background-color: var(--netflix-red);
+}
+
+.episodes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.episode-item {
+  display: flex;
+  gap: 20px;
+  padding: 16px;
+  background-color: var(--netflix-dark-gray);
+  border-radius: 8px;
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.episode-item:hover {
+  background-color: var(--netflix-gray);
+}
+
+.episode-number {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--netflix-light-gray);
+  min-width: 50px;
+  display: flex;
+  align-items: center;
+}
+
+.episode-thumbnail {
+  position: relative;
+  width: 200px;
+  height: 112px;
+  border-radius: 4px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.episode-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.episode-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--netflix-black);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.episode-item:hover .episode-play {
+  opacity: 1;
+}
+
+.episode-info {
+  flex: 1;
+}
+
+.episode-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.episode-duration {
+  font-size: 14px;
+  color: var(--netflix-light-gray);
+  margin-bottom: 8px;
+}
+
+.episode-description {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--netflix-light-gray);
+}
+
+.details-info {
+  padding: 20px;
+}
+
+.info-section {
+  margin-bottom: 32px;
+}
+
+.info-section h3 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.info-label {
+  font-size: 14px;
+  color: var(--netflix-light-gray);
+}
+
+.info-value {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.reviews-section,
+.empty-state {
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.empty-state p {
+  font-size: 18px;
+  color: var(--netflix-light-gray);
+  margin-bottom: 20px;
+}
+
+@media (max-width: 1024px) {
+  .detail-title {
+    font-size: 48px;
+  }
+
+  .detail-content {
+    padding: 30px 40px;
+  }
+
+  .episode-thumbnail {
+    width: 150px;
+    height: 84px;
+  }
+}
+
+@media (max-width: 768px) {
+  .detail-hero {
+    height: 400px;
+  }
+
+  .detail-hero-content {
+    padding: 0 20px;
+  }
+
+  .detail-title {
+    font-size: 32px;
+  }
+
+  .detail-content {
+    padding: 20px;
+  }
+
+  .detail-tabs {
+    gap: 16px;
+  }
+
+  .tab-btn {
+    font-size: 16px;
+  }
+
+  .episode-item {
+    flex-direction: column;
+  }
+
+  .episode-thumbnail {
+    width: 100%;
+    height: 200px;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+}

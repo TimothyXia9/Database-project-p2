@@ -1,0 +1,58 @@
+.home-page {
+  min-height: 100vh;
+  background-color: var(--netflix-black);
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.home-content {
+  padding-bottom: 60px;
+}
+
+.home-footer {
+  padding: 40px 60px;
+  background-color: var(--netflix-dark-gray);
+  border-top: 1px solid var(--netflix-gray);
+}
+
+.footer-content {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.footer-links {
+  display: flex;
+  gap: 32px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.footer-links a {
+  color: var(--netflix-light-gray);
+  font-size: 14px;
+  transition: color 0.2s ease;
+}
+
+.footer-links a:hover {
+  color: var(--netflix-white);
+}
+
+.footer-copyright {
+  color: var(--netflix-light-gray);
+  font-size: 12px;
+}
+
+@media (max-width: 768px) {
+  .home-footer {
+    padding: 30px 20px;
+  }
+
+  .footer-links {
+    gap: 16px;
+  }
+}
