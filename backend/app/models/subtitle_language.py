@@ -20,7 +20,7 @@ class SubtitleLanguage(db.Model):
     def to_dict(self):
         return {
             "subtitle_language_id": self.subtitle_language_id,
-            "language_name": self.language_name,
+            "language": self.language_name,  # Map to 'language' for frontend
             "webseries_id": self.webseries_id,
         }
 

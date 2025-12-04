@@ -29,7 +29,9 @@ class SeriesContract(db.Model):
             "start_date": self.start_date.isoformat() if self.start_date else None,
             "end_date": self.end_date.isoformat() if self.end_date else None,
             "charge_per_episode": float(self.charge_per_episode),
+            "contract_amount": float(self.charge_per_episode),  # Alias for frontend compatibility
             "status": self.status,
+            "contract_status": self.status,  # Alias for frontend compatibility
             "webseries_id": self.webseries_id,
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }

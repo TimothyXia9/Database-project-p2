@@ -27,6 +27,7 @@ class Telecast(db.Model):
             "start_date": self.start_date.isoformat() if self.start_date else None,
             "end_date": self.end_date.isoformat() if self.end_date else None,
             "tech_interruption": self.tech_interruption,
+            "technical_interruptions": self.tech_interruption,  # Alias for frontend compatibility
             "total_viewers": self.total_viewers,
             "episode_id": self.episode_id,
             "created_at": self.created_at.isoformat() if self.created_at else None,

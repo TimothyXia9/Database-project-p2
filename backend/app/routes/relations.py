@@ -29,6 +29,9 @@ relations_bp = Blueprint("relations", __name__)
 def get_all_affiliations():
     """Get all producer affiliations"""
     try:
+        from app.models.producer import Producer
+        from app.models.production_house import ProductionHouse
+
         page = request.args.get("page", 1, type=int)
         per_page = request.args.get("per_page", 100, type=int)
 
@@ -36,10 +39,29 @@ def get_all_affiliations():
             page=page, per_page=per_page, error_out=False
         )
 
+        # Enrich with producer and house names
+        result_list = []
+        for a in pagination.items:
+            item_dict = a.to_dict()
+            producer = Producer.query.get(a.producer_id)
+            house = ProductionHouse.query.get(a.house_id)
+
+            if producer:
+                item_dict["producer_name"] = f"{producer.first_name} {producer.last_name}"
+            else:
+                item_dict["producer_name"] = None
+
+            if house:
+                item_dict["house_name"] = house.name
+            else:
+                item_dict["house_name"] = None
+
+            result_list.append(item_dict)
+
         return (
             jsonify(
                 {
-                    "affiliations": [a.to_dict() for a in pagination.items],
+                    "affiliations": result_list,
                     "total": pagination.total,
                     "pages": pagination.pages,
                     "current_page": page,
@@ -149,6 +171,8 @@ def delete_affiliation(producer_id, house_id):
 def get_all_telecasts():
     """Get all telecasts"""
     try:
+        from app.models.episode import Episode
+
         page = request.args.get("page", 1, type=int)
         per_page = request.args.get("per_page", 100, type=int)
 
@@ -156,10 +180,26 @@ def get_all_telecasts():
             page=page, per_page=per_page, error_out=False
         )
 
+        # Enrich with episode and series info
+        result_list = []
+        for t in pagination.items:
+            item_dict = t.to_dict()
+            episode = Episode.query.get(t.episode_id)
+            if episode:
+                item_dict["episode_title"] = episode.title
+                # Get series title via episode
+                from app.models.web_series import WebSeries
+                series = WebSeries.query.get(episode.webseries_id)
+                item_dict["series_title"] = series.title if series else None
+            else:
+                item_dict["episode_title"] = None
+                item_dict["series_title"] = None
+            result_list.append(item_dict)
+
         return (
             jsonify(
                 {
-                    "telecasts": [t.to_dict() for t in pagination.items],
+                    "telecasts": result_list,
                     "total": pagination.total,
                     "pages": pagination.pages,
                     "current_page": page,
@@ -290,6 +330,8 @@ def delete_telecast(telecast_id):
 def get_all_contracts():
     """Get all series contracts"""
     try:
+        from app.models.web_series import WebSeries
+
         page = request.args.get("page", 1, type=int)
         per_page = request.args.get("per_page", 100, type=int)
 
@@ -297,10 +339,18 @@ def get_all_contracts():
             page=page, per_page=per_page, error_out=False
         )
 
+        # Enrich with series titles
+        result_list = []
+        for c in pagination.items:
+            item_dict = c.to_dict()
+            series = WebSeries.query.get(c.webseries_id)
+            item_dict["series_title"] = series.title if series else None
+            result_list.append(item_dict)
+
         return (
             jsonify(
                 {
-                    "contracts": [c.to_dict() for c in pagination.items],
+                    "contracts": result_list,
                     "total": pagination.total,
                     "pages": pagination.pages,
                     "current_page": page,
@@ -330,14 +380,21 @@ def create_contract():
             if not data.get(field):
                 return jsonify({"error": f"{field} is required"}), 400
 
+        # Accept either charge_per_episode or contract_amount
+        charge = data.get("charge_per_episode") or data.get("contract_amount")
+        if not charge:
+            return jsonify({"error": "charge_per_episode or contract_amount is required"}), 400
+
         contract_id = generate_id("CT", 8)
 
         new_contract = SeriesContract(
             contract_id=contract_id,
             webseries_id=data["webseries_id"],
+            signed_date=datetime.strptime(data.get("signed_date", data["start_date"]), "%Y-%m-%d").date(),
             start_date=datetime.strptime(data["start_date"], "%Y-%m-%d").date(),
             end_date=datetime.strptime(data["end_date"], "%Y-%m-%d").date(),
-            contract_status=data["contract_status"],
+            charge_per_episode=charge,
+            status=data["contract_status"],
         )
 
         db.session.add(new_contract)
@@ -374,12 +431,19 @@ def update_contract(contract_id):
 
         data = request.get_json()
 
+        if "signed_date" in data:
+            contract.signed_date = datetime.strptime(data["signed_date"], "%Y-%m-%d").date()
         if "start_date" in data:
             contract.start_date = datetime.strptime(data["start_date"], "%Y-%m-%d").date()
         if "end_date" in data:
             contract.end_date = datetime.strptime(data["end_date"], "%Y-%m-%d").date()
         if "contract_status" in data:
-            contract.contract_status = data["contract_status"]
+            contract.status = data["contract_status"]
+        # Accept either charge_per_episode or contract_amount
+        if "charge_per_episode" in data:
+            contract.charge_per_episode = data["charge_per_episode"]
+        elif "contract_amount" in data:
+            contract.charge_per_episode = data["contract_amount"]
 
         db.session.commit()
 
@@ -428,6 +492,8 @@ def delete_contract(contract_id):
 def get_all_subtitle_languages():
     """Get all subtitle languages"""
     try:
+        from app.models.web_series import WebSeries
+
         page = request.args.get("page", 1, type=int)
         per_page = request.args.get("per_page", 100, type=int)
 
@@ -435,10 +501,18 @@ def get_all_subtitle_languages():
             page=page, per_page=per_page, error_out=False
         )
 
+        # Enrich with series titles
+        result_list = []
+        for s in pagination.items:
+            item_dict = s.to_dict()
+            series = WebSeries.query.get(s.webseries_id)
+            item_dict["series_title"] = series.title if series else None
+            result_list.append(item_dict)
+
         return (
             jsonify(
                 {
-                    "subtitle_languages": [s.to_dict() for s in pagination.items],
+                    "subtitle_languages": result_list,
                     "total": pagination.total,
                     "pages": pagination.pages,
                     "current_page": page,
@@ -473,13 +547,18 @@ def create_subtitle_language():
 
         # Check if already exists
         existing = SubtitleLanguage.query.filter_by(
-            webseries_id=data["webseries_id"], language=data["language"]
+            webseries_id=data["webseries_id"], language_name=data["language"]
         ).first()
         if existing:
             return jsonify({"error": "Subtitle language already exists"}), 409
 
+        # Generate subtitle_language_id
+        subtitle_id = generate_id("SL", 8)
+
         new_subtitle = SubtitleLanguage(
-            webseries_id=data["webseries_id"], language=data["language"]
+            subtitle_language_id=subtitle_id,
+            webseries_id=data["webseries_id"],
+            language_name=data["language"]
         )
 
         db.session.add(new_subtitle)
@@ -516,7 +595,7 @@ def delete_subtitle_language(webseries_id, language):
             return jsonify({"error": "Unauthorized"}), 403
 
         subtitle = SubtitleLanguage.query.filter_by(
-            webseries_id=webseries_id, language=language
+            webseries_id=webseries_id, language_name=language
         ).first()
 
         if not subtitle:
@@ -541,6 +620,8 @@ def delete_subtitle_language(webseries_id, language):
 def get_all_releases():
     """Get all web series releases"""
     try:
+        from app.models.web_series import WebSeries
+
         page = request.args.get("page", 1, type=int)
         per_page = request.args.get("per_page", 100, type=int)
 
@@ -548,10 +629,18 @@ def get_all_releases():
             page=page, per_page=per_page, error_out=False
         )
 
+        # Enrich with series titles
+        result_list = []
+        for r in pagination.items:
+            item_dict = r.to_dict()
+            series = WebSeries.query.get(r.webseries_id)
+            item_dict["series_title"] = series.title if series else None
+            result_list.append(item_dict)
+
         return (
             jsonify(
                 {
-                    "releases": [r.to_dict() for r in pagination.items],
+                    "releases": result_list,
                     "total": pagination.total,
                     "pages": pagination.pages,
                     "current_page": page,
@@ -568,6 +657,8 @@ def get_all_releases():
 def create_release():
     """Create web series release (Employee/Admin only)"""
     try:
+        from app.models.country import Country
+
         current_user_id = get_jwt_identity()
         user = ViewerAccount.query.get(current_user_id)
 
@@ -580,6 +671,13 @@ def create_release():
         for field in required_fields:
             if not data.get(field):
                 return jsonify({"error": f"{field} is required"}), 400
+
+        # Check if country exists, if not create it
+        country = Country.query.get(data["country_name"])
+        if not country:
+            new_country = Country(country_name=data["country_name"])
+            db.session.add(new_country)
+            db.session.flush()  # Flush to make it available for the foreign key
 
         # Check if already exists
         existing = WebSeriesRelease.query.filter_by(
