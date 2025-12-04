@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import Navbar from "../components/common/Navbar";
 import usePermissions from "../hooks/usePermissions";
 import MovieIcon from "@mui/icons-material/Movie";
@@ -53,7 +52,7 @@ const AdminSeriesPage = () => {
 			setSeries(data.series);
 		} catch (error) {
 			console.error("Failed to fetch series:", error);
-			alert("获取剧集列表失败: " + (error.message || "未知错误"));
+			alert("Failed to fetch series: " + (error.message || "Unknown error"));
 		} finally {
 			setLoading(false);
 		}
@@ -112,30 +111,30 @@ const AdminSeriesPage = () => {
 		try {
 			if (modalMode === "create") {
 				await seriesService.createSeries(formData);
-				alert("剧集创建成功");
+				alert("Series created successfully");
 			} else {
 				await seriesService.updateSeries(currentSeries.webseries_id, formData);
-				alert("剧集更新成功");
+				alert("Series updated successfully");
 			}
 			fetchSeries(searchTerm);
 			fetchStats();
 			closeModal();
 		} catch (error) {
 			console.error("Failed to save series:", error);
-			alert("操作失败: " + (error.error || error.message || "未知错误"));
+			alert("Operation failed: " + (error.error || error.message || "Unknown error"));
 		}
 	};
 
 	const handleDeleteSeries = async (seriesId) => {
-		if (window.confirm("确定要删除该剧集吗？此操作将同时删除所有相关集数、反馈等数据，且无法撤销。")) {
+		if (window.confirm("Are you sure you want to delete this series? This action will also delete all related episodes, feedback, and cannot be undone.")) {
 			try {
 				await seriesService.deleteSeries(seriesId);
-				alert("剧集删除成功");
+				alert("Series deleted successfully.");
 				fetchSeries(searchTerm);
 				fetchStats();
 			} catch (error) {
 				console.error("Failed to delete series:", error);
-				alert("剧集删除失败: " + (error.error || error.message || "未知错误"));
+				alert("Failed to delete series: " + (error.error || error.message || "Unknown error"));
 			}
 		}
 	};
@@ -148,13 +147,13 @@ const AdminSeriesPage = () => {
 					<div className="header-content">
 						<MovieIcon style={{ fontSize: 40 }} />
 						<div>
-							<h1>剧集管理</h1>
-							<p>管理所有网络剧集信息</p>
+							<h1>Series Management</h1>
+							<p>Manage all web series information</p>
 						</div>
 					</div>
 					{permissions.canCreateSeries && (
 						<button className="btn btn-primary" onClick={openCreateModal}>
-							<AddIcon /> 创建剧集
+							<AddIcon /> Create Series
 						</button>
 					)}
 				</div>
@@ -163,32 +162,32 @@ const AdminSeriesPage = () => {
 					<div className="admin-stats">
 						<div className="stat-box">
 							<h3>{stats.total}</h3>
-							<p>总剧集数</p>
+							<p>Total Series</p>
 						</div>
 						<div className="stat-box">
 							<h3>{stats.this_month}</h3>
-							<p>本月新增</p>
+							<p>New This Month</p>
 						</div>
 						<div className="stat-box">
 							<h3>{stats.total_episodes}</h3>
-							<p>总集数</p>
+							<p>Total Episodes</p>
 						</div>
 					</div>
 
 					<div className="admin-table-container">
 						<div className="table-header">
-							<h2>剧集列表</h2>
+							<h2>Series List</h2>
 							<div className="search-container">
-								<input type="text" placeholder="搜索剧集..." className="search-input" value={searchTerm} onChange={handleSearchInputChange} onKeyPress={handleSearchKeyPress} />
+								<input type="text" placeholder="Search series..." className="search-input" value={searchTerm} onChange={handleSearchInputChange} onKeyPress={handleSearchKeyPress} />
 								<button className="btn btn-primary" onClick={handleSearchClick}>
-									<SearchIcon /> 搜索
+									<SearchIcon /> Search
 								</button>
 							</div>
 						</div>
 
 						{loading && (
 							<div className="loading-state">
-								<p>加载中...</p>
+								<p>Loading...</p>
 							</div>
 						)}
 
@@ -196,12 +195,12 @@ const AdminSeriesPage = () => {
 							<table className="admin-table">
 								<thead>
 									<tr>
-										<th>剧集ID</th>
-										<th>标题</th>
-										<th>类型</th>
-										<th>集数</th>
-										<th>评分</th>
-										{(permissions.canEditSeries || permissions.canDeleteSeries) && <th>操作</th>}
+										<th>Series ID</th>
+										<th>Title</th>
+										<th>Type</th>
+										<th>Episodes</th>
+										<th>Rating</th>
+										{(permissions.canEditSeries || permissions.canDeleteSeries) && <th>Actions</th>}
 									</tr>
 								</thead>
 								<tbody>
@@ -215,12 +214,12 @@ const AdminSeriesPage = () => {
 											{(permissions.canEditSeries || permissions.canDeleteSeries) && (
 												<td className="action-buttons">
 													{permissions.canEditSeries && (
-														<button className="btn-icon" title="编辑" onClick={() => openEditModal(item)}>
+														<button className="btn-icon" title="Edit" onClick={() => openEditModal(item)}>
 															<EditIcon />
 														</button>
 													)}
 													{permissions.canDeleteSeries && (
-														<button className="btn-icon" title="删除" onClick={() => handleDeleteSeries(item.webseries_id)} style={{ color: "#f44336" }}>
+														<button className="btn-icon" title="Delete" onClick={() => handleDeleteSeries(item.webseries_id)} style={{ color: "#f44336" }}>
 															<DeleteIcon />
 														</button>
 													)}
@@ -233,10 +232,10 @@ const AdminSeriesPage = () => {
 						) : (
 							<div className="empty-admin-state">
 								<MovieIcon style={{ fontSize: 64, opacity: 0.3 }} />
-								<p>暂无剧集数据</p>
+								<p>No series data available</p>
 								{permissions.canCreateSeries && (
 									<button className="btn btn-primary" onClick={openCreateModal}>
-										创建第一部剧集
+										Create the first series
 									</button>
 								)}
 							</div>
@@ -248,7 +247,7 @@ const AdminSeriesPage = () => {
 						<div className="modal-overlay" onClick={closeModal}>
 							<div className="modal-content" onClick={(e) => e.stopPropagation()}>
 								<div className="modal-header">
-									<h2>{modalMode === "create" ? "创建" : "编辑"}剧集</h2>
+									<h2>{modalMode === "create" ? "Create" : "Edit"} Series</h2>
 									<button className="btn-icon" onClick={closeModal}>
 										<CloseIcon />
 									</button>
@@ -256,27 +255,27 @@ const AdminSeriesPage = () => {
 
 								<form onSubmit={handleSubmit} className="modal-form">
 									<div className="form-group">
-										<label>剧集标题 *</label>
-										<input type="text" name="title" value={formData.title || ""} onChange={handleFormChange} required placeholder="请输入剧集标题" />
+										<label>Series Title *</label>
+										<input type="text" name="title" value={formData.title || ""} onChange={handleFormChange} required placeholder="Enter series title" />
 									</div>
 									<div className="form-group">
-										<label>类型 *</label>
+										<label>Type *</label>
 										<select name="type" value={formData.type || ""} onChange={handleFormChange} required>
-											<option value="">请选择类型</option>
-											<option value="Drama">剧情</option>
-											<option value="Comedy">喜剧</option>
-											<option value="Action">动作</option>
-											<option value="Sci-Fi">科幻</option>
-											<option value="Horror">恐怖</option>
-											<option value="Romance">爱情</option>
-											<option value="Thriller">惊悚</option>
-											<option value="Documentary">纪录片</option>
+											<option value="">Please select a type</option>
+											<option value="Drama">Drama</option>
+											<option value="Comedy">Comedy</option>
+											<option value="Action">Action</option>
+											<option value="Sci-Fi">Sci-Fi</option>
+											<option value="Horror">Horror</option>
+											<option value="Romance">Romance</option>
+											<option value="Thriller">Thriller</option>
+											<option value="Documentary">Documentary</option>
 										</select>
 									</div>
 									<div className="form-group">
-										<label>制作公司 *</label>
+										<label>Production House *</label>
 										<select name="house_id" value={formData.house_id || ""} onChange={handleFormChange} required>
-											<option value="">请选择制作公司</option>
+											<option value="">Please select a production house</option>
 											{productionHouses.map((house) => (
 												<option key={house.house_id} value={house.house_id}>
 													{house.name}
@@ -285,16 +284,16 @@ const AdminSeriesPage = () => {
 										</select>
 									</div>
 									<div className="form-group">
-										<label>集数</label>
+										<label>Number of Episodes</label>
 										<input type="number" name="num_episodes" value={formData.num_episodes || ""} onChange={handleFormChange} min="0" placeholder="0" />
 									</div>
 
 									<div className="modal-actions">
 										<button type="button" className="btn btn-secondary" onClick={closeModal}>
-											取消
+											Cancel
 										</button>
 										<button type="submit" className="btn btn-primary">
-											{modalMode === "create" ? "创建" : "保存"}
+											{modalMode === "create" ? "Create" : "Save"}
 										</button>
 									</div>
 								</form>

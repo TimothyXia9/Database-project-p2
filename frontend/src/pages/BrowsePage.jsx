@@ -30,13 +30,13 @@ const BrowsePage = () => {
   }, [dispatch, filterType, currentPage]);
 
   const types = [
-    { value: "all", label: "全部" },
-    { value: "Drama", label: "剧情" },
-    { value: "Comedy", label: "喜剧" },
-    { value: "Action", label: "动作" },
-    { value: "Thriller", label: "惊悚" },
-    { value: "Sci-Fi", label: "科幻" },
-    { value: "Romance", label: "爱情" },
+    { value: "all", label: "All" },
+    { value: "Drama", label: "Drama" },
+    { value: "Comedy", label: "Comedy" },
+    { value: "Action", label: "Action" },
+    { value: "Thriller", label: "Thriller" },
+    { value: "Sci-Fi", label: "Sci-Fi" },
+    { value: "Romance", label: "Romance" },
   ];
 
   const handleSeriesClick = (seriesId) => {
@@ -49,7 +49,7 @@ const BrowsePage = () => {
 
       <div className="browse-container">
         <div className="browse-header">
-          <h1 className="browse-title">浏览剧集</h1>
+          <h1 className="browse-title">Explore Series</h1>
           <div className="browse-filters">
             {types.map((type) => (
               <button
@@ -89,9 +89,9 @@ const BrowsePage = () => {
                     <div className="browse-card-meta">
                       <div className="browse-card-rating">
                         <StarIcon fontSize="small" />
-                        <span>{series.rating || "暂无评分"}</span>
+                        <span>{series.rating || "No Rating"}</span>
                       </div>
-                      <span className="browse-card-episodes">{series.num_episodes} 集</span>
+                      <span className="browse-card-episodes">{series.num_episodes} Episodes</span>
                     </div>
                     <p className="browse-card-id">ID: {series.webseries_id}</p>
                   </div>
@@ -109,7 +109,7 @@ const BrowsePage = () => {
                   上一页
                 </button>
                 <span className="pagination-info">
-                  第 {currentPage} 页，共 {pagination.pages} 页
+                  Page {currentPage} of {pagination.pages}
                 </span>
                 <button
                   className="pagination-btn"
@@ -120,7 +120,7 @@ const BrowsePage = () => {
                   }
                   disabled={currentPage === pagination.pages}
                 >
-                  下一页
+                  Next Page
                 </button>
               </div>
             )}

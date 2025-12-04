@@ -6,8 +6,6 @@ import { fetchFeedbackBySeries, createFeedback, clearSubmitSuccess, clearError }
 import Navbar from "../components/common/Navbar";
 import usePermissions from "../hooks/usePermissions";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import AddIcon from "@mui/icons-material/Add";
-import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import StarIcon from "@mui/icons-material/Star";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -46,10 +44,8 @@ const SeriesDetailPage = () => {
 	useEffect(() => {
 		if (feedbackError) {
 			console.error("Feedback error:", feedbackError);
-			const errorMessage = typeof feedbackError === 'string'
-				? feedbackError
-				: feedbackError.message || JSON.stringify(feedbackError);
-			alert(`提交失败: ${errorMessage}`);
+			const errorMessage = typeof feedbackError === "string" ? feedbackError : feedbackError.message || JSON.stringify(feedbackError);
+			alert(`Fail to submit feedback: ${errorMessage}`);
 			dispatch(clearError());
 		}
 	}, [feedbackError, dispatch]);
@@ -59,7 +55,7 @@ const SeriesDetailPage = () => {
 	};
 
 	const handleDeleteSeries = () => {
-		if (window.confirm("确定要删除这部剧集吗？此操作无法撤销。")) {
+		if (window.confirm("Are you sure you want to delete this series? This action cannot be undone.")) {
 			// TODO: Implement delete series API call
 			console.log("Delete series:", id);
 		}
@@ -74,12 +70,12 @@ const SeriesDetailPage = () => {
 
 		// Validate data before submission
 		if (!feedbackData.comments.trim()) {
-			alert("请输入评论内容");
+			alert("Please enter comments");
 			return;
 		}
 
 		if (!id) {
-			alert("剧集ID无效");
+			alert("Invalid series ID");
 			return;
 		}
 
@@ -125,9 +121,9 @@ const SeriesDetailPage = () => {
 			<div className="detail-error">
 				<Navbar />
 				<div className="error-content">
-					<h1>未找到该剧集</h1>
+					<h1>Series Not Found</h1>
 					<button className="btn btn-primary" onClick={() => navigate("/browse")}>
-						返回浏览
+						Back to Browse
 					</button>
 				</div>
 			</div>
@@ -143,32 +139,25 @@ const SeriesDetailPage = () => {
 					<h1 className="detail-title">{currentSeries.title}</h1>
 					<div className="detail-meta">
 						<span className="detail-type">{currentSeries.type}</span>
-						<span className="detail-episodes">{currentSeries.num_episodes} 集</span>
+						<span className="detail-episodes">{currentSeries.num_episodes} Episodes </span>
 						<div className="detail-rating">
 							<StarIcon />
-							<span>{currentSeries.rating || "暂无评分"}</span>
+							<span>{currentSeries.rating || "No Rating"}</span>
 						</div>
 					</div>
-					<p className="detail-description">{currentSeries.description || "精彩的剧情，引人入胜的故事,为您带来前所未有的观看体验。"}</p>
+					<p className="detail-description">{currentSeries.description || "Great plot, exciting story, captivating narrative, bringing you an unprecedented viewing experience."}</p>
 					<div className="detail-actions">
 						<button className="btn btn-primary detail-btn">
-							<PlayArrowIcon /> 播放
+							<PlayArrowIcon /> Play
 						</button>
-						<button className="btn-icon detail-btn-icon" title="添加到我的列表">
-							<AddIcon />
-						</button>
-						{isLoggedIn && (
-							<button className="btn-icon detail-btn-icon" title="点赞" onClick={() => setShowFeedbackForm(true)}>
-								<ThumbUpIcon />
-							</button>
-						)}
+
 						{permissions.canEditSeries && (
-							<button className="btn-icon detail-btn-icon" title="编辑剧集" onClick={handleEditSeries}>
+							<button className="btn-icon detail-btn-icon" title="Edit Series" onClick={handleEditSeries}>
 								<EditIcon />
 							</button>
 						)}
 						{permissions.canDeleteSeries && (
-							<button className="btn-icon detail-btn-icon" title="删除剧集" onClick={handleDeleteSeries} style={{ color: "#f44336" }}>
+							<button className="btn-icon detail-btn-icon" title="Delete Series" onClick={handleDeleteSeries} style={{ color: "#f44336" }}>
 								<DeleteIcon />
 							</button>
 						)}
@@ -179,13 +168,13 @@ const SeriesDetailPage = () => {
 			<div className="detail-content">
 				<div className="detail-tabs">
 					<button className={`tab-btn ${selectedTab === "episodes" ? "active" : ""}`} onClick={() => setSelectedTab("episodes")}>
-						剧集列表
+						Episodes
 					</button>
 					<button className={`tab-btn ${selectedTab === "details" ? "active" : ""}`} onClick={() => setSelectedTab("details")}>
-						详细信息
+						Details
 					</button>
 					<button className={`tab-btn ${selectedTab === "reviews" ? "active" : ""}`} onClick={() => setSelectedTab("reviews")}>
-						评论
+						Reviews
 					</button>
 				</div>
 
@@ -197,18 +186,18 @@ const SeriesDetailPage = () => {
 									<div key={episode.episode_id} className="episode-item">
 										<div className="episode-number">{index + 1}</div>
 										<div className="episode-info">
-											<h4 className="episode-title">{episode.title || `第 ${index + 1} 集`}</h4>
+											<h4 className="episode-title">{episode.title || `Episode ${index + 1}`}</h4>
 											<div className="episode-meta">
-												<span className="episode-duration">{episode.duration_minutes || 45} 分钟</span>
+												<span className="episode-duration">{episode.duration_minutes || 45} minutes</span>
 												<span className="episode-id">ID: {episode.episode_id}</span>
 											</div>
-											<p className="episode-description">{episode.description || "暂无简介"}</p>
+											<p className="episode-description">{episode.description || "No description available"}</p>
 										</div>
 									</div>
 								))
 							) : (
 								<div className="empty-state">
-									<p>暂无剧集信息</p>
+									<p>No episodes available</p>
 								</div>
 							)}
 						</div>
@@ -217,22 +206,22 @@ const SeriesDetailPage = () => {
 					{selectedTab === "details" && (
 						<div className="details-info">
 							<div className="info-section">
-								<h3>制作信息</h3>
+								<h3>Production Information</h3>
 								<div className="info-grid">
 									<div className="info-item">
-										<span className="info-label">制作公司:</span>
-										<span className="info-value">{currentSeries.house_id || "未知"}</span>
+										<span className="info-label">Production Company:</span>
+										<span className="info-value">{currentSeries.house_id || "Unknown"}</span>
 									</div>
 									<div className="info-item">
-										<span className="info-label">类型:</span>
+										<span className="info-label">Type:</span>
 										<span className="info-value">{currentSeries.type}</span>
 									</div>
 									<div className="info-item">
-										<span className="info-label">总集数:</span>
+										<span className="info-label">Total Episodes:</span>
 										<span className="info-value">{currentSeries.num_episodes}</span>
 									</div>
 									<div className="info-item">
-										<span className="info-label">剧集ID:</span>
+										<span className="info-label">Series ID:</span>
 										<span className="info-value">{currentSeries.webseries_id}</span>
 									</div>
 								</div>
@@ -246,11 +235,11 @@ const SeriesDetailPage = () => {
 								<div className="feedback-submit-section">
 									{!showFeedbackForm ? (
 										<button className="btn btn-primary" onClick={() => setShowFeedbackForm(true)}>
-											写评论
+											Write Review
 										</button>
 									) : (
 										<form onSubmit={handleSubmitFeedback} className="feedback-form">
-											<h3>为这部剧集评分</h3>
+											<h3>Rate this Series</h3>
 											<div className="rating-input">
 												<label>评分 (1-5):</label>
 												<div className="star-rating">
@@ -265,16 +254,16 @@ const SeriesDetailPage = () => {
 												</div>
 											</div>
 											<div className="comment-input">
-												<label>评论 (最多128字):</label>
-												<textarea name="comments" value={feedbackData.comments} onChange={handleFeedbackChange} maxLength={128} placeholder="分享您的观看感受..." rows={4} required disabled={feedbackLoading} />
+												<label>Comments (max 128 characters):</label>
+												<textarea name="comments" value={feedbackData.comments} onChange={handleFeedbackChange} maxLength={128} placeholder="Share your thoughts..." rows={4} required disabled={feedbackLoading} />
 												<div className="character-count">{feedbackData.comments.length}/128</div>
 											</div>
 											<div className="form-actions">
 												<button type="submit" className="btn btn-primary" disabled={feedbackLoading}>
-													{feedbackLoading ? "提交中..." : "提交评论"}
+													{feedbackLoading ? "Submitting..." : "Submit Review"}
 												</button>
 												<button type="button" className="btn btn-secondary" onClick={() => setShowFeedbackForm(false)} disabled={feedbackLoading}>
-													取消
+													Cancel
 												</button>
 											</div>
 										</form>
@@ -283,16 +272,16 @@ const SeriesDetailPage = () => {
 							)}
 							{!isLoggedIn && (
 								<div className="login-prompt">
-									<p>请登录后提交评论</p>
+									<p>Please log in to submit a review</p>
 									<button className="btn btn-primary" onClick={() => navigate("/login")}>
-										登录
+										Log In
 									</button>
 								</div>
 							)}
 							<div className="reviews-list">
 								{feedbackLoading ? (
 									<div className="empty-state">
-										<p>加载中...</p>
+										<p>Loading...</p>
 									</div>
 								) : feedbackList && feedbackList.length > 0 ? (
 									feedbackList.map((feedback) => (
@@ -322,7 +311,7 @@ const SeriesDetailPage = () => {
 												<div className="review-actions">
 													<button className="review-action-btn" onClick={() => handleEditFeedback(feedback)}>
 														<EditIcon />
-														编辑
+														Edit
 													</button>
 												</div>
 											)}
@@ -330,7 +319,7 @@ const SeriesDetailPage = () => {
 									))
 								) : (
 									<div className="empty-state">
-										<p>暂无评论</p>
+										<p>No Reviews Yet</p>
 									</div>
 								)}
 							</div>

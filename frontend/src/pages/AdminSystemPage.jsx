@@ -31,7 +31,7 @@ const AdminSystemPage = () => {
 			setStats(data);
 		} catch (error) {
 			console.error("Failed to fetch stats:", error);
-			alert("获取统计信息失败");
+			alert("Failed to fetch stats: " + (error.message || "Unknown error"));
 		} finally {
 			setLoading(false);
 		}
@@ -56,52 +56,52 @@ const AdminSystemPage = () => {
 	};
 
 	const handleAddCountry = async () => {
-		const countryName = prompt("请输入国家名称：");
+		const countryName = prompt("Please enter the name of the country to add:");
 		if (countryName) {
 			try {
 				await adminService.createCountry(countryName);
-				alert("国家添加成功");
+				alert("Country added successfully");
 				fetchCountries();
 			} catch (error) {
 				console.error("Failed to add country:", error);
-				alert("国家添加失败: " + (error.error || error.message || "未知错误"));
+				alert("Failed to add country: " + (error.error || error.message || "Unknown error"));
 			}
 		}
 	};
 
 	const handleDeleteCountry = async (countryName) => {
-		if (window.confirm(`确定要删除国家"${countryName}"吗？`)) {
+		if (window.confirm(`Are you sure you want to delete the country "${countryName}"?`)) {
 			try {
 				await adminService.deleteCountry(countryName);
-				alert("国家删除成功");
+				alert("Country deleted successfully.");
 				fetchCountries();
 			} catch (error) {
 				console.error("Failed to delete country:", error);
-				alert("国家删除失败: " + (error.error || error.message || "未知错误"));
+				alert("Failed to delete country: " + (error.error || error.message || "Unknown error"));
 			}
 		}
 	};
 
 	const handleVacuum = async () => {
-		if (window.confirm("确定要执行数据库优化吗？")) {
+		if (window.confirm("Are you sure you want to perform database vacuum?")) {
 			try {
 				await adminService.vacuumDatabase();
-				alert("数据库优化完成");
+				alert("Database vacuum completed");
 			} catch (error) {
 				console.error("Failed to vacuum database:", error);
-				alert("数据库优化失败");
+				alert("Database vacuum failed");
 			}
 		}
 	};
 
 	const handleBackup = async () => {
-		if (window.confirm("确定要创建数据库备份吗？")) {
+		if (window.confirm("Are you sure you want to create a database backup?")) {
 			try {
 				await adminService.backupDatabase();
-				alert("备份已启动");
+				alert("Backup initiated");
 			} catch (error) {
 				console.error("Failed to backup database:", error);
-				alert("备份失败");
+				alert("Backup failed");
 			}
 		}
 	};
@@ -112,8 +112,8 @@ const AdminSystemPage = () => {
 				<Navbar />
 				<div className="admin-container">
 					<div className="access-denied">
-						<h1>访问被拒绝</h1>
-						<p>您没有权限访问此页面</p>
+						<h1>Access Denied</h1>
+						<p>You do not have permission to access this page.</p>
 					</div>
 				</div>
 			</div>
@@ -128,8 +128,8 @@ const AdminSystemPage = () => {
 					<div className="header-content">
 						<SettingsIcon style={{ fontSize: 40 }} />
 						<div>
-							<h1>系统管理</h1>
-							<p>系统统计、国家管理、数据库维护</p>
+							<h1>System Management</h1>
+							<p>System statistics, country management, database maintenance</p>
 						</div>
 					</div>
 				</div>
@@ -137,78 +137,78 @@ const AdminSystemPage = () => {
 				<div className="admin-content">
 					<div className="admin-tabs">
 						<button className={`tab-button ${activeTab === "stats" ? "active" : ""}`} onClick={() => setActiveTab("stats")}>
-							<StorageIcon /> 系统统计
+							<StorageIcon /> System Stats
 						</button>
 						<button className={`tab-button ${activeTab === "countries" ? "active" : ""}`} onClick={() => setActiveTab("countries")}>
-							<PublicIcon /> 国家管理
+							<PublicIcon /> Country Management
 						</button>
 						<button className={`tab-button ${activeTab === "maintenance" ? "active" : ""}`} onClick={() => setActiveTab("maintenance")}>
-							<BackupIcon /> 数据库维护
+							<BackupIcon /> Database Maintenance
 						</button>
 						<button className={`tab-button ${activeTab === "logs" ? "active" : ""}`} onClick={() => setActiveTab("logs")}>
-							<HistoryIcon /> 系统日志
+							<HistoryIcon /> System Logs
 						</button>
 					</div>
 
 					{activeTab === "stats" && stats && (
 						<div className="system-stats-section">
-							<h2>系统统计信息</h2>
+							<h2>System Statistics</h2>
 
 							<div className="stats-grid">
 								<div className="stats-category">
-									<h3>用户统计</h3>
+									<h3>User Statistics</h3>
 									<div className="admin-stats">
 										<div className="stat-box">
 											<h3>{stats.users.total}</h3>
-											<p>总用户数</p>
+											<p>Total Users</p>
 										</div>
 										<div className="stat-box">
 											<h3>{stats.users.customers}</h3>
-											<p>观众</p>
+											<p>Customers</p>
 										</div>
 										<div className="stat-box">
 											<h3>{stats.users.employees}</h3>
-											<p>员工</p>
+											<p>Employees</p>
 										</div>
 										<div className="stat-box">
 											<h3>{stats.users.admins}</h3>
-											<p>管理员</p>
+											<p>Admins</p>
 										</div>
 										<div className="stat-box">
 											<h3>{stats.users.active}</h3>
-											<p>活跃用户</p>
+											<p>Active Users</p>
 										</div>
 									</div>
 								</div>
 
 								<div className="stats-category">
-									<h3>内容统计</h3>
+									<h3>Content Statistics</h3>
 									<div className="admin-stats">
 										<div className="stat-box">
 											<h3>{stats.series.total}</h3>
-											<p>总剧集数</p>
+											<p>Total Series</p>
 										</div>
 										<div className="stat-box">
 											<h3>{stats.series.this_month}</h3>
-											<p>本月新增</p>
+											<p>New This Month</p>
 										</div>
 										<div className="stat-box">
 											<h3>{stats.series.total_episodes}</h3>
-											<p>总集数</p>
+											<p>Total Episodes</p>
 										</div>
 									</div>
 								</div>
 
 								<div className="stats-category">
-									<h3>反馈统计</h3>
+									<h3>Feedback Statistics</h3>
 									<div className="admin-stats">
 										<div className="stat-box">
 											<h3>{stats.feedback.total}</h3>
-											<p>总反馈数</p>
+											<p>Total Feedback</p>
 										</div>
 										<div className="stat-box">
 											<h3>{stats.feedback.average_rating}</h3>
-											<p>平均评分</p>
+											<p>Average Rating</p>
 										</div>
 									</div>
 								</div>
@@ -219,9 +219,9 @@ const AdminSystemPage = () => {
 					{activeTab === "countries" && (
 						<div className="countries-section">
 							<div className="section-header">
-								<h2>国家列表</h2>
+								<h2>Country List</h2>
 								<button className="btn btn-primary" onClick={handleAddCountry}>
-									<AddIcon /> 添加国家
+									<AddIcon /> Add Country
 								</button>
 							</div>
 
@@ -230,7 +230,7 @@ const AdminSystemPage = () => {
 									<div key={country.country_name} className="country-card">
 										<PublicIcon />
 										<span>{country.country_name}</span>
-										<button className="btn-icon" title="删除" onClick={() => handleDeleteCountry(country.country_name)} style={{ color: "#f44336" }}>
+										<button className="btn-icon" title="Delete" onClick={() => handleDeleteCountry(country.country_name)} style={{ color: "#f44336" }}>
 											<DeleteIcon />
 										</button>
 									</div>
@@ -267,7 +267,7 @@ const AdminSystemPage = () => {
 
 					{activeTab === "logs" && (
 						<div className="logs-section">
-							<h2>系统日志</h2>
+							<h2>System Logs</h2>
 
 							<div className="logs-list">
 								{logs.length > 0 ? (
@@ -283,7 +283,7 @@ const AdminSystemPage = () => {
 								) : (
 									<div className="empty-admin-state">
 										<HistoryIcon style={{ fontSize: 64, opacity: 0.3 }} />
-										<p>暂无日志记录</p>
+										<p>No Logs Available</p>
 									</div>
 								)}
 							</div>

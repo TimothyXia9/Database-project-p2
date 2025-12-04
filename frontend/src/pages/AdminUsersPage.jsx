@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import Navbar from "../components/common/Navbar";
 import usePermissions from "../hooks/usePermissions";
 import PeopleIcon from "@mui/icons-material/People";
-import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import LockResetIcon from "@mui/icons-material/LockReset";
 import SearchIcon from "@mui/icons-material/Search";
@@ -96,7 +95,7 @@ const AdminUsersPage = () => {
 		if (window.confirm("确定要删除该用户吗？此操作无法撤销。")) {
 			try {
 				await adminService.deleteUser(userId);
-				alert("用户删除成功");
+				alert("用户Delete Successful.");
 				fetchUsers(searchTerm);
 				fetchStats();
 			} catch (error) {
@@ -180,7 +179,7 @@ const AdminUsersPage = () => {
 
 						{loading && (
 							<div className="loading-state">
-								<p>加载中...</p>
+								<p>Loading...</p>
 							</div>
 						)}
 

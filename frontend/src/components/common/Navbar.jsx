@@ -53,16 +53,16 @@ const Navbar = () => {
 					</Link>
 					<ul className="navbar-menu">
 						<li>
-							<Link to="/">首页</Link>
+							<Link to="/">Main</Link>
 						</li>
 						<li>
-							<Link to="/browse">剧集</Link>
+							<Link to="/browse">Web Series</Link>
 						</li>
 						{isAuthenticated && (
 							<>
 								{(user?.account_type === "Employee" || user?.account_type === "Admin") && (
 									<li>
-										<Link to="/admin/content">管理</Link>
+										<Link to="/admin/content">Admin</Link>
 									</li>
 								)}
 							</>
@@ -75,7 +75,7 @@ const Navbar = () => {
 						<SearchIcon className="navbar-icon" onClick={() => setShowSearch(!showSearch)} />
 						{showSearch && (
 							<form onSubmit={handleSearch} className="search-form">
-								<input type="text" placeholder="搜索剧集..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} autoFocus />
+								<input type="text" placeholder="Search Web Series..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} autoFocus />
 							</form>
 						)}
 					</div>
@@ -95,8 +95,8 @@ const Navbar = () => {
 											<p className="profile-email">{user?.email}</p>
 										</div>
 										<div className="profile-links">
-											<Link to="/dashboard">个人中心</Link>
-											<button onClick={handleLogout}>退出登录</button>
+											<Link to="/dashboard">Dashboard</Link>
+											<button onClick={handleLogout}>Logout</button>
 										</div>
 									</div>
 								)}
@@ -104,7 +104,7 @@ const Navbar = () => {
 						</>
 					) : (
 						<Link to="/login" className="btn btn-primary navbar-login">
-							登录
+							Login
 						</Link>
 					)}
 				</div>

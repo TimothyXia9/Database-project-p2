@@ -107,7 +107,7 @@ const AdminContentPage = () => {
 			setEpisodes(data.episodes);
 		} catch (error) {
 			console.error("Failed to fetch episodes:", error);
-			alert("获取集数列表失败");
+			alert("Failed to fetch episodes");
 		} finally {
 			setLoading(false);
 		}
@@ -120,7 +120,7 @@ const AdminContentPage = () => {
 			setProductionHouses(data.production_houses);
 		} catch (error) {
 			console.error("Failed to fetch production houses:", error);
-			alert("获取制作公司列表失败");
+			alert("Failed to fetch production houses");
 		} finally {
 			setLoading(false);
 		}
@@ -133,7 +133,7 @@ const AdminContentPage = () => {
 			setProducers(data.producers);
 		} catch (error) {
 			console.error("Failed to fetch producers:", error);
-			alert("获取制片人列表失败");
+			alert("Failed to fetch producers");
 		} finally {
 			setLoading(false);
 		}
@@ -146,7 +146,7 @@ const AdminContentPage = () => {
 			setFeedback(data.feedback);
 		} catch (error) {
 			console.error("Failed to fetch feedback:", error);
-			alert("获取反馈列表失败");
+			alert("Failed to fetch feedback");
 		} finally {
 			setLoading(false);
 		}
@@ -159,7 +159,7 @@ const AdminContentPage = () => {
 			setAffiliations(data.affiliations || []);
 		} catch (error) {
 			console.error("Failed to fetch affiliations:", error);
-			alert("获取制片人关联列表失败");
+			alert("Failed to fetch affiliations");
 		} finally {
 			setLoading(false);
 		}
@@ -172,7 +172,7 @@ const AdminContentPage = () => {
 			setTelecasts(data.telecasts || []);
 		} catch (error) {
 			console.error("Failed to fetch telecasts:", error);
-			alert("获取播出记录列表失败");
+			alert("Failed to fetch telecasts");
 		} finally {
 			setLoading(false);
 		}
@@ -194,7 +194,7 @@ const AdminContentPage = () => {
 			setContracts(data.contracts || []);
 		} catch (error) {
 			console.error("Failed to fetch contracts:", error);
-			alert("获取合同列表失败");
+			alert("Failed to fetch contracts");
 		} finally {
 			setLoading(false);
 		}
@@ -207,7 +207,7 @@ const AdminContentPage = () => {
 			setSubtitleLanguages(data.subtitle_languages || []);
 		} catch (error) {
 			console.error("Failed to fetch subtitle languages:", error);
-			alert("获取字幕语言列表失败");
+			alert("Failed to fetch subtitle languages");
 		} finally {
 			setLoading(false);
 		}
@@ -220,7 +220,7 @@ const AdminContentPage = () => {
 			setReleases(data.releases || []);
 		} catch (error) {
 			console.error("Failed to fetch releases:", error);
-			alert("获取发行记录列表失败");
+			alert("Failed to fetch releases");
 		} finally {
 			setLoading(false);
 		}
@@ -258,125 +258,125 @@ const AdminContentPage = () => {
 			if (activeTab === "episodes") {
 				if (modalMode === "create") {
 					await contentService.createEpisode(formData);
-					alert("集数创建成功");
+					alert("Episode created successfully");
 				} else {
 					await contentService.updateEpisode(currentItem.episode_id, formData);
-					alert("集数更新成功");
+					alert("Episode updated successfully");
 				}
 				fetchEpisodes(episodeSearch);
 			} else if (activeTab === "production") {
 				if (modalMode === "create") {
 					await contentService.createProductionHouse(formData);
-					alert("制作公司创建成功");
+					alert("Production house created successfully");
 				} else {
 					await contentService.updateProductionHouse(currentItem.house_id, formData);
-					alert("制作公司更新成功");
+					alert("Production house updated successfully");
 				}
 				fetchProductionHouses(productionHouseSearch);
 			} else if (activeTab === "producers") {
 				if (modalMode === "create") {
 					await contentService.createProducer(formData);
-					alert("制片人创建成功");
+					alert("Producer created successfully");
 				} else {
 					await contentService.updateProducer(currentItem.producer_id, formData);
-					alert("制片人更新成功");
+					alert("Producer updated successfully");
 				}
 				fetchProducers(producerSearch);
 			} else if (activeTab === "affiliations") {
 				if (modalMode === "create") {
 					await contentService.createAffiliation(formData);
-					alert("制片人关联创建成功");
+					alert("Affiliation created successfully");
 				}
 				fetchAffiliations();
 			} else if (activeTab === "telecasts") {
 				if (modalMode === "create") {
 					await contentService.createTelecast(formData);
-					alert("播出记录创建成功");
+					alert("Telecast created successfully");
 				} else {
 					await contentService.updateTelecast(currentItem.telecast_id, formData);
-					alert("播出记录更新成功");
+					alert("Telecast updated successfully");
 				}
 				fetchTelecasts();
 			} else if (activeTab === "contracts") {
 				if (modalMode === "create") {
 					await contentService.createContract(formData);
-					alert("合同创建成功");
+					alert("Contract created successfully");
 				} else {
 					await contentService.updateContract(currentItem.contract_id, formData);
-					alert("合同更新成功");
+					alert("Contract updated successfully");
 				}
 				fetchContracts();
 			} else if (activeTab === "subtitles") {
 				if (modalMode === "create") {
 					await contentService.createSubtitleLanguage(formData);
-					alert("字幕语言添加成功");
+					alert("Subtitle language added successfully");
 				}
 				fetchSubtitleLanguages();
 			} else if (activeTab === "releases") {
 				if (modalMode === "create") {
 					await contentService.createRelease(formData);
-					alert("发行记录创建成功");
+					alert("Release created successfully");
 				} else {
 					await contentService.updateRelease(currentItem.webseries_id, currentItem.country_name, formData);
-					alert("发行记录更新成功");
+					alert("Release updated successfully");
 				}
 				fetchReleases();
 			}
 			closeModal();
 		} catch (error) {
 			console.error("Failed to save:", error);
-			alert("操作失败: " + (error.error || error.message || "未知错误"));
+			alert("Operation failed: " + (error.error || error.message || "Unknown error"));
 		}
 	};
 
 	const handleDeleteEpisode = async (episodeId) => {
-		if (window.confirm("确定要删除该集数吗？")) {
+		if (window.confirm("Are you sure you want to delete this episode?")) {
 			try {
 				await contentService.deleteEpisode(episodeId);
-				alert("删除成功");
+				alert("Delete Successful.");
 				fetchEpisodes(episodeSearch);
 			} catch (error) {
 				console.error("Failed to delete episode:", error);
-				alert("删除失败: " + (error.error || error.message || "未知错误"));
+				alert("Delete failed: " + (error.error || error.message || "Unknown error"));
 			}
 		}
 	};
 
 	const handleDeleteProductionHouse = async (houseId) => {
-		if (window.confirm("确定要删除该制作公司吗？这将影响相关的剧集。")) {
+		if (window.confirm("Are you sure you want to delete this production house? This will affect related series.")) {
 			try {
 				await contentService.deleteProductionHouse(houseId);
-				alert("删除成功");
+				alert("Delete Successful.");
 				fetchProductionHouses(productionHouseSearch);
 			} catch (error) {
 				console.error("Failed to delete production house:", error);
-				alert("删除失败: " + (error.error || error.message || "未知错误"));
+				alert("Delete failed: " + (error.error || error.message || "Unknown error"));
 			}
 		}
 	};
 
 	const handleDeleteProducer = async (producerId) => {
-		if (window.confirm("确定要删除该制片人吗？")) {
+		if (window.confirm("Are you sure you want to delete this producer?")) {
 			try {
 				await contentService.deleteProducer(producerId);
-				alert("删除成功");
+				alert("Delete Successful.");
 				fetchProducers(producerSearch);
 			} catch (error) {
 				console.error("Failed to delete producer:", error);
-				alert("删除失败: " + (error.error || error.message || "未知错误"));
+				alert("Delete failed: " + (error.error || error.message || "Unknown error"));
 			}
 		}
 	};
 
 	const handleDeleteFeedback = async (feedbackId) => {
-		if (window.confirm("确定要删除该反馈吗？")) {
+		if (window.confirm("Are you sure you want to delete this feedback?")) {
 			try {
 				await contentService.deleteFeedback(feedbackId);
-				alert("删除成功");
+				alert("Delete Successful.");
 				fetchFeedback(feedbackSearch);
 			} catch (error) {
 				console.error("Failed to delete feedback:", error);
-				alert("删除失败: " + (error.error || error.message || "未知错误"));
+				alert("Delete failed: " + (error.error || error.message || "Unknown error"));
 			}
 		}
 	};
@@ -438,53 +438,53 @@ const AdminContentPage = () => {
 	};
 
 	const handleDeleteAffiliation = async (item) => {
-		if (window.confirm("确定要删除该制片人关联吗？")) {
+		if (window.confirm("Are you sure you want to delete this producer affiliation?")) {
 			try {
 				await contentService.deleteAffiliation(item.producer_id, item.house_id);
-				alert("删除成功");
+				alert("Delete Successful.");
 				fetchAffiliations();
 			} catch (error) {
 				console.error("Failed to delete affiliation:", error);
-				alert("删除失败: " + (error.error || error.message || "未知错误"));
+				alert("Delete failed: " + (error.error || error.message || "Unknown error"));
 			}
 		}
 	};
 
 	const handleDeleteTelecast = async (telecastId) => {
-		if (window.confirm("确定要删除该播出记录吗？")) {
+		if (window.confirm("Are you sure you want to delete this telecast record?")) {
 			try {
 				await contentService.deleteTelecast(telecastId);
-				alert("删除成功");
+				alert("Delete Successful.");
 				fetchTelecasts();
 			} catch (error) {
 				console.error("Failed to delete telecast:", error);
-				alert("删除失败: " + (error.error || error.message || "未知错误"));
+				alert("Delete failed: " + (error.error || error.message || "Unknown error"));
 			}
 		}
 	};
 
 	const handleDeleteContract = async (contractId) => {
-		if (window.confirm("确定要删除该合同吗？")) {
+		if (window.confirm("Are you sure you want to delete this contract?")) {
 			try {
 				await contentService.deleteContract(contractId);
-				alert("删除成功");
+				alert("Delete Successful.");
 				fetchContracts();
 			} catch (error) {
 				console.error("Failed to delete contract:", error);
-				alert("删除失败: " + (error.error || error.message || "未知错误"));
+				alert("Delete failed: " + (error.error || error.message || "Unknown error"));
 			}
 		}
 	};
 
 	const handleDeleteSubtitleLanguage = async (item) => {
-		if (window.confirm("确定要删除该字幕语言吗？")) {
+		if (window.confirm("Are you sure you want to delete this subtitle language?")) {
 			try {
 				await contentService.deleteSubtitleLanguage(item.webseries_id, item.language);
-				alert("删除成功");
+				alert("Delete Successful.");
 				fetchSubtitleLanguages();
 			} catch (error) {
 				console.error("Failed to delete subtitle language:", error);
-				alert("删除失败: " + (error.error || error.message || "未知错误"));
+				alert("Delete failed: " + (error.error || error.message || "Unknown error"));
 			}
 		}
 	};
@@ -560,14 +560,14 @@ const AdminContentPage = () => {
 	};
 
 	const handleDeleteRelease = async (item) => {
-		if (window.confirm("确定要删除该发行记录吗？")) {
+		if (window.confirm("Are you sure you want to delete this release record?")) {
 			try {
 				await contentService.deleteRelease(item.webseries_id, item.country_name);
-				alert("删除成功");
+				alert("Delete successful");
 				fetchReleases();
 			} catch (error) {
 				console.error("Failed to delete release:", error);
-				alert("删除失败: " + (error.error || error.message || "未知错误"));
+				alert("Delete failed: " + (error.error || error.message || "Unknown error"));
 			}
 		}
 	};
@@ -578,8 +578,8 @@ const AdminContentPage = () => {
 				<Navbar />
 				<div className="admin-container">
 					<div className="access-denied">
-						<h1>访问被拒绝</h1>
-						<p>您没有权限访问此页面</p>
+						<h1>Access Denied</h1>
+						<p>You do not have permission to access this page.</p>
 					</div>
 				</div>
 			</div>
@@ -594,8 +594,8 @@ const AdminContentPage = () => {
 					<div className="header-content">
 						<MovieIcon style={{ fontSize: 40 }} />
 						<div>
-							<h1>内容管理</h1>
-							<p>管理集数、制作公司、制片人、反馈和关系数据</p>
+							<h1>Content Management</h1>
+							<p>Manage episodes, production houses, producers, feedback, and affiliations</p>
 						</div>
 					</div>
 				</div>
@@ -603,37 +603,37 @@ const AdminContentPage = () => {
 				<div className="admin-content">
 					<div className="admin-tabs">
 						<button className={`tab-button ${activeTab === "episodes" ? "active" : ""}`} onClick={() => setActiveTab("episodes")}>
-							<LiveTvIcon /> 集数管理
+							<LiveTvIcon /> Episodes
 						</button>
 						<button className={`tab-button ${activeTab === "production" ? "active" : ""}`} onClick={() => setActiveTab("production")}>
-							<BusinessIcon /> 制作公司
+							<BusinessIcon /> Production Houses
 						</button>
 						<button className={`tab-button ${activeTab === "producers" ? "active" : ""}`} onClick={() => setActiveTab("producers")}>
-							<PersonIcon /> 制片人
+							<PersonIcon /> Producers
 						</button>
 						<button className={`tab-button ${activeTab === "feedback" ? "active" : ""}`} onClick={() => setActiveTab("feedback")}>
-							<FeedbackIcon /> 反馈管理
+							<FeedbackIcon /> Feedback
 						</button>
 						<button className={`tab-button ${activeTab === "affiliations" ? "active" : ""}`} onClick={() => setActiveTab("affiliations")}>
-							<LinkIcon /> 制片人关联
+							<LinkIcon /> Producer-Production House Affiliations
 						</button>
 						<button className={`tab-button ${activeTab === "telecasts" ? "active" : ""}`} onClick={() => setActiveTab("telecasts")}>
-							<TvIcon /> 播出记录
+							<TvIcon /> Telecast Records
 						</button>
 						<button className={`tab-button ${activeTab === "contracts" ? "active" : ""}`} onClick={() => setActiveTab("contracts")}>
-							<DescriptionIcon /> 合同管理
+							<DescriptionIcon /> Contract Management
 						</button>
 						<button className={`tab-button ${activeTab === "subtitles" ? "active" : ""}`} onClick={() => setActiveTab("subtitles")}>
-							<LanguageIcon /> 字幕语言
+							<LanguageIcon /> Subtitle Languages
 						</button>
 						<button className={`tab-button ${activeTab === "releases" ? "active" : ""}`} onClick={() => setActiveTab("releases")}>
-							<PublicIcon /> 发行记录
+							<PublicIcon /> Release Records
 						</button>
 					</div>
 
 					{loading && (
 						<div className="loading-state">
-							<p>加载中...</p>
+							<p>Loading...</p>
 						</div>
 					)}
 
@@ -641,17 +641,17 @@ const AdminContentPage = () => {
 					{activeTab === "episodes" && !loading && (
 						<div className="admin-table-container">
 							<div className="table-header">
-								<h2>集数列表（共 {episodes.length} 集）</h2>
+								<h2>Episode List (Total {episodes.length})</h2>
 								<div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
 									<div className="search-container">
-										<input type="text" placeholder="搜索集数..." className="search-input" value={episodeSearch} onChange={handleEpisodeSearchInputChange} onKeyPress={handleEpisodeSearchKeyPress} />
+										<input type="text" placeholder="Search Episodes..." className="search-input" value={episodeSearch} onChange={handleEpisodeSearchInputChange} onKeyPress={handleEpisodeSearchKeyPress} />
 										<button className="btn btn-primary" onClick={handleEpisodeSearchClick}>
-											<SearchIcon /> 搜索
+											<SearchIcon /> Search
 										</button>
 									</div>
 									{permissions.canCreateEpisode && (
 										<button className="btn btn-primary" onClick={openCreateModal}>
-											<AddIcon /> 新增集数
+											<AddIcon /> Add Episode
 										</button>
 									)}
 								</div>
@@ -661,20 +661,20 @@ const AdminContentPage = () => {
 								<table className="admin-table">
 									<thead>
 										<tr>
-											<th>集数ID</th>
-											<th>集数编号</th>
-											<th>标题</th>
-											<th>剧集ID</th>
-											<th>时长（分钟）</th>
-											<th>发布日期</th>
-											{(permissions.canEditEpisode || permissions.canDeleteEpisode) && <th>操作</th>}
+											<th>Episode ID</th>
+											<th>Episode Number</th>
+											<th>Title</th>
+											<th>Webseries ID</th>
+											<th>Duration (minutes)</th>
+											<th>Release Date</th>
+											{(permissions.canEditEpisode || permissions.canDeleteEpisode) && <th>Actions</th>}
 										</tr>
 									</thead>
 									<tbody>
 										{episodes.map((ep) => (
 											<tr key={ep.episode_id}>
 												<td>{ep.episode_id}</td>
-												<td>第 {ep.episode_number} 集</td>
+												<td>Episode {ep.episode_number}</td>
 												<td>{ep.title || "-"}</td>
 												<td>{ep.webseries_id}</td>
 												<td>{ep.duration_minutes || "-"}</td>
@@ -682,12 +682,12 @@ const AdminContentPage = () => {
 												{(permissions.canEditEpisode || permissions.canDeleteEpisode) && (
 													<td className="action-buttons">
 														{permissions.canEditEpisode && (
-															<button className="btn-icon" title="编辑" onClick={() => openEditModal(ep)}>
+															<button className="btn-icon" title="Edit" onClick={() => openEditModal(ep)}>
 																<EditIcon />
 															</button>
 														)}
 														{permissions.canDeleteEpisode && (
-															<button className="btn-icon" title="删除" onClick={() => handleDeleteEpisode(ep.episode_id)} style={{ color: "#f44336" }}>
+															<button className="btn-icon" title="Delete" onClick={() => handleDeleteEpisode(ep.episode_id)} style={{ color: "#f44336" }}>
 																<DeleteIcon />
 															</button>
 														)}
@@ -700,7 +700,7 @@ const AdminContentPage = () => {
 							) : (
 								<div className="empty-admin-state">
 									<LiveTvIcon style={{ fontSize: 64, opacity: 0.3 }} />
-									<p>暂无集数数据</p>
+									<p>No Episode Data</p>
 								</div>
 							)}
 						</div>
@@ -710,17 +710,17 @@ const AdminContentPage = () => {
 					{activeTab === "production" && !loading && (
 						<div className="admin-table-container">
 							<div className="table-header">
-								<h2>制作公司列表（共 {productionHouses.length} 家）</h2>
+								<h2>Production House List (Total {productionHouses.length})</h2>
 								<div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
 									<div className="search-container">
-										<input type="text" placeholder="搜索制作公司..." className="search-input" value={productionHouseSearch} onChange={handleProductionHouseSearchInputChange} onKeyPress={handleProductionHouseSearchKeyPress} />
+										<input type="text" placeholder="Search Production Houses..." className="search-input" value={productionHouseSearch} onChange={handleProductionHouseSearchInputChange} onKeyPress={handleProductionHouseSearchKeyPress} />
 										<button className="btn btn-primary" onClick={handleProductionHouseSearchClick}>
-											<SearchIcon /> 搜索
+											<SearchIcon /> Search
 										</button>
 									</div>
 									{permissions.canCreateProductionHouse && (
 										<button className="btn btn-primary" onClick={openCreateModal}>
-											<AddIcon /> 新增制作公司
+											<AddIcon /> Add Production House
 										</button>
 									)}
 								</div>
@@ -730,12 +730,12 @@ const AdminContentPage = () => {
 								<table className="admin-table">
 									<thead>
 										<tr>
-											<th>公司ID</th>
-											<th>公司名称</th>
-											<th>成立年份</th>
-											<th>地址</th>
-											<th>国籍</th>
-											{(permissions.canEditProductionHouse || permissions.canDeleteProductionHouse) && <th>操作</th>}
+											<th>Company ID</th>
+											<th>Company Name</th>
+											<th>Year Established</th>
+											<th>Address</th>
+											<th>Nationality</th>
+											{(permissions.canEditProductionHouse || permissions.canDeleteProductionHouse) && <th>Actions</th>}
 										</tr>
 									</thead>
 									<tbody>
@@ -751,12 +751,12 @@ const AdminContentPage = () => {
 												{(permissions.canEditProductionHouse || permissions.canDeleteProductionHouse) && (
 													<td className="action-buttons">
 														{permissions.canEditProductionHouse && (
-															<button className="btn-icon" title="编辑" onClick={() => openEditModal(house)}>
+															<button className="btn-icon" title="Edit" onClick={() => openEditModal(house)}>
 																<EditIcon />
 															</button>
 														)}
 														{permissions.canDeleteProductionHouse && (
-															<button className="btn-icon" title="删除" onClick={() => handleDeleteProductionHouse(house.house_id)} style={{ color: "#f44336" }}>
+															<button className="btn-icon" title="Delete" onClick={() => handleDeleteProductionHouse(house.house_id)} style={{ color: "#f44336" }}>
 																<DeleteIcon />
 															</button>
 														)}
@@ -769,7 +769,7 @@ const AdminContentPage = () => {
 							) : (
 								<div className="empty-admin-state">
 									<BusinessIcon style={{ fontSize: 64, opacity: 0.3 }} />
-									<p>暂无制作公司数据</p>
+									<p>No Production House Data</p>
 								</div>
 							)}
 						</div>
@@ -779,17 +779,17 @@ const AdminContentPage = () => {
 					{activeTab === "producers" && !loading && (
 						<div className="admin-table-container">
 							<div className="table-header">
-								<h2>制片人列表（共 {producers.length} 人）</h2>
+								<h2>Producer List (Total {producers.length})</h2>
 								<div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
 									<div className="search-container">
-										<input type="text" placeholder="搜索制片人..." className="search-input" value={producerSearch} onChange={handleProducerSearchInputChange} onKeyPress={handleProducerSearchKeyPress} />
+										<input type="text" placeholder="Search Producers..." className="search-input" value={producerSearch} onChange={handleProducerSearchInputChange} onKeyPress={handleProducerSearchKeyPress} />
 										<button className="btn btn-primary" onClick={handleProducerSearchClick}>
-											<SearchIcon /> 搜索
+											<SearchIcon /> Search
 										</button>
 									</div>
 									{permissions.canCreateProducer && (
 										<button className="btn btn-primary" onClick={openCreateModal}>
-											<AddIcon /> 新增制片人
+											<AddIcon /> Add Producer
 										</button>
 									)}
 								</div>
@@ -799,13 +799,13 @@ const AdminContentPage = () => {
 								<table className="admin-table">
 									<thead>
 										<tr>
-											<th>制片人ID</th>
-											<th>姓名</th>
-											<th>邮箱</th>
-											<th>电话</th>
-											<th>地址</th>
-											<th>国籍</th>
-											{(permissions.canEditProducer || permissions.canDeleteProducer) && <th>操作</th>}
+											<th>Producer ID</th>
+											<th>Name</th>
+											<th>Email</th>
+											<th>Phone</th>
+											<th>Address</th>
+											<th>Nationality</th>
+											{(permissions.canEditProducer || permissions.canDeleteProducer) && <th>Actions</th>}
 										</tr>
 									</thead>
 									<tbody>
@@ -824,12 +824,12 @@ const AdminContentPage = () => {
 												{(permissions.canEditProducer || permissions.canDeleteProducer) && (
 													<td className="action-buttons">
 														{permissions.canEditProducer && (
-															<button className="btn-icon" title="编辑" onClick={() => openEditModal(producer)}>
+															<button className="btn-icon" title="Edit" onClick={() => openEditModal(producer)}>
 																<EditIcon />
 															</button>
 														)}
 														{permissions.canDeleteProducer && (
-															<button className="btn-icon" title="删除" onClick={() => handleDeleteProducer(producer.producer_id)} style={{ color: "#f44336" }}>
+															<button className="btn-icon" title="Delete" onClick={() => handleDeleteProducer(producer.producer_id)} style={{ color: "#f44336" }}>
 																<DeleteIcon />
 															</button>
 														)}
@@ -852,11 +852,11 @@ const AdminContentPage = () => {
 					{activeTab === "feedback" && !loading && (
 						<div className="admin-table-container">
 							<div className="table-header">
-								<h2>用户反馈列表（共 {feedback.length} 条）</h2>
+								<h2>Total Feedback (Total {feedback.length})</h2>
 								<div className="search-container">
-									<input type="text" placeholder="搜索反馈..." className="search-input" value={feedbackSearch} onChange={handleFeedbackSearchInputChange} onKeyPress={handleFeedbackSearchKeyPress} />
+									<input type="text" placeholder="Search Feedback..." className="search-input" value={feedbackSearch} onChange={handleFeedbackSearchInputChange} onKeyPress={handleFeedbackSearchKeyPress} />
 									<button className="btn btn-primary" onClick={handleFeedbackSearchClick}>
-										<SearchIcon /> 搜索
+										<SearchIcon /> Search
 									</button>
 								</div>
 							</div>
@@ -865,13 +865,13 @@ const AdminContentPage = () => {
 								<table className="admin-table">
 									<thead>
 										<tr>
-											<th>反馈ID</th>
-											<th>评分</th>
-											<th>反馈内容</th>
-											<th>剧集ID</th>
-											<th>用户ID</th>
-											<th>日期</th>
-											{permissions.canDeleteFeedback && <th>操作</th>}
+											<th>Feedback ID</th>
+											<th>Rating</th>
+											<th>Feedback Text</th>
+											<th>Webseries ID</th>
+											<th>User ID</th>
+											<th>Date</th>
+											{permissions.canDeleteFeedback && <th>Actions</th>}
 										</tr>
 									</thead>
 									<tbody>
@@ -887,7 +887,7 @@ const AdminContentPage = () => {
 												<td>{fb.feedback_date}</td>
 												{permissions.canDeleteFeedback && (
 													<td className="action-buttons">
-														<button className="btn-icon" title="删除" onClick={() => handleDeleteFeedback(fb.feedback_id)} style={{ color: "#f44336" }}>
+														<button className="btn-icon" title="Delete" onClick={() => handleDeleteFeedback(fb.feedback_id)} style={{ color: "#f44336" }}>
 															<DeleteIcon />
 														</button>
 													</td>
@@ -899,7 +899,7 @@ const AdminContentPage = () => {
 							) : (
 								<div className="empty-admin-state">
 									<FeedbackIcon style={{ fontSize: 64, opacity: 0.3 }} />
-									<p>暂无反馈数据</p>
+									<p>No feedback data available</p>
 								</div>
 							)}
 						</div>
@@ -909,17 +909,17 @@ const AdminContentPage = () => {
 					{activeTab === "affiliations" && !loading && (
 						<div className="admin-table-container">
 							<div className="table-header">
-								<h2>制片人关联列表（共 {affiliations.length} 条）</h2>
+								<h2>Producer Affiliations (Total {affiliations.length})</h2>
 								<div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
 									<div className="search-container">
-										<input type="text" placeholder="搜索关联..." className="search-input" value={affiliationSearch} onChange={handleAffiliationSearchInputChange} onKeyPress={handleAffiliationSearchKeyPress} />
+										<input type="text" placeholder="Search Affiliations..." className="search-input" value={affiliationSearch} onChange={handleAffiliationSearchInputChange} onKeyPress={handleAffiliationSearchKeyPress} />
 										<button className="btn btn-primary" onClick={handleAffiliationSearchClick}>
-											<SearchIcon /> 搜索
+											<SearchIcon /> Search
 										</button>
 									</div>
 									{permissions.canCreateProducer && (
 										<button className="btn btn-primary" onClick={openCreateModal}>
-											<AddIcon /> 新增关联
+											<AddIcon /> Add Affiliation
 										</button>
 									)}
 								</div>
@@ -929,13 +929,13 @@ const AdminContentPage = () => {
 								<table className="admin-table">
 									<thead>
 										<tr>
-											<th>制片人ID</th>
-											<th>制片人姓名</th>
-											<th>制作公司ID</th>
-											<th>制作公司名称</th>
-											<th>开始日期</th>
-											<th>结束日期</th>
-											{permissions.canDeleteProducer && <th>操作</th>}
+											<th>Producer ID</th>
+											<th>Producer Name</th>
+											<th>Production House ID</th>
+											<th>Production House Name</th>
+											<th>Start Date</th>
+											<th>End Date</th>
+											{permissions.canDeleteProducer && <th>Actions</th>}
 										</tr>
 									</thead>
 									<tbody>
@@ -946,10 +946,10 @@ const AdminContentPage = () => {
 												<td>{item.house_id}</td>
 												<td>{item.house_name || "N/A"}</td>
 												<td>{item.start_date}</td>
-												<td>{item.end_date || "至今"}</td>
+												<td>{item.end_date || "Present"}</td>
 												{permissions.canDeleteProducer && (
 													<td className="action-buttons">
-														<button className="btn-icon" title="删除" onClick={() => handleDeleteAffiliation(item)} style={{ color: "#f44336" }}>
+														<button className="btn-icon" title="Delete" onClick={() => handleDeleteAffiliation(item)} style={{ color: "#f44336" }}>
 															<DeleteIcon />
 														</button>
 													</td>
@@ -961,7 +961,7 @@ const AdminContentPage = () => {
 							) : (
 								<div className="empty-admin-state">
 									<LinkIcon style={{ fontSize: 64, opacity: 0.3 }} />
-									<p>暂无制片人关联数据</p>
+									<p>No producer affiliation data available</p>
 								</div>
 							)}
 						</div>
@@ -971,17 +971,17 @@ const AdminContentPage = () => {
 					{activeTab === "telecasts" && !loading && (
 						<div className="admin-table-container">
 							<div className="table-header">
-								<h2>播出记录列表（共 {telecasts.length} 条）</h2>
+								<h2>Telecast Records (Total {telecasts.length})</h2>
 								<div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
 									<div className="search-container">
-										<input type="text" placeholder="搜索播出记录..." className="search-input" value={telecastSearch} onChange={handleTelecastSearchInputChange} onKeyPress={handleTelecastSearchKeyPress} />
+										<input type="text" placeholder="Search Telecast Records..." className="search-input" value={telecastSearch} onChange={handleTelecastSearchInputChange} onKeyPress={handleTelecastSearchKeyPress} />
 										<button className="btn btn-primary" onClick={handleTelecastSearchClick}>
-											<SearchIcon /> 搜索
+											<SearchIcon /> Search
 										</button>
 									</div>
 									{permissions.canCreateEpisode && (
 										<button className="btn btn-primary" onClick={openCreateModal}>
-											<AddIcon /> 新增播出记录
+											<AddIcon /> Add Telecast Record
 										</button>
 									)}
 								</div>
@@ -991,13 +991,13 @@ const AdminContentPage = () => {
 								<table className="admin-table">
 									<thead>
 										<tr>
-											<th>播出ID</th>
-											<th>集数ID</th>
-											<th>剧集标题</th>
-											<th>开始日期</th>
-											<th>结束日期</th>
-											<th>技术中断</th>
-											{(permissions.canEditEpisode || permissions.canDeleteEpisode) && <th>操作</th>}
+											<th>Telecast ID</th>
+											<th>Episode ID</th>
+											<th>Series Title</th>
+											<th>Start Date</th>
+											<th>End Date</th>
+											<th>Technical Interruptions</th>
+											{(permissions.canEditEpisode || permissions.canDeleteEpisode) && <th>Actions</th>}
 										</tr>
 									</thead>
 									<tbody>
@@ -1008,16 +1008,16 @@ const AdminContentPage = () => {
 												<td>{item.series_title || "N/A"}</td>
 												<td>{item.start_date}</td>
 												<td>{item.end_date}</td>
-												<td>{item.technical_interruptions === "Y" ? "是" : "否"}</td>
+												<td>{item.technical_interruptions === "Y" ? "Yes" : "No"}</td>
 												{(permissions.canEditEpisode || permissions.canDeleteEpisode) && (
 													<td className="action-buttons">
 														{permissions.canEditEpisode && (
-															<button className="btn-icon" title="编辑" onClick={() => openEditModal(item)}>
+															<button className="btn-icon" title="Edit" onClick={() => openEditModal(item)}>
 																<EditIcon />
 															</button>
 														)}
 														{permissions.canDeleteEpisode && (
-															<button className="btn-icon" title="删除" onClick={() => handleDeleteTelecast(item.telecast_id)} style={{ color: "#f44336" }}>
+															<button className="btn-icon" title="Delete" onClick={() => handleDeleteTelecast(item.telecast_id)} style={{ color: "#f44336" }}>
 																<DeleteIcon />
 															</button>
 														)}
@@ -1030,7 +1030,7 @@ const AdminContentPage = () => {
 							) : (
 								<div className="empty-admin-state">
 									<TvIcon style={{ fontSize: 64, opacity: 0.3 }} />
-									<p>暂无播出记录数据</p>
+									<p>No telecast record data available</p>
 								</div>
 							)}
 						</div>
@@ -1040,17 +1040,17 @@ const AdminContentPage = () => {
 					{activeTab === "contracts" && !loading && (
 						<div className="admin-table-container">
 							<div className="table-header">
-								<h2>合同列表（共 {contracts.length} 条）</h2>
+								<h2>Contract List (Total {contracts.length})</h2>
 								<div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
 									<div className="search-container">
-										<input type="text" placeholder="搜索合同..." className="search-input" value={contractSearch} onChange={handleContractSearchInputChange} onKeyPress={handleContractSearchKeyPress} />
+										<input type="text" placeholder="Search Contracts..." className="search-input" value={contractSearch} onChange={handleContractSearchInputChange} onKeyPress={handleContractSearchKeyPress} />
 										<button className="btn btn-primary" onClick={handleContractSearchClick}>
-											<SearchIcon /> 搜索
+											<SearchIcon /> Search
 										</button>
 									</div>
 									{permissions.canCreateSeries && (
 										<button className="btn btn-primary" onClick={openCreateModal}>
-											<AddIcon /> 新增合同
+											<AddIcon /> Add Contract
 										</button>
 									)}
 								</div>
@@ -1060,14 +1060,14 @@ const AdminContentPage = () => {
 								<table className="admin-table">
 									<thead>
 										<tr>
-											<th>合同ID</th>
-											<th>剧集ID</th>
-											<th>剧集标题</th>
-											<th>开始日期</th>
-											<th>结束日期</th>
-											<th>金额</th>
-											<th>状态</th>
-											{(permissions.canEditSeries || permissions.canDeleteSeries) && <th>操作</th>}
+											<th>Contract ID</th>
+											<th>Episode ID</th>
+											<th>Series Title</th>
+											<th>Start Date</th>
+											<th>End Date</th>
+											<th>Amount</th>
+											<th>Status</th>
+											{(permissions.canEditSeries || permissions.canDeleteSeries) && <th>Actions</th>}
 										</tr>
 									</thead>
 									<tbody>
@@ -1085,12 +1085,12 @@ const AdminContentPage = () => {
 												{(permissions.canEditSeries || permissions.canDeleteSeries) && (
 													<td className="action-buttons">
 														{permissions.canEditSeries && (
-															<button className="btn-icon" title="编辑" onClick={() => openEditModal(item)}>
+															<button className="btn-icon" title="Edit" onClick={() => openEditModal(item)}>
 																<EditIcon />
 															</button>
 														)}
 														{permissions.canDeleteSeries && (
-															<button className="btn-icon" title="删除" onClick={() => handleDeleteContract(item.contract_id)} style={{ color: "#f44336" }}>
+															<button className="btn-icon" title="Delete" onClick={() => handleDeleteContract(item.contract_id)} style={{ color: "#f44336" }}>
 																<DeleteIcon />
 															</button>
 														)}
@@ -1103,7 +1103,7 @@ const AdminContentPage = () => {
 							) : (
 								<div className="empty-admin-state">
 									<DescriptionIcon style={{ fontSize: 64, opacity: 0.3 }} />
-									<p>暂无合同数据</p>
+									<p>No contract data available</p>
 								</div>
 							)}
 						</div>
@@ -1113,17 +1113,17 @@ const AdminContentPage = () => {
 					{activeTab === "subtitles" && !loading && (
 						<div className="admin-table-container">
 							<div className="table-header">
-								<h2>字幕语言列表（共 {subtitleLanguages.length} 条）</h2>
+								<h2>Subtitle Language List (Total {subtitleLanguages.length})</h2>
 								<div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
 									<div className="search-container">
-										<input type="text" placeholder="搜索字幕语言..." className="search-input" value={subtitleSearch} onChange={handleSubtitleSearchInputChange} onKeyPress={handleSubtitleSearchKeyPress} />
+										<input type="text" placeholder="Search Subtitle Languages..." className="search-input" value={subtitleSearch} onChange={handleSubtitleSearchInputChange} onKeyPress={handleSubtitleSearchKeyPress} />
 										<button className="btn btn-primary" onClick={handleSubtitleSearchClick}>
-											<SearchIcon /> 搜索
+											<SearchIcon /> Search
 										</button>
 									</div>
 									{permissions.canCreateSeries && (
 										<button className="btn btn-primary" onClick={openCreateModal}>
-											<AddIcon /> 新增字幕语言
+											<AddIcon /> Add Subtitle Language
 										</button>
 									)}
 								</div>
@@ -1133,10 +1133,10 @@ const AdminContentPage = () => {
 								<table className="admin-table">
 									<thead>
 										<tr>
-											<th>剧集ID</th>
-											<th>剧集标题</th>
-											<th>语言</th>
-											{permissions.canDeleteSeries && <th>操作</th>}
+											<th>Episode ID</th>
+											<th>Series Title</th>
+											<th>Language</th>
+											{permissions.canDeleteSeries && <th>Actions</th>}
 										</tr>
 									</thead>
 									<tbody>
@@ -1147,7 +1147,7 @@ const AdminContentPage = () => {
 												<td>{item.language}</td>
 												{permissions.canDeleteSeries && (
 													<td className="action-buttons">
-														<button className="btn-icon" title="删除" onClick={() => handleDeleteSubtitleLanguage(item)} style={{ color: "#f44336" }}>
+														<button className="btn-icon" title="Delete" onClick={() => handleDeleteSubtitleLanguage(item)} style={{ color: "#f44336" }}>
 															<DeleteIcon />
 														</button>
 													</td>
@@ -1159,7 +1159,7 @@ const AdminContentPage = () => {
 							) : (
 								<div className="empty-admin-state">
 									<LanguageIcon style={{ fontSize: 64, opacity: 0.3 }} />
-									<p>暂无字幕语言数据</p>
+									<p>No subtitle language data available</p>
 								</div>
 							)}
 						</div>
@@ -1169,17 +1169,17 @@ const AdminContentPage = () => {
 					{activeTab === "releases" && !loading && (
 						<div className="admin-table-container">
 							<div className="table-header">
-								<h2>发行记录列表（共 {releases.length} 条）</h2>
+								<h2>Release List (Total {releases.length})</h2>
 								<div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
 									<div className="search-container">
-										<input type="text" placeholder="搜索发行记录..." className="search-input" value={releaseSearch} onChange={handleReleaseSearchInputChange} onKeyPress={handleReleaseSearchKeyPress} />
+										<input type="text" placeholder="Search Releases..." className="search-input" value={releaseSearch} onChange={handleReleaseSearchInputChange} onKeyPress={handleReleaseSearchKeyPress} />
 										<button className="btn btn-primary" onClick={handleReleaseSearchClick}>
-											<SearchIcon /> 搜索
+											<SearchIcon /> Search
 										</button>
 									</div>
 									{permissions.canCreateSeries && (
 										<button className="btn btn-primary" onClick={openCreateModal}>
-											<AddIcon /> 新增发行记录
+											<AddIcon /> Add Release
 										</button>
 									)}
 								</div>
@@ -1189,11 +1189,11 @@ const AdminContentPage = () => {
 								<table className="admin-table">
 									<thead>
 										<tr>
-											<th>剧集ID</th>
-											<th>剧集标题</th>
-											<th>国家</th>
-											<th>发行日期</th>
-											{(permissions.canEditSeries || permissions.canDeleteSeries) && <th>操作</th>}
+											<th>Episode ID</th>
+											<th>Series Title</th>
+											<th>Country</th>
+											<th>Release Date</th>
+											{(permissions.canEditSeries || permissions.canDeleteSeries) && <th>Actions</th>}
 										</tr>
 									</thead>
 									<tbody>
@@ -1206,12 +1206,12 @@ const AdminContentPage = () => {
 												{(permissions.canEditSeries || permissions.canDeleteSeries) && (
 													<td className="action-buttons">
 														{permissions.canEditSeries && (
-															<button className="btn-icon" title="编辑" onClick={() => openEditModal(item)}>
+															<button className="btn-icon" title="Edit" onClick={() => openEditModal(item)}>
 																<EditIcon />
 															</button>
 														)}
 														{permissions.canDeleteSeries && (
-															<button className="btn-icon" title="删除" onClick={() => handleDeleteRelease(item)} style={{ color: "#f44336" }}>
+															<button className="btn-icon" title="Delete" onClick={() => handleDeleteRelease(item)} style={{ color: "#f44336" }}>
 																<DeleteIcon />
 															</button>
 														)}
@@ -1224,7 +1224,7 @@ const AdminContentPage = () => {
 							) : (
 								<div className="empty-admin-state">
 									<PublicIcon style={{ fontSize: 64, opacity: 0.3 }} />
-									<p>暂无发行记录数据</p>
+									<p>No release data available</p>
 								</div>
 							)}
 						</div>
@@ -1236,15 +1236,15 @@ const AdminContentPage = () => {
 							<div className="modal-content" onClick={(e) => e.stopPropagation()}>
 								<div className="modal-header">
 									<h2>
-										{modalMode === "create" ? "新增" : "编辑"}
-										{activeTab === "episodes" && "集数"}
-										{activeTab === "production" && "制作公司"}
-										{activeTab === "producers" && "制片人"}
-										{activeTab === "affiliations" && "制片人关联"}
-										{activeTab === "telecasts" && "播出记录"}
-										{activeTab === "contracts" && "合同"}
-										{activeTab === "subtitles" && "字幕语言"}
-										{activeTab === "releases" && "发行记录"}
+										{modalMode === "create" ? "Add" : "Edit"}
+										{activeTab === "episodes" && " Episode"}
+										{activeTab === "production" && " Production House"}
+										{activeTab === "producers" && " Producer"}
+										{activeTab === "affiliations" && " Producer Affiliation"}
+										{activeTab === "telecasts" && " Telecast"}
+										{activeTab === "contracts" && " Contract"}
+										{activeTab === "subtitles" && " Subtitle Language"}
+										{activeTab === "releases" && " Release"}
 									</h2>
 									<button className="btn-icon" onClick={closeModal}>
 										<CloseIcon />
@@ -1256,17 +1256,17 @@ const AdminContentPage = () => {
 									{activeTab === "episodes" && (
 										<>
 											<div className="form-group">
-												<label>集数编号 *</label>
+												<label>Episode Number *</label>
 												<input type="number" name="episode_number" value={formData.episode_number || ""} onChange={handleFormChange} required />
 											</div>
 											<div className="form-group">
-												<label>标题</label>
+												<label>Title</label>
 												<input type="text" name="title" value={formData.title || ""} onChange={handleFormChange} />
 											</div>
 											<div className="form-group">
-												<label>剧集 *</label>
+												<label>Series *</label>
 												<select name="webseries_id" value={formData.webseries_id || ""} onChange={handleFormChange} required>
-													<option value="">请选择剧集</option>
+													<option value="">Please select a series</option>
 													{seriesList.map((series) => (
 														<option key={series.webseries_id} value={series.webseries_id}>
 															{series.title}
@@ -1275,11 +1275,11 @@ const AdminContentPage = () => {
 												</select>
 											</div>
 											<div className="form-group">
-												<label>时长（分钟）</label>
+												<label>Duration (minutes)</label>
 												<input type="number" name="duration_minutes" value={formData.duration_minutes || ""} onChange={handleFormChange} />
 											</div>
 											<div className="form-group">
-												<label>发布日期</label>
+												<label>Release Date</label>
 												<input type="date" name="release_date" value={formData.release_date || ""} onChange={handleFormChange} />
 											</div>
 										</>
@@ -1289,27 +1289,27 @@ const AdminContentPage = () => {
 									{activeTab === "production" && (
 										<>
 											<div className="form-group">
-												<label>公司名称 *</label>
+												<label>Company Name *</label>
 												<input type="text" name="name" value={formData.name || ""} onChange={handleFormChange} required />
 											</div>
 											<div className="form-group">
-												<label>成立年份 *</label>
+												<label>Year Established *</label>
 												<input type="number" name="year_established" value={formData.year_established || ""} onChange={handleFormChange} required min="1800" max="2100" />
 											</div>
 											<div className="form-group">
-												<label>街道地址 *</label>
+												<label>Street Address *</label>
 												<input type="text" name="street" value={formData.street || ""} onChange={handleFormChange} required />
 											</div>
 											<div className="form-group">
-												<label>城市 *</label>
+												<label>City *</label>
 												<input type="text" name="city" value={formData.city || ""} onChange={handleFormChange} required />
 											</div>
 											<div className="form-group">
-												<label>州/省 *</label>
+												<label>State/Province *</label>
 												<input type="text" name="state" value={formData.state || ""} onChange={handleFormChange} required />
 											</div>
 											<div className="form-group">
-												<label>国籍 *</label>
+												<label>Nationality *</label>
 												<input type="text" name="nationality" value={formData.nationality || ""} onChange={handleFormChange} required />
 											</div>
 										</>
@@ -1319,39 +1319,39 @@ const AdminContentPage = () => {
 									{activeTab === "producers" && (
 										<>
 											<div className="form-group">
-												<label>名 *</label>
+												<label>First Name *</label>
 												<input type="text" name="first_name" value={formData.first_name || ""} onChange={handleFormChange} required />
 											</div>
 											<div className="form-group">
-												<label>中间名</label>
+												<label>Middle Name</label>
 												<input type="text" name="middle_name" value={formData.middle_name || ""} onChange={handleFormChange} />
 											</div>
 											<div className="form-group">
-												<label>姓 *</label>
+												<label>Last Name *</label>
 												<input type="text" name="last_name" value={formData.last_name || ""} onChange={handleFormChange} required />
 											</div>
 											<div className="form-group">
-												<label>邮箱 *</label>
+												<label>Email *</label>
 												<input type="email" name="email" value={formData.email || ""} onChange={handleFormChange} required />
 											</div>
 											<div className="form-group">
-												<label>电话 *</label>
+												<label>Phone *</label>
 												<input type="tel" name="phone" value={formData.phone || ""} onChange={handleFormChange} required />
 											</div>
 											<div className="form-group">
-												<label>街道地址 *</label>
+												<label>Street Address *</label>
 												<input type="text" name="street" value={formData.street || ""} onChange={handleFormChange} required />
 											</div>
 											<div className="form-group">
-												<label>城市 *</label>
+												<label>City *</label>
 												<input type="text" name="city" value={formData.city || ""} onChange={handleFormChange} required />
 											</div>
 											<div className="form-group">
-												<label>州/省 *</label>
+												<label>State/Province *</label>
 												<input type="text" name="state" value={formData.state || ""} onChange={handleFormChange} required />
 											</div>
 											<div className="form-group">
-												<label>国籍 *</label>
+												<label>Nationality *</label>
 												<input type="text" name="nationality" value={formData.nationality || ""} onChange={handleFormChange} required />
 											</div>
 										</>
@@ -1361,9 +1361,9 @@ const AdminContentPage = () => {
 									{activeTab === "affiliations" && (
 										<>
 											<div className="form-group">
-												<label>制片人 *</label>
+												<label>Producer *</label>
 												<select name="producer_id" value={formData.producer_id || ""} onChange={handleFormChange} required>
-													<option value="">请选择制片人</option>
+													<option value="">Please select a producer</option>
 													{producers.map((p) => (
 														<option key={p.producer_id} value={p.producer_id}>
 															{p.first_name} {p.last_name}
@@ -1372,9 +1372,9 @@ const AdminContentPage = () => {
 												</select>
 											</div>
 											<div className="form-group">
-												<label>制作公司 *</label>
+												<label>Production House *</label>
 												<select name="house_id" value={formData.house_id || ""} onChange={handleFormChange} required>
-													<option value="">请选择制作公司</option>
+													<option value="">Please select a production house</option>
 													{productionHouses.map((h) => (
 														<option key={h.house_id} value={h.house_id}>
 															{h.name}
@@ -1383,11 +1383,11 @@ const AdminContentPage = () => {
 												</select>
 											</div>
 											<div className="form-group">
-												<label>开始日期 *</label>
+												<label>Start Date *</label>
 												<input type="date" name="start_date" value={formData.start_date || ""} onChange={handleFormChange} required />
 											</div>
 											<div className="form-group">
-												<label>结束日期</label>
+												<label>End Date</label>
 												<input type="date" name="end_date" value={formData.end_date || ""} onChange={handleFormChange} />
 											</div>
 										</>
@@ -1397,9 +1397,9 @@ const AdminContentPage = () => {
 									{activeTab === "telecasts" && (
 										<>
 											<div className="form-group">
-												<label>集数 *</label>
+												<label>Episode Number *</label>
 												<select name="episode_id" value={formData.episode_id || ""} onChange={handleFormChange} required>
-													<option value="">请选择集数</option>
+													<option value="">Please select an episode</option>
 													{episodesList.map((e) => (
 														<option key={e.episode_id} value={e.episode_id}>
 															{e.episode_id} - {e.title}
@@ -1408,18 +1408,18 @@ const AdminContentPage = () => {
 												</select>
 											</div>
 											<div className="form-group">
-												<label>开始日期 *</label>
+												<label>Start Date *</label>
 												<input type="datetime-local" name="start_date" value={formData.start_date || ""} onChange={handleFormChange} required />
 											</div>
 											<div className="form-group">
-												<label>结束日期 *</label>
+												<label>End Date *</label>
 												<input type="datetime-local" name="end_date" value={formData.end_date || ""} onChange={handleFormChange} required />
 											</div>
 											<div className="form-group">
-												<label>技术中断</label>
+												<label>Technical Interruptions</label>
 												<select name="technical_interruptions" value={formData.technical_interruptions || "N"} onChange={handleFormChange}>
-													<option value="N">否</option>
-													<option value="Y">是</option>
+													<option value="N">No</option>
+													<option value="Y">Yes</option>
 												</select>
 											</div>
 										</>
@@ -1429,9 +1429,9 @@ const AdminContentPage = () => {
 									{activeTab === "contracts" && (
 										<>
 											<div className="form-group">
-												<label>剧集 *</label>
+												<label>Web Series *</label>
 												<select name="webseries_id" value={formData.webseries_id || ""} onChange={handleFormChange} required disabled={modalMode === "edit"}>
-													<option value="">请选择剧集</option>
+													<option value="">Please select a web series</option>
 													{seriesList.map((s) => (
 														<option key={s.webseries_id} value={s.webseries_id}>
 															{s.title}
@@ -1440,21 +1440,21 @@ const AdminContentPage = () => {
 												</select>
 											</div>
 											<div className="form-group">
-												<label>开始日期 *</label>
+												<label>Start Date *</label>
 												<input type="date" name="start_date" value={formData.start_date || ""} onChange={handleFormChange} required />
 											</div>
 											<div className="form-group">
-												<label>结束日期 *</label>
+												<label>End Date *</label>
 												<input type="date" name="end_date" value={formData.end_date || ""} onChange={handleFormChange} required />
 											</div>
 											<div className="form-group">
-												<label>金额 *</label>
+												<label>Contract Amount *</label>
 												<input type="number" name="contract_amount" value={formData.contract_amount || ""} onChange={handleFormChange} min="0" step="0.01" required />
 											</div>
 											<div className="form-group">
-												<label>状态 *</label>
+												<label>Status *</label>
 												<select name="contract_status" value={formData.contract_status || ""} onChange={handleFormChange} required>
-													<option value="">请选择状态</option>
+													<option value="">Please select a status</option>
 													<option value="Active">Active</option>
 													<option value="Expired">Expired</option>
 													<option value="Terminated">Terminated</option>
@@ -1468,9 +1468,9 @@ const AdminContentPage = () => {
 									{activeTab === "subtitles" && (
 										<>
 											<div className="form-group">
-												<label>剧集 *</label>
+												<label>Web Series *</label>
 												<select name="webseries_id" value={formData.webseries_id || ""} onChange={handleFormChange} required>
-													<option value="">请选择剧集</option>
+													<option value="">Please select a web series</option>
 													{seriesList.map((s) => (
 														<option key={s.webseries_id} value={s.webseries_id}>
 															{s.title}
@@ -1479,8 +1479,8 @@ const AdminContentPage = () => {
 												</select>
 											</div>
 											<div className="form-group">
-												<label>语言 *</label>
-												<input type="text" name="language" value={formData.language || ""} onChange={handleFormChange} required placeholder="例如: English, 中文, Español" />
+												<label>Language *</label>
+												<input type="text" name="language" value={formData.language || ""} onChange={handleFormChange} required placeholder="e.g., English, 中文, Español" />
 											</div>
 										</>
 									)}
@@ -1489,9 +1489,9 @@ const AdminContentPage = () => {
 									{activeTab === "releases" && (
 										<>
 											<div className="form-group">
-												<label>剧集 *</label>
+												<label>Web Series *</label>
 												<select name="webseries_id" value={formData.webseries_id || ""} onChange={handleFormChange} required disabled={modalMode === "edit"}>
-													<option value="">请选择剧集</option>
+													<option value="">Please select a web series</option>
 													{seriesList.map((s) => (
 														<option key={s.webseries_id} value={s.webseries_id}>
 															{s.title}
@@ -1500,11 +1500,11 @@ const AdminContentPage = () => {
 												</select>
 											</div>
 											<div className="form-group">
-												<label>国家 *</label>
-												<input type="text" name="country_name" value={formData.country_name || ""} onChange={handleFormChange} required placeholder="国家名称" disabled={modalMode === "edit"} />
+												<label>Country *</label>
+												<input type="text" name="country_name" value={formData.country_name || ""} onChange={handleFormChange} required placeholder="Country Name" disabled={modalMode === "edit"} />
 											</div>
 											<div className="form-group">
-												<label>发行日期 *</label>
+												<label>Release Date *</label>
 												<input type="date" name="release_date" value={formData.release_date || ""} onChange={handleFormChange} required />
 											</div>
 										</>
@@ -1512,10 +1512,10 @@ const AdminContentPage = () => {
 
 									<div className="modal-actions">
 										<button type="button" className="btn btn-secondary" onClick={closeModal}>
-											取消
+											Cancel
 										</button>
 										<button type="submit" className="btn btn-primary">
-											{modalMode === "create" ? "创建" : "保存"}
+											{modalMode === "create" ? "Create" : "Save"}
 										</button>
 									</div>
 								</form>
