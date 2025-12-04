@@ -54,7 +54,7 @@ def get_all_series():
         return jsonify({"error": "Failed to fetch series", "message": str(e)}), 500
 
 
-@series_bp.route("<series_id>", methods=["GET"])
+@series_bp.route("/<series_id>", methods=["GET"])
 def get_series(series_id):
     """Get single series details"""
     try:
