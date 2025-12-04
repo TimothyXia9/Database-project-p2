@@ -92,10 +92,10 @@ WEB_SERIES_RELEASE ── COUNTRY
 
 ### 表结构详解
 
-#### 1. QTY_COUNTRY (国家/地区表)
+#### 1. COUNTRY (国家/地区表)
 
 ```sql
-CREATE TABLE qty_country (
+CREATE TABLE country (
     country_name VARCHAR(64) PRIMARY KEY,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -110,10 +110,10 @@ CREATE TABLE qty_country (
 
 ---
 
-#### 2. QTY_PRODUCTION_HOUSE (制作公司表)
+#### 2. PRODUCTION_HOUSE (制作公司表)
 
 ```sql
-CREATE TABLE qty_production_house (
+CREATE TABLE production_house (
     house_id VARCHAR(10) PRIMARY KEY,
     name VARCHAR(64) NOT NULL,
     year_established VARCHAR(10) NOT NULL,
@@ -138,10 +138,10 @@ CREATE TABLE qty_production_house (
 
 ---
 
-#### 3. QTY_PRODUCER (制作人表)
+#### 3. PRODUCER (制作人表)
 
 ```sql
-CREATE TABLE qty_producer (
+CREATE TABLE producer (
     producer_id VARCHAR(10) PRIMARY KEY,
     first_name VARCHAR(64) NOT NULL,
     middle_name VARCHAR(64),
@@ -167,10 +167,10 @@ CREATE TABLE qty_producer (
 
 ---
 
-#### 4. QTY_PRODUCER_AFFILIATION (制作人归属关系表)
+#### 4. PRODUCER_AFFILIATION (制作人归属关系表)
 
 ```sql
-CREATE TABLE qty_producer_affiliation (
+CREATE TABLE producer_affiliation (
     producer_id VARCHAR(10),
     house_id VARCHAR(10),
     start_date DATE NOT NULL,
@@ -178,8 +178,8 @@ CREATE TABLE qty_producer_affiliation (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (producer_id, house_id),
-    FOREIGN KEY (producer_id) REFERENCES qty_producer(producer_id) ON DELETE CASCADE,
-    FOREIGN KEY (house_id) REFERENCES qty_production_house(house_id) ON DELETE CASCADE,
+    FOREIGN KEY (producer_id) REFERENCES producer(producer_id) ON DELETE CASCADE,
+    FOREIGN KEY (house_id) REFERENCES production_house(house_id) ON DELETE CASCADE,
     CHECK (end_date IS NULL OR end_date >= start_date)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ```
@@ -191,10 +191,10 @@ CREATE TABLE qty_producer_affiliation (
 
 ---
 
-#### 5. QTY_WEB_SERIES (网络剧集主表)
+#### 5. WEB_SERIES (网络剧集主表)
 
 ```sql
-CREATE TABLE qty_web_series (
+CREATE TABLE web_series (
     webseries_id VARCHAR(10) PRIMARY KEY,
     title VARCHAR(64) NOT NULL,
     num_episodes INT NOT NULL DEFAULT 0,
@@ -202,7 +202,7 @@ CREATE TABLE qty_web_series (
     house_id VARCHAR(10) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (house_id) REFERENCES qty_production_house(house_id) ON DELETE RESTRICT,
+    FOREIGN KEY (house_id) REFERENCES production_house(house_id) ON DELETE RESTRICT,
     INDEX idx_title (title),
     INDEX idx_type (type),
     INDEX idx_house (house_id)
@@ -217,10 +217,10 @@ CREATE TABLE qty_web_series (
 
 ---
 
-#### 6. QTY_EPISODE (剧集单集表)
+#### 6. EPISODE (剧集单集表)
 
 ```sql
-CREATE TABLE qty_episode (
+CREATE TABLE episode (
     episode_id VARCHAR(10) PRIMARY KEY,
     episode_number VARCHAR(10) NOT NULL,
     title VARCHAR(64),
@@ -229,7 +229,7 @@ CREATE TABLE qty_episode (
     release_date DATE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (webseries_id) REFERENCES qty_web_series(webseries_id) ON DELETE CASCADE,
+    FOREIGN KEY (webseries_id) REFERENCES web_series(webseries_id) ON DELETE CASCADE,
     INDEX idx_webseries (webseries_id),
     INDEX idx_episode_num (episode_number)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -237,10 +237,10 @@ CREATE TABLE qty_episode (
 
 ---
 
-#### 7. QTY_TELECAST (播出信息表)
+#### 7. TELECAST (播出信息表)
 
 ```sql
-CREATE TABLE qty_telecast (
+CREATE TABLE telecast (
     telecast_id VARCHAR(10) PRIMARY KEY,
     start_date DATETIME NOT NULL,
     end_date DATETIME NOT NULL,
@@ -249,7 +249,7 @@ CREATE TABLE qty_telecast (
     episode_id VARCHAR(10) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (episode_id) REFERENCES qty_episode(episode_id) ON DELETE CASCADE,
+    FOREIGN KEY (episode_id) REFERENCES episode(episode_id) ON DELETE CASCADE,
     CHECK (start_date < end_date),
     CHECK (total_viewers >= 0),
     CHECK (tech_interruption IN ('Y', 'N')),
@@ -265,10 +265,10 @@ CREATE TABLE qty_telecast (
 
 ---
 
-#### 8. QTY_SERIES_CONTRACT (剧集合同表)
+#### 8. SERIES_CONTRACT (剧集合同表)
 
 ```sql
-CREATE TABLE qty_series_contract (
+CREATE TABLE series_contract (
     contract_id VARCHAR(10) PRIMARY KEY,
     signed_date DATE NOT NULL,
     start_date DATE NOT NULL,
@@ -278,7 +278,7 @@ CREATE TABLE qty_series_contract (
     webseries_id VARCHAR(10) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (webseries_id) REFERENCES qty_web_series(webseries_id) ON DELETE CASCADE,
+    FOREIGN KEY (webseries_id) REFERENCES web_series(webseries_id) ON DELETE CASCADE,
     CHECK (charge_per_episode > 0),
     CHECK (start_date >= signed_date),
     CHECK (end_date >= start_date),
@@ -290,10 +290,10 @@ CREATE TABLE qty_series_contract (
 
 ---
 
-#### 9. QTY_VIEWER_ACCOUNT (观众账户表)
+#### 9. VIEWER_ACCOUNT (观众账户表)
 
 ```sql
-CREATE TABLE qty_viewer_account (
+CREATE TABLE viewer_account (
     account_id VARCHAR(10) PRIMARY KEY,
     first_name VARCHAR(30) NOT NULL,
     middle_name VARCHAR(30),
@@ -310,7 +310,7 @@ CREATE TABLE qty_viewer_account (
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (country_name) REFERENCES qty_country(country_name),
+    FOREIGN KEY (country_name) REFERENCES country(country_name),
     CHECK (account_type IN ('Customer', 'Employee', 'Admin')),
     INDEX idx_email (email),
     INDEX idx_type (account_type)
@@ -326,10 +326,10 @@ CREATE TABLE qty_viewer_account (
 
 ---
 
-#### 10. QTY_FEEDBACK (用户反馈表)
+#### 10. FEEDBACK (用户反馈表)
 
 ```sql
-CREATE TABLE qty_feedback (
+CREATE TABLE feedback (
     feedback_id VARCHAR(10) PRIMARY KEY,
     rating INT NOT NULL,
     feedback_text VARCHAR(128) NOT NULL,
@@ -338,8 +338,8 @@ CREATE TABLE qty_feedback (
     webseries_id VARCHAR(10) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (account_id) REFERENCES qty_viewer_account(account_id) ON DELETE CASCADE,
-    FOREIGN KEY (webseries_id) REFERENCES qty_web_series(webseries_id) ON DELETE CASCADE,
+    FOREIGN KEY (account_id) REFERENCES viewer_account(account_id) ON DELETE CASCADE,
+    FOREIGN KEY (webseries_id) REFERENCES web_series(webseries_id) ON DELETE CASCADE,
     CHECK (rating BETWEEN 1 AND 5),
     INDEX idx_webseries (webseries_id),
     INDEX idx_account (account_id),
@@ -349,47 +349,47 @@ CREATE TABLE qty_feedback (
 
 ---
 
-#### 11. QTY_DUBBING_LANGUAGE (配音语言表)
+#### 11. DUBBING_LANGUAGE (配音语言表)
 
 ```sql
-CREATE TABLE qty_dubbing_language (
+CREATE TABLE dubbing_language (
     dubbing_language_id VARCHAR(10) PRIMARY KEY,
     language_name VARCHAR(20) NOT NULL,
     webseries_id VARCHAR(10) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (webseries_id) REFERENCES qty_web_series(webseries_id) ON DELETE CASCADE,
+    FOREIGN KEY (webseries_id) REFERENCES web_series(webseries_id) ON DELETE CASCADE,
     INDEX idx_webseries (webseries_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ```
 
 ---
 
-#### 12. QTY_SUBTITLE_LANGUAGE (字幕语言表)
+#### 12. SUBTITLE_LANGUAGE (字幕语言表)
 
 ```sql
-CREATE TABLE qty_subtitle_language (
+CREATE TABLE subtitle_language (
     subtitle_language_id VARCHAR(10) PRIMARY KEY,
     language_name VARCHAR(20) NOT NULL,
     webseries_id VARCHAR(10) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (webseries_id) REFERENCES qty_web_series(webseries_id) ON DELETE CASCADE,
+    FOREIGN KEY (webseries_id) REFERENCES web_series(webseries_id) ON DELETE CASCADE,
     INDEX idx_webseries (webseries_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ```
 
 ---
 
-#### 13. QTY_WEB_SERIES_RELEASE (剧集发布信息表)
+#### 13. WEB_SERIES_RELEASE (剧集发布信息表)
 
 ```sql
-CREATE TABLE qty_web_series_release (
+CREATE TABLE web_series_release (
     release_date DATE NOT NULL,
     webseries_id VARCHAR(10) NOT NULL,
     country_name VARCHAR(64) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (webseries_id, country_name),
-    FOREIGN KEY (webseries_id) REFERENCES qty_web_series(webseries_id) ON DELETE CASCADE,
-    FOREIGN KEY (country_name) REFERENCES qty_country(country_name),
+    FOREIGN KEY (webseries_id) REFERENCES web_series(webseries_id) ON DELETE CASCADE,
+    FOREIGN KEY (country_name) REFERENCES country(country_name),
     INDEX idx_release_date (release_date)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ```
@@ -521,7 +521,7 @@ from app import db, bcrypt
 from datetime import datetime
 
 class ViewerAccount(db.Model):
-    __tablename__ = 'qty_viewer_account'
+    __tablename__ = 'viewer_account'
 
     account_id = db.Column(db.String(10), primary_key=True)
     first_name = db.Column(db.String(30), nullable=False)
@@ -532,7 +532,7 @@ class ViewerAccount(db.Model):
     street = db.Column(db.String(64), nullable=False)
     city = db.Column(db.String(64), nullable=False)
     state = db.Column(db.String(64), nullable=False)
-    country_name = db.Column(db.String(64), db.ForeignKey('qty_country.country_name'))
+    country_name = db.Column(db.String(64), db.ForeignKey('country.country_name'))
     open_date = db.Column(db.Date, nullable=False)
     monthly_service_charge = db.Column(db.Numeric(10, 2), nullable=False)
     account_type = db.Column(db.String(20), nullable=False, default='Customer')
@@ -578,13 +578,13 @@ from app import db
 from datetime import datetime
 
 class WebSeries(db.Model):
-    __tablename__ = 'qty_web_series'
+    __tablename__ = 'web_series'
 
     webseries_id = db.Column(db.String(10), primary_key=True)
     title = db.Column(db.String(64), nullable=False, index=True)
     num_episodes = db.Column(db.Integer, nullable=False, default=0)
     type = db.Column(db.String(15), nullable=False, index=True)
-    house_id = db.Column(db.String(10), db.ForeignKey('qty_production_house.house_id'), nullable=False)
+    house_id = db.Column(db.String(10), db.ForeignKey('production_house.house_id'), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -1778,7 +1778,7 @@ Content-Type: application/json
 ```python
 # ❌ 错误示例 - SQL注入漏洞
 user_input = request.args.get('email')
-query = f"SELECT * FROM qty_viewer_account WHERE email = '{user_input}'"
+query = f"SELECT * FROM viewer_account WHERE email = '{user_input}'"
 result = db.engine.execute(query)
 
 # ✅ 正确示例 - 使用ORM
@@ -1793,7 +1793,7 @@ from sqlalchemy import text
 
 # ✅ 正确示例 - 预编译语句
 user_input = request.args.get('email')
-query = text("SELECT * FROM qty_viewer_account WHERE email = :email")
+query = text("SELECT * FROM viewer_account WHERE email = :email")
 result = db.session.execute(query, {'email': user_input})
 ```
 
