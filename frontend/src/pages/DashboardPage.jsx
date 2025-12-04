@@ -49,17 +49,9 @@ const DashboardPage = () => {
 								<AccountCircleIcon />
 								<span>账户设置</span>
 							</Link>
-							<Link to="/my-list" className="nav-item">
-								<FavoriteIcon />
-								<span>我的列表</span>
-							</Link>
 							<Link to="/my-feedback" className="nav-item">
 								<RateReviewIcon />
 								<span>我的反馈</span>
-							</Link>
-							<Link to="/history" className="nav-item">
-								<HistoryIcon />
-								<span>观看历史</span>
 							</Link>
 							{permissions.canAccessAdmin && (
 								<>
