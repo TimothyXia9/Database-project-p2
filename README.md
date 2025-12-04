@@ -537,8 +537,8 @@ class ViewerAccount(db.Model):
     monthly_service_charge = db.Column(db.Numeric(10, 2), nullable=False)
     account_type = db.Column(db.String(20), nullable=False, default='Customer')
     is_active = db.Column(db.Boolean, default=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.now)
+    updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
 
     # 关系
     feedbacks = db.relationship('Feedback', backref='viewer', lazy='dynamic', cascade='all, delete-orphan')
@@ -585,8 +585,8 @@ class WebSeries(db.Model):
     num_episodes = db.Column(db.Integer, nullable=False, default=0)
     type = db.Column(db.String(15), nullable=False, index=True)
     house_id = db.Column(db.String(10), db.ForeignKey('production_house.house_id'), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.now)
+    updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
 
     # 关系
     episodes = db.relationship('Episode', backref='series', lazy='dynamic', cascade='all, delete-orphan')

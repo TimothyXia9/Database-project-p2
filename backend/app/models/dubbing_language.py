@@ -15,7 +15,7 @@ class DubbingLanguage(db.Model):
         nullable=False,
         index=True,
     )
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.now)
 
     def to_dict(self):
         return {

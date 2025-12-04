@@ -14,10 +14,8 @@ class ProductionHouse(db.Model):
     city = db.Column(db.String(64), nullable=False)
     state = db.Column(db.String(64), nullable=False)
     nationality = db.Column(db.String(20), nullable=False, index=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(
-        db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
-    )
+    created_at = db.Column(db.DateTime, default=datetime.now)
+    updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
 
     # Relationships
     web_series = db.relationship(

@@ -17,10 +17,8 @@ class Producer(db.Model):
     state = db.Column(db.String(32), nullable=False)
     email = db.Column(db.String(64), unique=True, nullable=False, index=True)
     nationality = db.Column(db.String(20), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(
-        db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
-    )
+    created_at = db.Column(db.DateTime, default=datetime.now)
+    updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
 
     # Relationships
     affiliations = db.relationship(

@@ -8,10 +8,8 @@ class Country(db.Model):
     __tablename__ = "country"
 
     country_name = db.Column(db.String(64), primary_key=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(
-        db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
-    )
+    created_at = db.Column(db.DateTime, default=datetime.now)
+    updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
 
     # Relationships
     viewer_accounts = db.relationship(
