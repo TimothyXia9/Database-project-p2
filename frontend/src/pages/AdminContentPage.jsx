@@ -15,6 +15,7 @@ import TvIcon from "@mui/icons-material/Tv";
 import DescriptionIcon from "@mui/icons-material/Description";
 import LanguageIcon from "@mui/icons-material/Language";
 import PublicIcon from "@mui/icons-material/Public";
+import SearchIcon from "@mui/icons-material/Search";
 import "./AdminPages.css";
 import * as contentService from "../services/contentService";
 import seriesService from "../services/seriesService";
@@ -27,13 +28,16 @@ const AdminContentPage = () => {
 	// Episodes
 	const [episodes, setEpisodes] = useState([]);
 	const [seriesList, setSeriesList] = useState([]); // For episode form
+	const [episodeSearch, setEpisodeSearch] = useState("");
 	// Production Houses
 	const [productionHouses, setProductionHouses] = useState([]);
+	const [productionHouseSearch, setProductionHouseSearch] = useState("");
 	// Producers
 	const [producers, setProducers] = useState([]);
 	const [producerSearch, setProducerSearch] = useState("");
 	// Feedback
 	const [feedback, setFeedback] = useState([]);
+	const [feedbackSearch, setFeedbackSearch] = useState("");
 	// Relations - Affiliations
 	const [affiliations, setAffiliations] = useState([]);
 	// Relations - Telecasts
@@ -54,15 +58,15 @@ const AdminContentPage = () => {
 
 	useEffect(() => {
 		if (activeTab === "episodes") {
-			fetchEpisodes();
+			fetchEpisodes(episodeSearch);
 			fetchSeriesList();
 		} else if (activeTab === "production") {
-			fetchProductionHouses();
+			fetchProductionHouses(productionHouseSearch);
 		} else if (activeTab === "producers") {
-			fetchProducers();
+			fetchProducers(producerSearch);
 			if (productionHouses.length === 0) fetchProductionHouses();
 		} else if (activeTab === "feedback") {
-			fetchFeedback();
+			fetchFeedback(feedbackSearch);
 		} else if (activeTab === "affiliations") {
 			fetchAffiliations();
 			if (producers.length === 0) fetchProducers();
@@ -91,10 +95,10 @@ const AdminContentPage = () => {
 		}
 	};
 
-	const fetchEpisodes = async () => {
+	const fetchEpisodes = async (search = "") => {
 		try {
 			setLoading(true);
-			const data = await contentService.getAllEpisodes({ per_page: 100 });
+			const data = await contentService.getAllEpisodes({ per_page: 100, search });
 			setEpisodes(data.episodes);
 		} catch (error) {
 			console.error("Failed to fetch episodes:", error);
@@ -104,10 +108,10 @@ const AdminContentPage = () => {
 		}
 	};
 
-	const fetchProductionHouses = async () => {
+	const fetchProductionHouses = async (search = "") => {
 		try {
 			setLoading(true);
-			const data = await contentService.getAllProductionHouses();
+			const data = await contentService.getAllProductionHouses({ search });
 			setProductionHouses(data.production_houses);
 		} catch (error) {
 			console.error("Failed to fetch production houses:", error);
@@ -130,10 +134,10 @@ const AdminContentPage = () => {
 		}
 	};
 
-	const fetchFeedback = async () => {
+	const fetchFeedback = async (search = "") => {
 		try {
 			setLoading(true);
-			const data = await contentService.getAllFeedback();
+			const data = await contentService.getAllFeedback({ search });
 			setFeedback(data.feedback);
 		} catch (error) {
 			console.error("Failed to fetch feedback:", error);
@@ -372,10 +376,60 @@ const AdminContentPage = () => {
 		}
 	};
 
-	const handleProducerSearch = (e) => {
-		const value = e.target.value;
-		setProducerSearch(value);
-		fetchProducers(value);
+	const handleEpisodeSearchInputChange = (e) => {
+		setEpisodeSearch(e.target.value);
+	};
+
+	const handleEpisodeSearchClick = () => {
+		fetchEpisodes(episodeSearch);
+	};
+
+	const handleEpisodeSearchKeyPress = (e) => {
+		if (e.key === "Enter") {
+			fetchEpisodes(episodeSearch);
+		}
+	};
+
+	const handleProductionHouseSearchInputChange = (e) => {
+		setProductionHouseSearch(e.target.value);
+	};
+
+	const handleProductionHouseSearchClick = () => {
+		fetchProductionHouses(productionHouseSearch);
+	};
+
+	const handleProductionHouseSearchKeyPress = (e) => {
+		if (e.key === "Enter") {
+			fetchProductionHouses(productionHouseSearch);
+		}
+	};
+
+	const handleProducerSearchInputChange = (e) => {
+		setProducerSearch(e.target.value);
+	};
+
+	const handleProducerSearchClick = () => {
+		fetchProducers(producerSearch);
+	};
+
+	const handleProducerSearchKeyPress = (e) => {
+		if (e.key === "Enter") {
+			fetchProducers(producerSearch);
+		}
+	};
+
+	const handleFeedbackSearchInputChange = (e) => {
+		setFeedbackSearch(e.target.value);
+	};
+
+	const handleFeedbackSearchClick = () => {
+		fetchFeedback(feedbackSearch);
+	};
+
+	const handleFeedbackSearchKeyPress = (e) => {
+		if (e.key === "Enter") {
+			fetchFeedback(feedbackSearch);
+		}
 	};
 
 	const handleDeleteAffiliation = async (item) => {
@@ -513,11 +567,19 @@ const AdminContentPage = () => {
 						<div className="admin-table-container">
 							<div className="table-header">
 								<h2>集数列表（共 {episodes.length} 集）</h2>
-								{permissions.canCreateEpisode && (
-									<button className="btn btn-primary" onClick={openCreateModal}>
-										<AddIcon /> 新增集数
-									</button>
-								)}
+								<div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+									<div className="search-container">
+										<input type="text" placeholder="搜索集数..." className="search-input" value={episodeSearch} onChange={handleEpisodeSearchInputChange} onKeyPress={handleEpisodeSearchKeyPress} />
+										<button className="btn btn-primary" onClick={handleEpisodeSearchClick}>
+											<SearchIcon /> 搜索
+										</button>
+									</div>
+									{permissions.canCreateEpisode && (
+										<button className="btn btn-primary" onClick={openCreateModal}>
+											<AddIcon /> 新增集数
+										</button>
+									)}
+								</div>
 							</div>
 
 							{episodes.length > 0 ? (
@@ -574,11 +636,19 @@ const AdminContentPage = () => {
 						<div className="admin-table-container">
 							<div className="table-header">
 								<h2>制作公司列表（共 {productionHouses.length} 家）</h2>
-								{permissions.canCreateProductionHouse && (
-									<button className="btn btn-primary" onClick={openCreateModal}>
-										<AddIcon /> 新增制作公司
-									</button>
-								)}
+								<div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+									<div className="search-container">
+										<input type="text" placeholder="搜索制作公司..." className="search-input" value={productionHouseSearch} onChange={handleProductionHouseSearchInputChange} onKeyPress={handleProductionHouseSearchKeyPress} />
+										<button className="btn btn-primary" onClick={handleProductionHouseSearchClick}>
+											<SearchIcon /> 搜索
+										</button>
+									</div>
+									{permissions.canCreateProductionHouse && (
+										<button className="btn btn-primary" onClick={openCreateModal}>
+											<AddIcon /> 新增制作公司
+										</button>
+									)}
+								</div>
 							</div>
 
 							{productionHouses.length > 0 ? (
@@ -636,7 +706,12 @@ const AdminContentPage = () => {
 							<div className="table-header">
 								<h2>制片人列表（共 {producers.length} 人）</h2>
 								<div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-									<input type="text" placeholder="搜索制片人..." className="search-input" value={producerSearch} onChange={handleProducerSearch} />
+									<div className="search-container">
+										<input type="text" placeholder="搜索制片人..." className="search-input" value={producerSearch} onChange={handleProducerSearchInputChange} onKeyPress={handleProducerSearchKeyPress} />
+										<button className="btn btn-primary" onClick={handleProducerSearchClick}>
+											<SearchIcon /> 搜索
+										</button>
+									</div>
 									{permissions.canCreateProducer && (
 										<button className="btn btn-primary" onClick={openCreateModal}>
 											<AddIcon /> 新增制片人
@@ -703,6 +778,12 @@ const AdminContentPage = () => {
 						<div className="admin-table-container">
 							<div className="table-header">
 								<h2>用户反馈列表（共 {feedback.length} 条）</h2>
+								<div className="search-container">
+									<input type="text" placeholder="搜索反馈..." className="search-input" value={feedbackSearch} onChange={handleFeedbackSearchInputChange} onKeyPress={handleFeedbackSearchKeyPress} />
+									<button className="btn btn-primary" onClick={handleFeedbackSearchClick}>
+										<SearchIcon /> 搜索
+									</button>
+								</div>
 							</div>
 
 							{feedback.length > 0 ? (

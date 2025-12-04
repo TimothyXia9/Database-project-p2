@@ -4,22 +4,34 @@ from app import db
 from app.models.feedback import Feedback
 from app.utils.security import generate_id
 from datetime import date
+from sqlalchemy import or_
 
 feedback_bp = Blueprint("feedback", __name__)
 
 
 @feedback_bp.route("", methods=["GET"])
 def get_all_feedback():
-    """Get all feedback"""
+    """Get all feedback with search functionality"""
     try:
         page = request.args.get("page", 1, type=int)
         per_page = request.args.get("per_page", 20, type=int)
         webseries_id = request.args.get("webseries_id")
+        search = request.args.get("search", "")
 
         query = Feedback.query
 
         if webseries_id:
             query = query.filter_by(webseries_id=webseries_id)
+
+        if search:
+            query = query.filter(
+                or_(
+                    Feedback.feedback_text.contains(search),
+                    Feedback.feedback_id.contains(search),
+                    Feedback.account_id.contains(search),
+                    Feedback.webseries_id.contains(search),
+                )
+            )
 
         pagination = query.paginate(page=page, per_page=per_page, error_out=False)
 

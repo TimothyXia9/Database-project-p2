@@ -7,6 +7,7 @@ import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
+import SearchIcon from "@mui/icons-material/Search";
 import "./AdminPages.css";
 import seriesService from "../services/seriesService";
 import * as adminService from "../services/adminService";
@@ -67,10 +68,18 @@ const AdminSeriesPage = () => {
 		}
 	};
 
-	const handleSearch = (e) => {
-		const value = e.target.value;
-		setSearchTerm(value);
-		fetchSeries(value);
+	const handleSearchInputChange = (e) => {
+		setSearchTerm(e.target.value);
+	};
+
+	const handleSearchClick = () => {
+		fetchSeries(searchTerm);
+	};
+
+	const handleSearchKeyPress = (e) => {
+		if (e.key === "Enter") {
+			fetchSeries(searchTerm);
+		}
 	};
 
 	const openCreateModal = () => {
@@ -169,7 +178,12 @@ const AdminSeriesPage = () => {
 					<div className="admin-table-container">
 						<div className="table-header">
 							<h2>剧集列表</h2>
-							<input type="text" placeholder="搜索剧集..." className="search-input" value={searchTerm} onChange={handleSearch} />
+							<div className="search-container">
+								<input type="text" placeholder="搜索剧集..." className="search-input" value={searchTerm} onChange={handleSearchInputChange} onKeyPress={handleSearchKeyPress} />
+								<button className="btn btn-primary" onClick={handleSearchClick}>
+									<SearchIcon /> 搜索
+								</button>
+							</div>
 						</div>
 
 						{loading && (

@@ -4,22 +4,33 @@ from app import db
 from app.models.episode import Episode
 from app.models.viewer_account import ViewerAccount
 from app.utils.security import generate_id
+from sqlalchemy import or_
 
 episode_bp = Blueprint("episode", __name__)
 
 
 @episode_bp.route("", methods=["GET"])
 def get_all_episodes():
-    """Get all episodes"""
+    """Get all episodes with search functionality"""
     try:
         page = request.args.get("page", 1, type=int)
         per_page = request.args.get("per_page", 20, type=int)
         webseries_id = request.args.get("webseries_id")
+        search = request.args.get("search", "")
 
         query = Episode.query
 
         if webseries_id:
             query = query.filter_by(webseries_id=webseries_id)
+
+        if search:
+            query = query.filter(
+                or_(
+                    Episode.title.contains(search),
+                    Episode.episode_id.contains(search),
+                    Episode.webseries_id.contains(search),
+                )
+            )
 
         pagination = query.paginate(page=page, per_page=per_page, error_out=False)
 

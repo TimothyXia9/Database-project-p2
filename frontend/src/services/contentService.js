@@ -3,9 +3,9 @@ import api from "./api";
 // ==================== Episodes ====================
 
 export const getAllEpisodes = async (params = {}) => {
-	const { page = 1, per_page = 20, webseries_id = "" } = params;
+	const { page = 1, per_page = 20, webseries_id = "", search = "" } = params;
 	const response = await api.get("/episodes", {
-		params: { page, per_page, webseries_id },
+		params: { page, per_page, webseries_id, search },
 	});
 	return response.data;
 };
@@ -33,9 +33,9 @@ export const deleteEpisode = async (episodeId) => {
 // ==================== Production Houses ====================
 
 export const getAllProductionHouses = async (params = {}) => {
-	const { page = 1, per_page = 100 } = params;
+	const { page = 1, per_page = 100, search = "" } = params;
 	const response = await api.get("/production-houses", {
-		params: { page, per_page },
+		params: { page, per_page, search },
 	});
 	return response.data;
 };
@@ -93,9 +93,9 @@ export const deleteProducer = async (producerId) => {
 // ==================== Feedback ====================
 
 export const getAllFeedback = async (params = {}) => {
-	const { page = 1, per_page = 100, webseries_id = "" } = params;
+	const { page = 1, per_page = 100, webseries_id = "", search = "" } = params;
 	const response = await api.get("/feedback", {
-		params: { page, per_page, webseries_id },
+		params: { page, per_page, webseries_id, search },
 	});
 	return response.data;
 };

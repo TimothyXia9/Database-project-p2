@@ -5,6 +5,7 @@ import PeopleIcon from "@mui/icons-material/People";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import LockResetIcon from "@mui/icons-material/LockReset";
+import SearchIcon from "@mui/icons-material/Search";
 import "./AdminPages.css";
 import * as adminService from "../services/adminService";
 
@@ -47,10 +48,18 @@ const AdminUsersPage = () => {
 		}
 	};
 
-	const handleSearch = (e) => {
-		const value = e.target.value;
-		setSearchTerm(value);
-		fetchUsers(value);
+	const handleSearchInputChange = (e) => {
+		setSearchTerm(e.target.value);
+	};
+
+	const handleSearchClick = () => {
+		fetchUsers(searchTerm);
+	};
+
+	const handleSearchKeyPress = (e) => {
+		if (e.key === "Enter") {
+			fetchUsers(searchTerm);
+		}
 	};
 
 	const handleChangeRole = async (userId, newRole) => {
@@ -161,7 +170,12 @@ const AdminUsersPage = () => {
 					<div className="admin-table-container">
 						<div className="table-header">
 							<h2>用户列表</h2>
-							<input type="text" placeholder="搜索用户..." className="search-input" value={searchTerm} onChange={handleSearch} />
+							<div className="search-container">
+								<input type="text" placeholder="搜索用户..." className="search-input" value={searchTerm} onChange={handleSearchInputChange} onKeyPress={handleSearchKeyPress} />
+								<button className="btn btn-primary" onClick={handleSearchClick}>
+									<SearchIcon /> 搜索
+								</button>
+							</div>
 						</div>
 
 						{loading && (

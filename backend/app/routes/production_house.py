@@ -4,20 +4,33 @@ from app import db
 from app.models.production_house import ProductionHouse
 from app.models.viewer_account import ViewerAccount
 from app.utils.security import generate_id
+from sqlalchemy import or_
 
 production_house_bp = Blueprint("production_house", __name__)
 
 
 @production_house_bp.route("", methods=["GET"])
 def get_all_production_houses():
-    """Get all production houses"""
+    """Get all production houses with search functionality"""
     try:
         page = request.args.get("page", 1, type=int)
         per_page = request.args.get("per_page", 20, type=int)
+        search = request.args.get("search", "")
 
-        pagination = ProductionHouse.query.paginate(
-            page=page, per_page=per_page, error_out=False
-        )
+        query = ProductionHouse.query
+
+        if search:
+            query = query.filter(
+                or_(
+                    ProductionHouse.name.contains(search),
+                    ProductionHouse.city.contains(search),
+                    ProductionHouse.state.contains(search),
+                    ProductionHouse.nationality.contains(search),
+                    ProductionHouse.house_id.contains(search),
+                )
+            )
+
+        pagination = query.paginate(page=page, per_page=per_page, error_out=False)
 
         return (
             jsonify(
