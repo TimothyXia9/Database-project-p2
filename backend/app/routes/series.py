@@ -4,14 +4,16 @@ from app import db
 from app.models.web_series import WebSeries
 from app.models.viewer_account import ViewerAccount
 from app.utils.security import role_required, generate_id
+from app.utils.cache import cache_response, invalidate_cache
 from sqlalchemy import or_
 
 series_bp = Blueprint("series", __name__)
 
 
 @series_bp.route("", methods=["GET"])
+@cache_response(timeout=300, key_prefix='series')
 def get_all_series():
-    """Get all series with pagination and search"""
+    """Get all series with pagination and search (cached for 5 minutes)"""
     try:
         # Pagination parameters
         page = request.args.get("page", 1, type=int)
@@ -55,8 +57,9 @@ def get_all_series():
 
 
 @series_bp.route("/<series_id>", methods=["GET"])
+@cache_response(timeout=600, key_prefix='series_detail')
 def get_series(series_id):
-    """Get single series details"""
+    """Get single series details (cached for 10 minutes)"""
     try:
         series = WebSeries.query.get(series_id)
 
@@ -71,8 +74,9 @@ def get_series(series_id):
 
 @series_bp.route("", methods=["POST"])
 @jwt_required()
+@invalidate_cache(['series:*', 'series_detail:*'])
 def create_series():
-    """Create new series (Employee/Admin only)"""
+    """Create new series (Employee/Admin only) - invalidates cache"""
     try:
         current_user_id = get_jwt_identity()
         user = ViewerAccount.query.get(current_user_id)
@@ -120,8 +124,9 @@ def create_series():
 
 @series_bp.route("/<series_id>", methods=["PUT"])
 @jwt_required()
+@invalidate_cache(['series:*', 'series_detail:*'])
 def update_series(series_id):
-    """Update series information (Employee/Admin only)"""
+    """Update series information (Employee/Admin only) - invalidates cache"""
     try:
         current_user_id = get_jwt_identity()
         user = ViewerAccount.query.get(current_user_id)
@@ -159,8 +164,9 @@ def update_series(series_id):
 
 @series_bp.route("/<series_id>", methods=["DELETE"])
 @jwt_required()
+@invalidate_cache(['series:*', 'series_detail:*'])
 def delete_series(series_id):
-    """Delete series (Admin only)"""
+    """Delete series (Admin only) - invalidates cache"""
     try:
         current_user_id = get_jwt_identity()
         user = ViewerAccount.query.get(current_user_id)

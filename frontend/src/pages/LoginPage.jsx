@@ -45,38 +45,40 @@ const LoginPage = () => {
 
 			<div className="auth-container">
 				<div className="auth-box">
-					<h1 className="auth-title">登录</h1>
+					<h1 className="auth-title">Login</h1>
 
 					{error && <div className="auth-error">{error}</div>}
 
 					<form onSubmit={handleSubmit} className="auth-form">
 						<div className="auth-input-group">
-							<input type="email" name="email" placeholder="邮箱地址" value={formData.email} onChange={handleChange} required className="auth-input" />
+							<input type="email" name="email" placeholder="Email Address" value={formData.email} onChange={handleChange} required className="auth-input" />
 						</div>
 
 						<div className="auth-input-group">
-							<input type="password" name="password" placeholder="密码" value={formData.password} onChange={handleChange} required className="auth-input" />
+							<input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} required className="auth-input" />
 						</div>
 
 						<button type="submit" className="auth-submit" disabled={loading}>
-							{loading ? "登录中..." : "登录"}
+							{loading ? "Logging in..." : "Login"}
 						</button>
 
 						<div className="auth-help">
 							<label className="auth-checkbox">
 								<input type="checkbox" />
-								<span>记住我</span>
+								<span>Remember me</span>
 							</label>
 							<Link to="/forgot-password" className="auth-link">
-								忘记密码？
+								Forgot password?
 							</Link>
 						</div>
 					</form>
 
 					<div className="auth-footer">
-						<span className="auth-footer-text">还没有账户？</span>
+						<div>
+							<span className="auth-footer-text">Don't have an account?</span>
+						</div>
 						<Link to="/register" className="auth-link">
-							立即注册
+							Register now
 						</Link>
 					</div>
 				</div>

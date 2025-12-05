@@ -56,7 +56,7 @@ class WebSeries(db.Model):
         data = {
             "webseries_id": self.webseries_id,
             "title": self.title,
-            "num_episodes": self.num_episodes,
+            "num_episodes": self.episodes.count(),  # Count actual episodes
             "type": self.type,
             "house_id": self.house_id,
             "created_at": self.created_at.isoformat() if self.created_at else None,

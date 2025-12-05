@@ -4,14 +4,16 @@ from app import db
 from app.models.production_house import ProductionHouse
 from app.models.viewer_account import ViewerAccount
 from app.utils.security import generate_id
+from app.utils.cache import cache_response, invalidate_cache
 from sqlalchemy import or_
 
 production_house_bp = Blueprint("production_house", __name__)
 
 
 @production_house_bp.route("", methods=["GET"])
+@cache_response(timeout=600, key_prefix='production_house')
 def get_all_production_houses():
-    """Get all production houses with search functionality"""
+    """Get all production houses with search functionality (cached for 10 minutes)"""
     try:
         page = request.args.get("page", 1, type=int)
         per_page = request.args.get("per_page", 20, type=int)
@@ -52,8 +54,9 @@ def get_all_production_houses():
 
 
 @production_house_bp.route("<house_id>", methods=["GET"])
+@cache_response(timeout=900, key_prefix='production_house_detail')
 def get_production_house(house_id):
-    """Get single production house"""
+    """Get single production house (cached for 15 minutes)"""
     try:
         house = ProductionHouse.query.get(house_id)
 
@@ -71,8 +74,9 @@ def get_production_house(house_id):
 
 @production_house_bp.route("", methods=["POST"])
 @jwt_required()
+@invalidate_cache(['production_house:*', 'production_house_detail:*'])
 def create_production_house():
-    """Create new production house (Admin only)"""
+    """Create new production house (Admin only) - invalidates cache"""
     try:
         current_user_id = get_jwt_identity()
         user = ViewerAccount.query.get(current_user_id)
@@ -129,8 +133,9 @@ def create_production_house():
 
 @production_house_bp.route("/<house_id>", methods=["PUT"])
 @jwt_required()
+@invalidate_cache(['production_house:*', 'production_house_detail:*'])
 def update_production_house(house_id):
-    """Update production house (Admin only)"""
+    """Update production house (Admin only) - invalidates cache"""
     try:
         current_user_id = get_jwt_identity()
         user = ViewerAccount.query.get(current_user_id)
@@ -179,8 +184,9 @@ def update_production_house(house_id):
 
 @production_house_bp.route("/<house_id>", methods=["DELETE"])
 @jwt_required()
+@invalidate_cache(['production_house:*', 'production_house_detail:*', 'series:*'])
 def delete_production_house(house_id):
-    """Delete production house (Admin only)"""
+    """Delete production house (Admin only) - invalidates cache"""
     try:
         current_user_id = get_jwt_identity()
         user = ViewerAccount.query.get(current_user_id)

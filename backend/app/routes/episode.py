@@ -4,14 +4,16 @@ from app import db
 from app.models.episode import Episode
 from app.models.viewer_account import ViewerAccount
 from app.utils.security import generate_id
+from app.utils.cache import cache_response, invalidate_cache
 from sqlalchemy import or_
 
 episode_bp = Blueprint("episode", __name__)
 
 
 @episode_bp.route("", methods=["GET"])
+@cache_response(timeout=300, key_prefix='episode')
 def get_all_episodes():
-    """Get all episodes with search functionality"""
+    """Get all episodes with search functionality (cached for 5 minutes)"""
     try:
         page = request.args.get("page", 1, type=int)
         per_page = request.args.get("per_page", 20, type=int)
@@ -51,8 +53,9 @@ def get_all_episodes():
 
 
 @episode_bp.route("/<episode_id>", methods=["GET"])
+@cache_response(timeout=600, key_prefix='episode_detail')
 def get_episode(episode_id):
-    """Get single episode"""
+    """Get single episode (cached for 10 minutes)"""
     try:
         episode = Episode.query.get(episode_id)
 
@@ -67,8 +70,9 @@ def get_episode(episode_id):
 
 @episode_bp.route("", methods=["POST"])
 @jwt_required()
+@invalidate_cache(['episode:*', 'episode_detail:*', 'series:*', 'series_detail:*'])
 def create_episode():
-    """Create new episode (Employee/Admin only)"""
+    """Create new episode (Employee/Admin only) - invalidates cache"""
     try:
         current_user_id = get_jwt_identity()
         user = ViewerAccount.query.get(current_user_id)
@@ -114,8 +118,9 @@ def create_episode():
 
 @episode_bp.route("/<episode_id>", methods=["PUT"])
 @jwt_required()
+@invalidate_cache(['episode:*', 'episode_detail:*', 'series:*', 'series_detail:*'])
 def update_episode(episode_id):
-    """Update episode (Employee/Admin only)"""
+    """Update episode (Employee/Admin only) - invalidates cache"""
     try:
         current_user_id = get_jwt_identity()
         user = ViewerAccount.query.get(current_user_id)
@@ -155,8 +160,9 @@ def update_episode(episode_id):
 
 @episode_bp.route("/<episode_id>", methods=["DELETE"])
 @jwt_required()
+@invalidate_cache(['episode:*', 'episode_detail:*', 'series:*', 'series_detail:*'])
 def delete_episode(episode_id):
-    """Delete episode (Admin only)"""
+    """Delete episode (Admin only) - invalidates cache"""
     try:
         current_user_id = get_jwt_identity()
         user = ViewerAccount.query.get(current_user_id)
