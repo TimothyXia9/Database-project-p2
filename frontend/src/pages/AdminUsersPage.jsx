@@ -32,7 +32,7 @@ const AdminUsersPage = () => {
 			setUsers(data.users);
 		} catch (error) {
 			console.error("Failed to fetch users:", error);
-			alert("获取用户列表失败: " + (error.message || "未知错误"));
+			alert("Fail to fetch users: " + (error.message || "Unknown error"));
 		} finally {
 			setLoading(false);
 		}
@@ -62,58 +62,58 @@ const AdminUsersPage = () => {
 	};
 
 	const handleChangeRole = async (userId, newRole) => {
-		if (window.confirm(`确定要将用户角色更改为 ${newRole} 吗？`)) {
+		if (window.confirm(`Are you sure you want to change the user role to ${newRole}?`)) {
 			try {
 				await adminService.changeUserRole(userId, newRole);
-				alert("角色更新成功");
+				alert("Role updated successfully");
 				fetchUsers(searchTerm);
 				fetchStats();
 			} catch (error) {
 				console.error("Failed to change role:", error);
-				alert("角色更新失败: " + (error.error || error.message || "未知错误"));
+				alert("Failed to update role: " + (error.error || error.message || "Unknown error"));
 			}
 		}
 	};
 
 	const handleToggleStatus = async (userId, currentStatus) => {
 		const newStatus = !currentStatus;
-		const action = newStatus ? "激活" : "禁用";
+		const action = newStatus ? "activate" : "deactivate";
 
-		if (window.confirm(`确定要${action}该用户吗？`)) {
+		if (window.confirm(`Are you sure you want to ${action} this user?`)) {
 			try {
 				await adminService.toggleUserStatus(userId, newStatus);
-				alert(`用户${action}成功`);
+				alert(`User ${action}d successfully`);
 				fetchUsers(searchTerm);
 			} catch (error) {
 				console.error("Failed to toggle status:", error);
-				alert(`用户${action}失败: ` + (error.error || error.message || "未知错误"));
+				alert(`Failed to ${action} user: ` + (error.error || error.message || "Unknown error"));
 			}
 		}
 	};
 
 	const handleDeleteUser = async (userId) => {
-		if (window.confirm("确定要删除该用户吗？此操作无法撤销。")) {
+		if (window.confirm("Are you sure you want to delete this user? This action cannot be undone.")) {
 			try {
 				await adminService.deleteUser(userId);
-				alert("用户Delete Successful.");
+				alert("User deleted successfully.");
 				fetchUsers(searchTerm);
 				fetchStats();
 			} catch (error) {
 				console.error("Failed to delete user:", error);
-				alert("用户删除失败: " + (error.error || error.message || "未知错误"));
+				alert("Failed to delete user: " + (error.error || error.message || "Unknown error"));
 			}
 		}
 	};
 
 	const handleResetPassword = async (userId) => {
-		const newPassword = prompt("请输入新密码（至少8位，包含大小写字母和数字）：");
+		const newPassword = prompt("Please enter a new password (at least 8 characters, including uppercase, lowercase letters, and numbers):");
 		if (newPassword) {
 			try {
 				await adminService.resetUserPassword(userId, newPassword);
-				alert("密码重置成功");
+				alert("Password reset successfully");
 			} catch (error) {
 				console.error("Failed to reset password:", error);
-				alert("密码重置失败: " + (error.error || error.message || "未知错误"));
+				alert("Failed to reset password: " + (error.error || error.message || "Unknown error"));
 			}
 		}
 	};
@@ -124,8 +124,8 @@ const AdminUsersPage = () => {
 				<Navbar />
 				<div className="admin-container">
 					<div className="access-denied">
-						<h1>访问被拒绝</h1>
-						<p>您没有权限访问此页面</p>
+						<h1>Access Denied</h1>
+						<p>You do not have permission to access this page</p>
 					</div>
 				</div>
 			</div>
@@ -140,8 +140,8 @@ const AdminUsersPage = () => {
 					<div className="header-content">
 						<PeopleIcon style={{ fontSize: 40 }} />
 						<div>
-							<h1>用户管理</h1>
-							<p>管理系统用户和权限 (仅限管理员)</p>
+							<h1>User Management</h1>
+							<p>Manage system users and permissions (Admins only)</p>
 						</div>
 					</div>
 				</div>
@@ -150,29 +150,29 @@ const AdminUsersPage = () => {
 					<div className="admin-stats">
 						<div className="stat-box">
 							<h3>{stats.total}</h3>
-							<p>总用户数</p>
+							<p>Total Users</p>
 						</div>
 						<div className="stat-box">
 							<h3>{stats.customers}</h3>
-							<p>观众</p>
+							<p>Customers</p>
 						</div>
 						<div className="stat-box">
 							<h3>{stats.employees}</h3>
-							<p>员工</p>
+							<p>Employees</p>
 						</div>
 						<div className="stat-box">
 							<h3>{stats.admins}</h3>
-							<p>管理员</p>
+							<p>Admins</p>
 						</div>
 					</div>
 
 					<div className="admin-table-container">
 						<div className="table-header">
-							<h2>用户列表</h2>
+							<h2>User List</h2>
 							<div className="search-container">
-								<input type="text" placeholder="搜索用户..." className="search-input" value={searchTerm} onChange={handleSearchInputChange} onKeyPress={handleSearchKeyPress} />
+								<input type="text" placeholder="Search users..." className="search-input" value={searchTerm} onChange={handleSearchInputChange} onKeyPress={handleSearchKeyPress} />
 								<button className="btn btn-primary" onClick={handleSearchClick}>
-									<SearchIcon /> 搜索
+									<SearchIcon /> Search
 								</button>
 							</div>
 						</div>
@@ -187,13 +187,13 @@ const AdminUsersPage = () => {
 							<table className="admin-table">
 								<thead>
 									<tr>
-										<th>账户ID</th>
-										<th>姓名</th>
-										<th>邮箱</th>
-										<th>角色</th>
-										<th>状态</th>
-										<th>注册日期</th>
-										<th>操作</th>
+										<th>Account ID</th>
+										<th>Name</th>
+										<th>Email</th>
+										<th>Role</th>
+										<th>Status</th>
+										<th>Registration Date</th>
+										<th>Actions</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -212,17 +212,17 @@ const AdminUsersPage = () => {
 												</select>
 											</td>
 											<td>
-												<span className={`status-badge ${user.is_active ? "active" : "inactive"}`} onClick={() => handleToggleStatus(user.account_id, user.is_active)} style={{ cursor: "pointer" }} title="点击切换状态">
-													{user.is_active ? "活跃" : "未激活"}
+												<span className={`status-badge ${user.is_active ? "active" : "inactive"}`} onClick={() => handleToggleStatus(user.account_id, user.is_active)} style={{ cursor: "pointer" }} title="Click to toggle status">
+													{user.is_active ? "Active" : "Inactive"}
 												</span>
 											</td>
 											<td>{user.open_date}</td>
 											<td className="action-buttons">
-												<button className="btn-icon" title="重置密码" onClick={() => handleResetPassword(user.account_id)}>
+												<button className="btn-icon" title="Reset Password" onClick={() => handleResetPassword(user.account_id)}>
 													<LockResetIcon />
 												</button>
 												{permissions.canDeleteUsers && (
-													<button className="btn-icon" title="删除" onClick={() => handleDeleteUser(user.account_id)} style={{ color: "#f44336" }}>
+													<button className="btn-icon" title="Delete" onClick={() => handleDeleteUser(user.account_id)} style={{ color: "#f44336" }}>
 														<DeleteIcon />
 													</button>
 												)}
@@ -234,7 +234,7 @@ const AdminUsersPage = () => {
 						) : (
 							<div className="empty-admin-state">
 								<PeopleIcon style={{ fontSize: 64, opacity: 0.3 }} />
-								<p>暂无用户数据</p>
+								<p>No user data available</p>
 							</div>
 						)}
 					</div>
