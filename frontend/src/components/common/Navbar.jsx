@@ -53,7 +53,7 @@ const Navbar = () => {
 					</Link>
 					<ul className="navbar-menu">
 						<li>
-							<Link to="/">Main</Link>
+							<Link to="/">Home</Link>
 						</li>
 						<li>
 							<Link to="/browse">Web Series</Link>

@@ -621,7 +621,7 @@ const AdminContentPage = () => {
 							<TvIcon /> Telecast Records
 						</button>
 						<button className={`tab-button ${activeTab === "contracts" ? "active" : ""}`} onClick={() => setActiveTab("contracts")}>
-							<DescriptionIcon /> Contract Management
+							<DescriptionIcon /> Contract
 						</button>
 						<button className={`tab-button ${activeTab === "subtitles" ? "active" : ""}`} onClick={() => setActiveTab("subtitles")}>
 							<LanguageIcon /> Subtitle Languages
