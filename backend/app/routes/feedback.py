@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app import db
 from app.models.feedback import Feedback
-from app.utils.security import generate_id
+from app.utils.security import generate_id, sanitize_input
 from app.utils.cache import cache_response, invalidate_cache
 from datetime import date
 from sqlalchemy import or_
@@ -99,7 +99,7 @@ def create_feedback():
         if not 1 <= rating <= 5:
             return jsonify({"error": "Rating must be between 1 and 5"}), 400
 
-        # Validate feedback_text length
+        # Validate and sanitize feedback_text
         feedback_text = str(data["feedback_text"]).strip()
         if len(feedback_text) > 128:
             return (
@@ -108,6 +108,9 @@ def create_feedback():
             )
         if len(feedback_text) == 0:
             return jsonify({"error": "Feedback text cannot be empty"}), 400
+
+        # Sanitize to prevent XSS attacks
+        feedback_text = sanitize_input(feedback_text)
 
         # Check if user already submitted feedback for this series
         existing_feedback = Feedback.query.filter_by(
@@ -182,7 +185,8 @@ def update_feedback(feedback_id):
             feedback.rating = data["rating"]
 
         if "feedback_text" in data:
-            feedback.feedback_text = data["feedback_text"]
+            # Sanitize to prevent XSS attacks
+            feedback.feedback_text = sanitize_input(data["feedback_text"])
 
         db.session.commit()
 

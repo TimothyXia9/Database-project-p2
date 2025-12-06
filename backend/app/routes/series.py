@@ -3,7 +3,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from app import db
 from app.models.web_series import WebSeries
 from app.models.viewer_account import ViewerAccount
-from app.utils.security import role_required, generate_id
+from app.utils.security import role_required, generate_id, sanitize_input
 from app.utils.cache import cache_response, invalidate_cache
 from sqlalchemy import or_
 
@@ -96,11 +96,15 @@ def create_series():
         # Generate series ID
         series_id = generate_id("WS", 8)
 
+        # Sanitize user inputs to prevent XSS
+        title = sanitize_input(data["title"])
+        series_type = sanitize_input(data["type"])
+
         new_series = WebSeries(
             webseries_id=series_id,
-            title=data["title"],
+            title=title,
             num_episodes=data.get("num_episodes", 0),
-            type=data["type"],
+            type=series_type,
             house_id=data["house_id"],
         )
 
@@ -140,13 +144,13 @@ def update_series(series_id):
 
         data = request.get_json()
 
-        # Update fields
+        # Update fields with XSS protection
         if "title" in data:
-            series.title = data["title"]
+            series.title = sanitize_input(data["title"])
         if "num_episodes" in data:
             series.num_episodes = data["num_episodes"]
         if "type" in data:
-            series.type = data["type"]
+            series.type = sanitize_input(data["type"])
 
         db.session.commit()
 

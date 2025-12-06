@@ -3,7 +3,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from app import db
 from app.models.episode import Episode
 from app.models.viewer_account import ViewerAccount
-from app.utils.security import generate_id
+from app.utils.security import generate_id, sanitize_input
 from app.utils.cache import cache_response, invalidate_cache
 from sqlalchemy import or_
 
@@ -89,10 +89,13 @@ def create_episode():
 
         episode_id = generate_id("EP", 8)
 
+        # Sanitize user inputs to prevent XSS
+        title = sanitize_input(data.get("title")) if data.get("title") else None
+
         new_episode = Episode(
             episode_id=episode_id,
             episode_number=data["episode_number"],
-            title=data.get("title"),
+            title=title,
             webseries_id=data["webseries_id"],
             duration_minutes=data.get("duration_minutes"),
             release_date=data.get("release_date"),
@@ -134,8 +137,9 @@ def update_episode(episode_id):
 
         data = request.get_json()
 
+        # Update fields with XSS protection
         if "title" in data:
-            episode.title = data["title"]
+            episode.title = sanitize_input(data["title"])
         if "duration_minutes" in data:
             episode.duration_minutes = data["duration_minutes"]
         if "release_date" in data:
