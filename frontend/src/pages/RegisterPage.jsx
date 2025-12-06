@@ -82,7 +82,6 @@ const RegisterPage = () => {
 	return (
 		<div className="auth-page">
 			<div className="auth-background">
-				<img src="https://unsplash.com/photos/red-neon-sign-for-kaptol-boutique-cinema-dvNWscgOUZ4" alt="Background" />
 				<div className="auth-overlay"></div>
 			</div>
 
