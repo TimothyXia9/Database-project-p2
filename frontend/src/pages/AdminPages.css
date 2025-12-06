@@ -597,3 +597,20 @@
 .btn-secondary:hover {
 	background: #444;
 }
+
+input[type="date"] {
+	background-color: #141414;
+	color: #fff;
+	padding-right: 30px;
+
+	appearance: none;
+	-webkit-appearance: none;
+
+	/* 仅用于把默认图标变亮，而不是替换图标 */
+}
+
+/* 调整默认图标颜色（仍可点击） */
+input[type="date"]::-webkit-calendar-picker-indicator {
+	filter: invert(1) brightness(1.5); /* 变成浅色/白色 */
+	cursor: pointer;
+}

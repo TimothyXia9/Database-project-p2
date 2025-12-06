@@ -842,7 +842,7 @@ const AdminContentPage = () => {
 							) : (
 								<div className="empty-admin-state">
 									<PersonIcon style={{ fontSize: 64, opacity: 0.3 }} />
-									<p>暂无制片人数据</p>
+									<p>No producer data available</p>
 								</div>
 							)}
 						</div>
