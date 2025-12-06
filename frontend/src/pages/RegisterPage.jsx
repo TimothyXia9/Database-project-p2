@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
 import { register, clearError } from "../store/slices/authSlice";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import "./AuthPages.css";
 
 const RegisterPage = () => {
@@ -22,6 +23,8 @@ const RegisterPage = () => {
 	});
 
 	const [validationError, setValidationError] = useState("");
+	const [showPassword, setShowPassword] = useState(false);
+	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
 	useEffect(() => {
 		if (isAuthenticated) {
@@ -79,7 +82,7 @@ const RegisterPage = () => {
 	return (
 		<div className="auth-page">
 			<div className="auth-background">
-				<img src="https://source.unsplash.com/dvNWscgOUZ4" alt="Background" />
+				<img src="https://unsplash.com/photos/red-neon-sign-for-kaptol-boutique-cinema-dvNWscgOUZ4" alt="Background" />
 				<div className="auth-overlay"></div>
 			</div>
 
@@ -110,12 +113,18 @@ const RegisterPage = () => {
 							<input type="email" name="email" placeholder="Email Address" value={formData.email} onChange={handleChange} required className="auth-input" />
 						</div>
 
-						<div className="auth-input-group">
-							<input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} required className="auth-input" />
+						<div className="auth-input-group password-input-group">
+							<input type={showPassword ? "text" : "password"} name="password" placeholder="Password (min 8 chars, 1 uppercase, 1 lowercase, 1 number)" value={formData.password} onChange={handleChange} required className="auth-input auth-input-password" />
+							<button type="button" className="password-toggle-btn" onClick={() => setShowPassword(!showPassword)} aria-label={showPassword ? "Hide password" : "Show password"}>
+								{showPassword ? <VisibilityOff /> : <Visibility />}
+							</button>
 						</div>
 
-						<div className="auth-input-group">
-							<input type="password" name="confirmPassword" placeholder="Confirm Password" value={formData.confirmPassword} onChange={handleChange} required className="auth-input" />
+						<div className="auth-input-group password-input-group">
+							<input type={showConfirmPassword ? "text" : "password"} name="confirmPassword" placeholder="Confirm Password" value={formData.confirmPassword} onChange={handleChange} required className="auth-input auth-input-password" />
+							<button type="button" className="password-toggle-btn" onClick={() => setShowConfirmPassword(!showConfirmPassword)} aria-label={showConfirmPassword ? "Hide password" : "Show password"}>
+								{showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+							</button>
 						</div>
 
 						<div className="auth-input-group">
