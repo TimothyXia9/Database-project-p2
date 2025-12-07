@@ -155,6 +155,60 @@ def create_affiliation():
 
 
 @relations_bp.route(
+    "/producer-affiliations/<producer_id>/<house_id>", methods=["PUT"]
+)
+@jwt_required()
+def update_affiliation(producer_id, house_id):
+    """Update producer affiliation (Employee/Admin only)"""
+    try:
+        current_user_id = get_jwt_identity()
+        user = ViewerAccount.query.get(current_user_id)
+
+        if user.account_type not in ["Employee", "Admin"]:
+            return jsonify({"error": "Unauthorized"}), 403
+
+        affiliation = ProducerAffiliation.query.filter_by(
+            producer_id=producer_id, house_id=house_id
+        ).first()
+
+        if not affiliation:
+            return jsonify({"error": "Affiliation not found"}), 404
+
+        data = request.get_json()
+
+        # Update fields
+        if "start_date" in data:
+            from datetime import datetime
+            affiliation.start_date = datetime.strptime(data["start_date"], "%Y-%m-%d").date()
+
+        if "end_date" in data:
+            if data["end_date"]:
+                from datetime import datetime
+                affiliation.end_date = datetime.strptime(data["end_date"], "%Y-%m-%d").date()
+            else:
+                affiliation.end_date = None
+
+        # Validate dates
+        if affiliation.end_date and affiliation.start_date:
+            if affiliation.end_date < affiliation.start_date:
+                return jsonify({"error": "End date must be after start date"}), 400
+
+        db.session.commit()
+
+        return jsonify({
+            "message": "Affiliation updated successfully",
+            "affiliation": affiliation.to_dict()
+        }), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return (
+            jsonify({"error": "Failed to update affiliation", "message": str(e)}),
+            500,
+        )
+
+
+@relations_bp.route(
     "/producer-affiliations/<producer_id>/<house_id>", methods=["DELETE"]
 )
 @jwt_required()
@@ -198,9 +252,14 @@ def get_all_telecasts():
         page = request.args.get("page", 1, type=int)
         per_page = request.args.get("per_page", 100, type=int)
         episode_id = request.args.get("episode_id", "", type=str)
+        webseries_id = request.args.get("webseries_id", "", type=str)
         search = request.args.get("search", "", type=str)
 
         query = Telecast.query
+
+        # Filter by webseries_id (via episode join)
+        if webseries_id:
+            query = query.join(Episode).filter(Episode.webseries_id == webseries_id)
 
         # Filter by episode_id
         if episode_id:
