@@ -3,15 +3,17 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from app import db
 from app.models.web_series import WebSeries
 from app.models.viewer_account import ViewerAccount
-from app.utils.security import role_required, generate_id
+from app.utils.security import role_required, generate_id, sanitize_input
+from app.utils.cache import cache_response, invalidate_cache
 from sqlalchemy import or_
 
 series_bp = Blueprint("series", __name__)
 
 
 @series_bp.route("", methods=["GET"])
+@cache_response(timeout=300, key_prefix='series')
 def get_all_series():
-    """Get all series with pagination and search"""
+    """Get all series with pagination and search (cached for 5 minutes)"""
     try:
         # Pagination parameters
         page = request.args.get("page", 1, type=int)
@@ -55,8 +57,9 @@ def get_all_series():
 
 
 @series_bp.route("/<series_id>", methods=["GET"])
+@cache_response(timeout=600, key_prefix='series_detail')
 def get_series(series_id):
-    """Get single series details"""
+    """Get single series details (cached for 10 minutes)"""
     try:
         series = WebSeries.query.get(series_id)
 
@@ -71,8 +74,9 @@ def get_series(series_id):
 
 @series_bp.route("", methods=["POST"])
 @jwt_required()
+@invalidate_cache(['series:*', 'series_detail:*'])
 def create_series():
-    """Create new series (Employee/Admin only)"""
+    """Create new series (Employee/Admin only) - invalidates cache"""
     try:
         current_user_id = get_jwt_identity()
         user = ViewerAccount.query.get(current_user_id)
@@ -92,11 +96,15 @@ def create_series():
         # Generate series ID
         series_id = generate_id("WS", 8)
 
+        # Sanitize user inputs to prevent XSS
+        title = sanitize_input(data["title"])
+        series_type = sanitize_input(data["type"])
+
         new_series = WebSeries(
             webseries_id=series_id,
-            title=data["title"],
+            title=title,
             num_episodes=data.get("num_episodes", 0),
-            type=data["type"],
+            type=series_type,
             house_id=data["house_id"],
         )
 
@@ -120,8 +128,9 @@ def create_series():
 
 @series_bp.route("/<series_id>", methods=["PUT"])
 @jwt_required()
+@invalidate_cache(['series:*', 'series_detail:*'])
 def update_series(series_id):
-    """Update series information (Employee/Admin only)"""
+    """Update series information (Employee/Admin only) - invalidates cache"""
     try:
         current_user_id = get_jwt_identity()
         user = ViewerAccount.query.get(current_user_id)
@@ -135,13 +144,13 @@ def update_series(series_id):
 
         data = request.get_json()
 
-        # Update fields
+        # Update fields with XSS protection
         if "title" in data:
-            series.title = data["title"]
+            series.title = sanitize_input(data["title"])
         if "num_episodes" in data:
             series.num_episodes = data["num_episodes"]
         if "type" in data:
-            series.type = data["type"]
+            series.type = sanitize_input(data["type"])
 
         db.session.commit()
 
@@ -159,8 +168,9 @@ def update_series(series_id):
 
 @series_bp.route("/<series_id>", methods=["DELETE"])
 @jwt_required()
+@invalidate_cache(['series:*', 'series_detail:*'])
 def delete_series(series_id):
-    """Delete series (Admin only)"""
+    """Delete series (Admin only) - invalidates cache"""
     try:
         current_user_id = get_jwt_identity()
         user = ViewerAccount.query.get(current_user_id)

@@ -36,6 +36,10 @@ class Config:
     # CORS Configuration
     CORS_ORIGINS = ["http://localhost:3000", "http://127.0.0.1:3000"]
 
+    # Redis Configuration
+    REDIS_URL = os.environ.get("REDIS_URL") or "redis://localhost:6379/0"
+    CACHE_DEFAULT_TIMEOUT = 300  # 5 minutes default cache timeout
+
 
 class DevelopmentConfig(Config):
     """Development configuration"""

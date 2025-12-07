@@ -8,7 +8,7 @@ from flask_jwt_extended import (
 from app import db
 from app.models.viewer_account import ViewerAccount
 from app.models.country import Country
-from app.utils.security import generate_id
+from app.utils.security import generate_id, sanitize_input
 from datetime import date
 import re
 
@@ -68,17 +68,26 @@ def register():
         # Generate account ID
         account_id = generate_id("ACC", 7)
 
+        # Sanitize user inputs to prevent XSS
+        first_name = sanitize_input(data["first_name"])
+        middle_name = sanitize_input(data.get("middle_name")) if data.get("middle_name") else None
+        last_name = sanitize_input(data["last_name"])
+        street = sanitize_input(data["street"])
+        city = sanitize_input(data["city"])
+        state = sanitize_input(data["state"])
+        country_name = sanitize_input(data["country_name"])
+
         # Create new user
         new_user = ViewerAccount(
             account_id=account_id,
-            first_name=data["first_name"],
-            middle_name=data.get("middle_name"),
-            last_name=data["last_name"],
-            email=data["email"],
-            street=data["street"],
-            city=data["city"],
-            state=data["state"],
-            country_name=data["country_name"],
+            first_name=first_name,
+            middle_name=middle_name,
+            last_name=last_name,
+            email=data["email"],  # Email is validated and used for login, no need to sanitize
+            street=street,
+            city=city,
+            state=state,
+            country_name=country_name,
             open_date=date.today(),
             monthly_service_charge=9.99,
             account_type=data.get("account_type", "Customer"),

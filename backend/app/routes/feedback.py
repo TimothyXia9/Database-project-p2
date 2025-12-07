@@ -2,7 +2,8 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app import db
 from app.models.feedback import Feedback
-from app.utils.security import generate_id
+from app.utils.security import generate_id, sanitize_input
+from app.utils.cache import cache_response, invalidate_cache
 from datetime import date
 from sqlalchemy import or_
 
@@ -10,8 +11,9 @@ feedback_bp = Blueprint("feedback", __name__)
 
 
 @feedback_bp.route("", methods=["GET"])
+@cache_response(timeout=180, key_prefix='feedback')
 def get_all_feedback():
-    """Get all feedback with search functionality"""
+    """Get all feedback with search functionality (cached for 3 minutes)"""
     try:
         page = request.args.get("page", 1, type=int)
         per_page = request.args.get("per_page", 20, type=int)
@@ -52,8 +54,9 @@ def get_all_feedback():
 
 
 @feedback_bp.route("/<feedback_id>", methods=["GET"])
+@cache_response(timeout=300, key_prefix='feedback_detail')
 def get_feedback(feedback_id):
-    """Get single feedback"""
+    """Get single feedback (cached for 5 minutes)"""
     try:
         feedback = Feedback.query.get(feedback_id)
 
@@ -68,8 +71,9 @@ def get_feedback(feedback_id):
 
 @feedback_bp.route("", methods=["POST"])
 @jwt_required()
+@invalidate_cache(['feedback:*', 'feedback_detail:*', 'series:*', 'series_detail:*'])
 def create_feedback():
-    """Create new feedback"""
+    """Create new feedback - invalidates cache"""
     try:
         current_user_id = get_jwt_identity()
         data = request.get_json()
@@ -95,7 +99,7 @@ def create_feedback():
         if not 1 <= rating <= 5:
             return jsonify({"error": "Rating must be between 1 and 5"}), 400
 
-        # Validate feedback_text length
+        # Validate and sanitize feedback_text
         feedback_text = str(data["feedback_text"]).strip()
         if len(feedback_text) > 128:
             return (
@@ -104,6 +108,9 @@ def create_feedback():
             )
         if len(feedback_text) == 0:
             return jsonify({"error": "Feedback text cannot be empty"}), 400
+
+        # Sanitize to prevent XSS attacks
+        feedback_text = sanitize_input(feedback_text)
 
         # Check if user already submitted feedback for this series
         existing_feedback = Feedback.query.filter_by(
@@ -156,8 +163,9 @@ def create_feedback():
 
 @feedback_bp.route("/<feedback_id>", methods=["PUT"])
 @jwt_required()
+@invalidate_cache(['feedback:*', 'feedback_detail:*', 'series:*', 'series_detail:*'])
 def update_feedback(feedback_id):
-    """Update feedback (owner only)"""
+    """Update feedback (owner only) - invalidates cache"""
     try:
         current_user_id = get_jwt_identity()
 
@@ -177,7 +185,8 @@ def update_feedback(feedback_id):
             feedback.rating = data["rating"]
 
         if "feedback_text" in data:
-            feedback.feedback_text = data["feedback_text"]
+            # Sanitize to prevent XSS attacks
+            feedback.feedback_text = sanitize_input(data["feedback_text"])
 
         db.session.commit()
 
@@ -198,8 +207,9 @@ def update_feedback(feedback_id):
 
 @feedback_bp.route("/<feedback_id>", methods=["DELETE"])
 @jwt_required()
+@invalidate_cache(['feedback:*', 'feedback_detail:*', 'series:*', 'series_detail:*'])
 def delete_feedback(feedback_id):
-    """Delete feedback (owner or admin)"""
+    """Delete feedback (owner or admin) - invalidates cache"""
     try:
         current_user_id = get_jwt_identity()
         from app.models.viewer_account import ViewerAccount

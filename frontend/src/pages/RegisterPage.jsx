@@ -2,239 +2,163 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
 import { register, clearError } from "../store/slices/authSlice";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import "./AuthPages.css";
 
 const RegisterPage = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const { isAuthenticated, loading, error } = useSelector(
-    (state) => state.auth
-  );
+	const dispatch = useDispatch();
+	const navigate = useNavigate();
+	const { isAuthenticated, loading, error } = useSelector((state) => state.auth);
 
-  const [formData, setFormData] = useState({
-    first_name: "",
-    last_name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    street: "",
-    city: "",
-    state: "",
-    country_name: "USA",
-  });
+	const [formData, setFormData] = useState({
+		first_name: "",
+		last_name: "",
+		email: "",
+		password: "",
+		confirmPassword: "",
+		street: "",
+		city: "",
+		state: "",
+		country_name: "USA",
+	});
 
-  const [validationError, setValidationError] = useState("");
+	const [validationError, setValidationError] = useState("");
+	const [showPassword, setShowPassword] = useState(false);
+	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/browse");
-    }
-    return () => {
-      dispatch(clearError());
-    };
-  }, [isAuthenticated, navigate, dispatch]);
+	useEffect(() => {
+		if (isAuthenticated) {
+			navigate("/browse");
+		}
+		return () => {
+			dispatch(clearError());
+		};
+	}, [isAuthenticated, navigate, dispatch]);
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-    setValidationError("");
-  };
+	const handleChange = (e) => {
+		setFormData({
+			...formData,
+			[e.target.name]: e.target.value,
+		});
+		setValidationError("");
+	};
 
-  const validatePassword = (password) => {
-    if (password.length < 8) {
-      return "密码至少需要8个字符";
-    }
-    if (!/[A-Z]/.test(password)) {
-      return "密码必须包含至少一个大写字母";
-    }
-    if (!/[a-z]/.test(password)) {
-      return "密码必须包含至少一个小写字母";
-    }
-    if (!/\d/.test(password)) {
-      return "密码必须包含至少一个数字";
-    }
-    return "";
-  };
+	const validatePassword = (password) => {
+		if (password.length < 8) {
+			return "Password must be at least 8 characters long";
+		}
+		if (!/[A-Z]/.test(password)) {
+			return "Password must contain at least one uppercase letter";
+		}
+		if (!/[a-z]/.test(password)) {
+			return "Password must contain at least one lowercase letter";
+		}
+		if (!/\d/.test(password)) {
+			return "Password must contain at least one number";
+		}
+		return "";
+	};
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+	const handleSubmit = async (e) => {
+		e.preventDefault();
 
-    // 验证密码
-    const passwordError = validatePassword(formData.password);
-    if (passwordError) {
-      setValidationError(passwordError);
-      return;
-    }
+		// 验证密码
+		const passwordError = validatePassword(formData.password);
+		if (passwordError) {
+			setValidationError(passwordError);
+			return;
+		}
 
-    // 验证密码匹配
-    if (formData.password !== formData.confirmPassword) {
-      setValidationError("两次输入的密码不匹配");
-      return;
-    }
+		// 验证密码匹配
+		if (formData.password !== formData.confirmPassword) {
+			setValidationError("Passwords do not match");
+			return;
+		}
 
-    // 移除 confirmPassword 字段
-    const { confirmPassword, ...registerData } = formData;
-    dispatch(register(registerData));
-  };
+		const { confirmPassword, ...registerData } = formData;
+		dispatch(register(registerData));
+	};
 
-  return (
-    <div className="auth-page">
-      <div className="auth-background">
-        <img
-          src="https://source.unsplash.com/1920x1080/?cinema,theater,entertainment"
-          alt="Background"
-        />
-        <div className="auth-overlay"></div>
-      </div>
+	return (
+		<div className="auth-page">
+			<div className="auth-background">
+				<div className="auth-overlay"></div>
+			</div>
 
-      <div className="auth-navbar">
-        <Link to="/" className="auth-logo">
-          NEWS
-        </Link>
-      </div>
+			<div className="auth-navbar">
+				<Link to="/" className="auth-logo">
+					NEWS
+				</Link>
+			</div>
 
-      <div className="auth-container">
-        <div className="auth-box auth-box-large">
-          <h1 className="auth-title">注册</h1>
+			<div className="auth-container">
+				<div className="auth-box auth-box-large">
+					<h1 className="auth-title">Register</h1>
 
-          {(error || validationError) && (
-            <div className="auth-error">{error || validationError}</div>
-          )}
+					{(error || validationError) && <div className="auth-error">{error || validationError}</div>}
 
-          <form onSubmit={handleSubmit} className="auth-form">
-            <div className="auth-row">
-              <div className="auth-input-group">
-                <input
-                  type="text"
-                  name="first_name"
-                  placeholder="名"
-                  value={formData.first_name}
-                  onChange={handleChange}
-                  required
-                  className="auth-input"
-                />
-              </div>
+					<form onSubmit={handleSubmit} className="auth-form">
+						<div className="auth-row">
+							<div className="auth-input-group">
+								<input type="text" name="first_name" placeholder="First Name" value={formData.first_name} onChange={handleChange} required className="auth-input" />
+							</div>
 
-              <div className="auth-input-group">
-                <input
-                  type="text"
-                  name="last_name"
-                  placeholder="姓"
-                  value={formData.last_name}
-                  onChange={handleChange}
-                  required
-                  className="auth-input"
-                />
-              </div>
-            </div>
+							<div className="auth-input-group">
+								<input type="text" name="last_name" placeholder="Last Name" value={formData.last_name} onChange={handleChange} required className="auth-input" />
+							</div>
+						</div>
 
-            <div className="auth-input-group">
-              <input
-                type="email"
-                name="email"
-                placeholder="邮箱地址"
-                value={formData.email}
-                onChange={handleChange}
-                required
-                className="auth-input"
-              />
-            </div>
+						<div className="auth-input-group">
+							<input type="email" name="email" placeholder="Email Address" value={formData.email} onChange={handleChange} required className="auth-input" />
+						</div>
 
-            <div className="auth-input-group">
-              <input
-                type="password"
-                name="password"
-                placeholder="密码"
-                value={formData.password}
-                onChange={handleChange}
-                required
-                className="auth-input"
-              />
-            </div>
+						<div className="auth-input-group password-input-group">
+							<input type={showPassword ? "text" : "password"} name="password" placeholder="Password (min 8 chars, 1 uppercase, 1 lowercase, 1 number)" value={formData.password} onChange={handleChange} required className="auth-input auth-input-password" />
+							<button type="button" className="password-toggle-btn" onClick={() => setShowPassword(!showPassword)} aria-label={showPassword ? "Hide password" : "Show password"}>
+								{showPassword ? <VisibilityOff /> : <Visibility />}
+							</button>
+						</div>
 
-            <div className="auth-input-group">
-              <input
-                type="password"
-                name="confirmPassword"
-                placeholder="确认密码"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                required
-                className="auth-input"
-              />
-            </div>
+						<div className="auth-input-group password-input-group">
+							<input type={showConfirmPassword ? "text" : "password"} name="confirmPassword" placeholder="Confirm Password" value={formData.confirmPassword} onChange={handleChange} required className="auth-input auth-input-password" />
+							<button type="button" className="password-toggle-btn" onClick={() => setShowConfirmPassword(!showConfirmPassword)} aria-label={showConfirmPassword ? "Hide password" : "Show password"}>
+								{showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+							</button>
+						</div>
 
-            <div className="auth-input-group">
-              <input
-                type="text"
-                name="street"
-                placeholder="街道地址"
-                value={formData.street}
-                onChange={handleChange}
-                required
-                className="auth-input"
-              />
-            </div>
+						<div className="auth-input-group">
+							<input type="text" name="street" placeholder="Street Address" value={formData.street} onChange={handleChange} required className="auth-input" />
+						</div>
 
-            <div className="auth-row">
-              <div className="auth-input-group">
-                <input
-                  type="text"
-                  name="city"
-                  placeholder="城市"
-                  value={formData.city}
-                  onChange={handleChange}
-                  required
-                  className="auth-input"
-                />
-              </div>
+						<div className="auth-row">
+							<div className="auth-input-group">
+								<input type="text" name="city" placeholder="City" value={formData.city} onChange={handleChange} required className="auth-input" />
+							</div>
 
-              <div className="auth-input-group">
-                <input
-                  type="text"
-                  name="state"
-                  placeholder="州/省"
-                  value={formData.state}
-                  onChange={handleChange}
-                  required
-                  className="auth-input"
-                />
-              </div>
-            </div>
+							<div className="auth-input-group">
+								<input type="text" name="state" placeholder="State/Province" value={formData.state} onChange={handleChange} required className="auth-input" />
+							</div>
+						</div>
 
-            <div className="auth-input-group">
-              <input
-                type="text"
-                name="country_name"
-                placeholder="国家"
-                value={formData.country_name}
-                onChange={handleChange}
-                required
-                className="auth-input"
-              />
-            </div>
+						<div className="auth-input-group">
+							<input type="text" name="country_name" placeholder="Country" value={formData.country_name} onChange={handleChange} required className="auth-input" />
+						</div>
 
-            <button type="submit" className="auth-submit" disabled={loading}>
-              {loading ? "注册中..." : "注册"}
-            </button>
-          </form>
+						<button type="submit" className="auth-submit" disabled={loading}>
+							{loading ? "Registering..." : "Register"}
+						</button>
+					</form>
 
-          <div className="auth-footer">
-            <span className="auth-footer-text">已有账户？</span>
-            <Link to="/login" className="auth-link">
-              立即登录
-            </Link>
-          </div>
-
-          <div className="auth-info">
-            注册即表示您同意我们的服务条款和隐私政策。
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+					<div className="auth-footer">
+						<span className="auth-footer-text">Already have an account?</span>
+						<Link to="/login" className="auth-link">
+							Login now
+						</Link>
+					</div>
+				</div>
+			</div>
+		</div>
+	);
 };
 
 export default RegisterPage;

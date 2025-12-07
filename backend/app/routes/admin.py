@@ -490,3 +490,72 @@ def backup_database():
 
     except Exception as e:
         return jsonify({"error": "Backup failed", "message": str(e)}), 500
+
+
+# ==================== Cache Management ====================
+
+
+@admin_bp.route("/cache/clear", methods=["POST"])
+@admin_required
+def clear_cache():
+    """Clear all cache"""
+    from app.utils.cache import cache
+    
+    try:
+        cache.clear_all()
+        return (
+            jsonify({"message": "All cache cleared successfully"}),
+            200,
+        )
+    except Exception as e:
+        return jsonify({"error": "Failed to clear cache", "message": str(e)}), 500
+
+
+@admin_bp.route("/cache/clear/<pattern>", methods=["POST"])
+@admin_required
+def clear_cache_pattern(pattern):
+    """Clear cache by pattern"""
+    from app.utils.cache import cache
+    
+    try:
+        cache.delete_pattern(f"{pattern}:*")
+        return (
+            jsonify({"message": f"Cache pattern '{pattern}:*' cleared successfully"}),
+            200,
+        )
+    except Exception as e:
+        return jsonify({"error": "Failed to clear cache pattern", "message": str(e)}), 500
+
+
+@admin_bp.route("/cache/stats", methods=["GET"])
+@admin_required
+def cache_stats():
+    """Get cache statistics"""
+    from app.utils.cache import cache
+    
+    try:
+        if not cache.redis_client:
+            return jsonify({"error": "Redis not connected"}), 503
+        
+        info = cache.redis_client.info('stats')
+        keyspace = cache.redis_client.info('keyspace')
+        
+        # Get sample keys for each pattern
+        patterns = ['series', 'series_detail', 'episode', 'feedback']
+        keys_by_pattern = {}
+        
+        for pattern in patterns:
+            keys = cache.redis_client.keys(f"{pattern}:*")
+            keys_by_pattern[pattern] = len(keys)
+        
+        return jsonify({
+            "status": "connected",
+            "total_keys": info.get('keyspace_hits', 0) + info.get('keyspace_misses', 0),
+            "hits": info.get('keyspace_hits', 0),
+            "misses": info.get('keyspace_misses', 0),
+            "keys_by_pattern": keys_by_pattern,
+            "keyspace_info": keyspace
+        }), 200
+        
+    except Exception as e:
+        return jsonify({"error": "Failed to get cache stats", "message": str(e)}), 500

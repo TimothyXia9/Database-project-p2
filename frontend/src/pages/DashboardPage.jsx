@@ -94,7 +94,7 @@ const DashboardPage = () => {
 							<div className="info-cards">
 								<div className="info-card">
 									<div className="info-row">
-										<span className="info-key">Membership Type</span>
+										<span className="info-key">Account Type</span>
 										<span className="info-value">
 											{user.account_type}
 											{isCustomer && " - Customer"}

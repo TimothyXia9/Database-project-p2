@@ -112,6 +112,12 @@
   position: relative;
 }
 
+.password-input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
 .auth-input {
   width: 100%;
   padding: 16px 20px;
@@ -122,6 +128,10 @@
   font-size: 16px;
   outline: none;
   transition: var(--transition);
+}
+
+.auth-input-password {
+  padding-right: 50px; /* Make room for the toggle button */
 }
 
 .auth-input:focus {
@@ -203,6 +213,36 @@
   font-size: 13px;
   color: var(--netflix-light-gray);
   line-height: 1.5;
+}
+
+/* Password Toggle Button */
+.password-toggle-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--netflix-light-gray);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+  z-index: 1;
+}
+
+.password-toggle-btn:hover {
+  color: var(--netflix-white);
+}
+
+.password-toggle-btn:focus {
+  outline: none;
+}
+
+.password-toggle-btn svg {
+  font-size: 20px;
 }
 
 @media (max-width: 768px) {

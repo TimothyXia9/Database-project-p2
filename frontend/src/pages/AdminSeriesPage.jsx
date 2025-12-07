@@ -285,7 +285,7 @@ const AdminSeriesPage = () => {
 									</div>
 									<div className="form-group">
 										<label>Number of Episodes</label>
-										<input type="number" name="num_episodes" value={formData.num_episodes || ""} onChange={handleFormChange} min="0" placeholder="0" />
+										<input type="number" name="num_episodes" value={formData.num_episodes || ""} readOnly placeholder="0" />
 									</div>
 
 									<div className="modal-actions">
