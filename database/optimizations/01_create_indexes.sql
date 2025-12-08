@@ -35,17 +35,12 @@ CREATE INDEX idx_feedback_series_rating ON feedback(webseries_id, rating);
 -- 3. PARTIAL INDEXES FOR FILTERED DATA
 -- ============================================================================
 
--- Note: MySQL doesn't support partial indexes directly like PostgreSQL
--- But we can optimize with functional indexes in MySQL 8.0+
 
 -- Index for active contracts only
 -- Most queries only care about active contracts, not expired ones
 DROP INDEX IF EXISTS idx_contract_active ON series_contract;
 CREATE INDEX idx_contract_active ON series_contract(webseries_id, status);
 
--- Expected improvement: 40-60% faster active contract queries
--- Use case: Finding active contracts for a series
--- Query: SELECT * FROM series_contract WHERE webseries_id = ? AND status = 'Active'
 
 -- ============================================================================
 -- 4. DATE RANGE INDEXES
@@ -55,10 +50,6 @@ CREATE INDEX idx_contract_active ON series_contract(webseries_id, status);
 -- Helps find current and upcoming telecasts efficiently
 DROP INDEX IF EXISTS idx_telecast_dates ON telecast;
 CREATE INDEX idx_telecast_dates ON telecast(episode_id, start_date, end_date);
-
--- Expected improvement: 70-85% faster date range queries
--- Use case: Finding current/upcoming telecasts
--- Query: SELECT * FROM telecast WHERE start_date <= NOW() AND end_date >= NOW()
 
 -- ============================================================================
 -- 5. FOREIGN KEY OPTIMIZATION INDEXES
@@ -76,8 +67,6 @@ SHOW INDEX FROM feedback WHERE Key_name = 'idx_feedback_account_id';
 DROP INDEX IF EXISTS idx_affiliation_dates ON producer_affiliation;
 CREATE INDEX idx_affiliation_dates ON producer_affiliation(house_id, start_date, end_date);
 
--- Expected improvement: 50-70% faster when finding current affiliations
--- Use case: Finding producers currently affiliated with a house
 -- Query: SELECT * FROM producer_affiliation
 --        WHERE house_id = ? AND (end_date IS NULL OR end_date >= NOW())
 
@@ -195,43 +184,8 @@ OPTIMIZE TABLE web_series;
 OPTIMIZE TABLE episode;
 OPTIMIZE TABLE feedback;
 
--- ============================================================================
--- 10. MONITORING QUERIES
--- ============================================================================
 
--- Find unused indexes (run after application has been running for a while)
-SELECT
-    t.TABLE_SCHEMA AS database_name,
-    t.TABLE_NAME AS table_name,
-    t.INDEX_NAME AS index_name,
-    t.INDEX_TYPE
-FROM information_schema.STATISTICS t
-LEFT JOIN performance_schema.table_io_waits_summary_by_index_usage p
-    ON t.TABLE_SCHEMA = p.OBJECT_SCHEMA
-    AND t.TABLE_NAME = p.OBJECT_NAME
-    AND t.INDEX_NAME = p.INDEX_NAME
-WHERE t.TABLE_SCHEMA = 'news_db'
-    AND t.INDEX_NAME != 'PRIMARY'
-    AND p.INDEX_NAME IS NULL;
 
--- Find duplicate indexes
-SELECT
-    a.TABLE_NAME,
-    a.INDEX_NAME AS index1,
-    b.INDEX_NAME AS index2,
-    a.COLUMN_NAME
-FROM information_schema.STATISTICS a
-JOIN information_schema.STATISTICS b
-    ON a.TABLE_SCHEMA = b.TABLE_SCHEMA
-    AND a.TABLE_NAME = b.TABLE_NAME
-    AND a.COLUMN_NAME = b.COLUMN_NAME
-    AND a.INDEX_NAME < b.INDEX_NAME
-    AND a.SEQ_IN_INDEX = b.SEQ_IN_INDEX
-WHERE a.TABLE_SCHEMA = 'news_db';
-
--- ============================================================================
--- SUMMARY
--- ============================================================================
 
 /*
 Indexes Created:
@@ -243,15 +197,4 @@ Indexes Created:
 6. idx_web_series_title_fulltext - Full-text search on titles
 7. idx_feedback_review_fulltext - Full-text search on reviews
 
-Expected Performance Improvements:
-- Search queries: 70-95% faster
-- Rating calculations: 60-80% faster
-- Date range queries: 70-85% faster
-- JOIN operations: 50-70% faster
-
-Next Steps:
-1. Run this script on your database
-2. Run the test queries to verify performance
-3. Monitor index usage with the monitoring queries
-4. Adjust application queries to use full-text search where appropriate
 */

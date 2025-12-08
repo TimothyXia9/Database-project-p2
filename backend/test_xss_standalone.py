@@ -29,66 +29,66 @@ def test_xss_protection():
     print("=" * 60)
 
     test_cases = [
+        # Normal text (should remain unchanged except HTML escaping)
+        {
+            "name": "Normal Text",
+            "input": "This is a normal comment",
+            "expected_safe": True,
+        },
         # Basic script tags
         {
             "name": "Basic Script Tag",
             "input": "<script>alert('XSS')</script>",
-            "expected_safe": True
+            "expected_safe": True,
         },
         # Script with attributes
         {
             "name": "Script with Attributes",
             "input": "<script src='malicious.js'></script>",
-            "expected_safe": True
+            "expected_safe": True,
         },
         # HTML injection
         {
             "name": "HTML Injection",
             "input": "<img src=x onerror='alert(1)'>",
-            "expected_safe": True
+            "expected_safe": True,
         },
         # Event handlers
         {
             "name": "Event Handler",
             "input": "<div onload='alert(1)'>Test</div>",
-            "expected_safe": True
+            "expected_safe": True,
         },
         # JavaScript URL
         {
             "name": "JavaScript URL",
             "input": "<a href='javascript:alert(1)'>Click</a>",
-            "expected_safe": True
-        },
-        # Normal text (should remain unchanged except HTML escaping)
-        {
-            "name": "Normal Text",
-            "input": "This is a normal comment",
-            "expected_safe": True
+            "expected_safe": True,
         },
         # Text with special characters
         {
             "name": "Special Characters",
             "input": "I love Breaking Bad & The Crown!",
-            "expected_safe": True
+            "expected_safe": True,
         },
         # Mixed content
         {
             "name": "Mixed Content",
             "input": "Great show! <script>alert('xss')</script> Highly recommended!",
-            "expected_safe": True
+            "expected_safe": True,
         },
         # Case variations
         {
             "name": "Case Variation",
             "input": "<ScRiPt>alert('xss')</sCrIpT>",
-            "expected_safe": True
+            "expected_safe": True,
         },
         # Nested tags
         {
             "name": "Nested Tags",
             "input": "<div><script>alert('xss')</script></div>",
-            "expected_safe": True
-        }
+            "expected_safe": True,
+        },
     ]
 
     passed = 0
@@ -98,16 +98,16 @@ def test_xss_protection():
         print(f"\nTest {i}: {test['name']}")
         print(f"Input:  {test['input']}")
 
-        sanitized = sanitize_input(test['input'])
+        sanitized = sanitize_input(test["input"])
         print(f"Output: {sanitized}")
 
         # Check if dangerous HTML tags are properly escaped
         # Safe if < and > are converted to &lt; and &gt;
         has_dangerous_tags = (
-            "<script" in sanitized.lower() or
-            "<img" in sanitized.lower() or
-            "<div" in sanitized.lower() or
-            "<a" in sanitized.lower()
+            "<script" in sanitized.lower()
+            or "<img" in sanitized.lower()
+            or "<div" in sanitized.lower()
+            or "<a" in sanitized.lower()
         )
 
         # Also check if HTML entities are used (indicating proper escaping)
@@ -115,7 +115,7 @@ def test_xss_protection():
 
         # If input had tags and they're escaped, it's safe
         # If input had tags and they're NOT escaped, it's dangerous
-        input_has_tags = "<" in test['input'] and ">" in test['input']
+        input_has_tags = "<" in test["input"] and ">" in test["input"]
 
         if input_has_tags:
             # If input had tags, we expect them to be escaped
@@ -125,7 +125,7 @@ def test_xss_protection():
             is_safe = not has_dangerous_tags
 
         if is_safe:
-            print("✅ PASS - XSS content neutralized")
+            pass
             passed += 1
         else:
             print("❌ FAIL - Potential XSS vulnerability detected!")
@@ -136,7 +136,7 @@ def test_xss_protection():
     print("=" * 60)
 
     if failed == 0:
-        print("\n✅ All XSS protection tests PASSED!")
+        pass
     else:
         print(f"\n❌ {failed} test(s) FAILED!")
 
