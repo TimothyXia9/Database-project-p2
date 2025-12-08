@@ -4,8 +4,6 @@ import { Link } from "react-router-dom";
 import Navbar from "../components/common/Navbar";
 import usePermissions from "../hooks/usePermissions";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import MovieIcon from "@mui/icons-material/Movie";
-import RateReviewIcon from "@mui/icons-material/RateReview";
 import BusinessIcon from "@mui/icons-material/Business";
 import PeopleIcon from "@mui/icons-material/People";
 import SettingsIcon from "@mui/icons-material/Settings";
@@ -98,6 +96,12 @@ const DashboardPage = () => {
 										<span className="info-key">Registration Date</span>
 										<span className="info-value">{user.open_date || "Unknown"}</span>
 									</div>
+									{isCustomer && user.monthly_service_charge && (
+										<div className="info-row">
+											<span className="info-key">Monthly Service Charge</span>
+											<span className="info-value subscription-charge">${parseFloat(user.monthly_service_charge).toFixed(2)}</span>
+										</div>
+									)}
 									<div className="info-row">
 										<span className="info-key">Location</span>
 										<span className="info-value">

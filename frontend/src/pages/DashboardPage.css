@@ -199,6 +199,12 @@
   font-weight: 500;
 }
 
+.subscription-charge {
+  color: var(--netflix-red);
+  font-size: 18px;
+  font-weight: 600;
+}
+
 .empty-state-dashboard {
   display: flex;
   flex-direction: column;
