@@ -6,6 +6,7 @@ from app.models.web_series import WebSeries
 from app.models.episode import Episode
 from app.models.feedback import Feedback
 from app.models.country import Country
+from app.utils.cache import cache_response, invalidate_cache
 from sqlalchemy import func, extract
 from datetime import datetime, date
 from functools import wraps
@@ -244,8 +245,9 @@ def reset_user_password(account_id):
 
 @admin_bp.route("/stats", methods=["GET"])
 @admin_required
+@cache_response(timeout=120, key_prefix='admin_stats')
 def get_system_stats():
-    """Get system-wide statistics"""
+    """Get system-wide statistics (cached for 2 minutes)"""
     try:
         # User statistics
         total_users = ViewerAccount.query.count()
@@ -308,8 +310,9 @@ def get_system_stats():
 
 @admin_bp.route("/countries", methods=["GET"])
 @admin_required
+@cache_response(timeout=3600, key_prefix='country')
 def get_all_countries():
-    """Get all countries"""
+    """Get all countries (cached for 60 minutes)"""
     try:
         countries = Country.query.all()
         return (

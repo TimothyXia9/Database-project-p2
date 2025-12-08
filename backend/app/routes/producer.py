@@ -4,12 +4,14 @@ from app import db
 from app.models.producer import Producer
 from app.models.viewer_account import ViewerAccount
 from app.utils.security import generate_id
+from app.utils.cache import cache_response, invalidate_cache
 from sqlalchemy import or_
 
 producer_bp = Blueprint("producer", __name__)
 
 
 @producer_bp.route("", methods=["GET"])
+@cache_response(timeout=600, key_prefix='producer')
 def get_all_producers():
     """Get all producers with pagination and search"""
     try:
@@ -52,8 +54,9 @@ def get_all_producers():
 
 
 @producer_bp.route("<producer_id>", methods=["GET"])
+@cache_response(timeout=600, key_prefix='producer_detail')
 def get_producer(producer_id):
-    """Get single producer details"""
+    """Get single producer details (cached for 10 minutes)"""
     try:
         producer = Producer.query.get(producer_id)
 
@@ -68,6 +71,7 @@ def get_producer(producer_id):
 
 @producer_bp.route("", methods=["POST"])
 @jwt_required()
+@invalidate_cache(['producer:*', 'producer_detail:*'])
 def create_producer():
     """Create new producer (Employee/Admin only)"""
     try:
@@ -135,6 +139,7 @@ def create_producer():
 
 @producer_bp.route("/<producer_id>", methods=["PUT"])
 @jwt_required()
+@invalidate_cache(['producer:*', 'producer_detail:*'])
 def update_producer(producer_id):
     """Update producer information (Employee/Admin only)"""
     try:
@@ -193,6 +198,7 @@ def update_producer(producer_id):
 
 @producer_bp.route("/<producer_id>", methods=["DELETE"])
 @jwt_required()
+@invalidate_cache(['producer:*', 'producer_detail:*'])
 def delete_producer(producer_id):
     """Delete producer (Admin only)"""
     try:
