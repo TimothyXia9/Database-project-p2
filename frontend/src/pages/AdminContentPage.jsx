@@ -22,7 +22,7 @@ import seriesService from "../services/seriesService";
 
 const AdminContentPage = () => {
 	const { permissions } = usePermissions();
-	const [activeTab, setActiveTab] = useState("series");
+	const [activeTab, setActiveTab] = useState("webseries");
 	const [loading, setLoading] = useState(false);
 
 	// Episodes
