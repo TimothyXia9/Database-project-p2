@@ -29,6 +29,10 @@ const AdminContentPage = () => {
 	const [episodes, setEpisodes] = useState([]);
 	const [seriesList, setSeriesList] = useState([]); // For episode form
 	const [episodeSearch, setEpisodeSearch] = useState("");
+	const [episodeSeriesFilter, setEpisodeSeriesFilter] = useState(""); // Filter episodes by series
+	// Web Series
+	const [webSeries, setWebSeries] = useState([]);
+	const [seriesSearch, setSeriesSearch] = useState("");
 	// Production Houses
 	const [productionHouses, setProductionHouses] = useState([]);
 	const [productionHouseSearch, setProductionHouseSearch] = useState("");
@@ -38,12 +42,14 @@ const AdminContentPage = () => {
 	// Feedback
 	const [feedback, setFeedback] = useState([]);
 	const [feedbackSearch, setFeedbackSearch] = useState("");
+	const [feedbackSeriesFilter, setFeedbackSeriesFilter] = useState("");
 	// Relations - Affiliations
 	const [affiliations, setAffiliations] = useState([]);
 	const [affiliationSearch, setAffiliationSearch] = useState("");
 	// Relations - Telecasts
 	const [telecasts, setTelecasts] = useState([]);
 	const [telecastSearch, setTelecastSearch] = useState("");
+	const [telecastSeriesFilter, setTelecastSeriesFilter] = useState("");
 	const [episodesList, setEpisodesList] = useState([]);
 	// Relations - Contracts
 	const [contracts, setContracts] = useState([]);
@@ -63,22 +69,27 @@ const AdminContentPage = () => {
 
 	useEffect(() => {
 		if (activeTab === "episodes") {
-			fetchEpisodes(episodeSearch);
+			fetchEpisodes(episodeSearch, episodeSeriesFilter);
 			fetchSeriesList();
+		} else if (activeTab === "webseries") {
+			fetchWebSeries(seriesSearch);
+			if (productionHouses.length === 0) fetchProductionHouses("");
 		} else if (activeTab === "production") {
 			fetchProductionHouses(productionHouseSearch);
 		} else if (activeTab === "producers") {
 			fetchProducers(producerSearch);
 			if (productionHouses.length === 0) fetchProductionHouses("");
 		} else if (activeTab === "feedback") {
-			fetchFeedback(feedbackSearch);
+			fetchFeedback(feedbackSearch, feedbackSeriesFilter);
+			if (seriesList.length === 0) fetchSeriesList();
 		} else if (activeTab === "affiliations") {
 			fetchAffiliations();
 			if (producers.length === 0) fetchProducers("");
 			if (productionHouses.length === 0) fetchProductionHouses("");
 		} else if (activeTab === "telecasts") {
-			fetchTelecasts();
+			fetchTelecasts(telecastSearch, telecastSeriesFilter);
 			if (episodesList.length === 0) fetchEpisodesList();
+			if (seriesList.length === 0) fetchSeriesList();
 		} else if (activeTab === "contracts") {
 			fetchContracts();
 			if (seriesList.length === 0) fetchSeriesList();
@@ -100,14 +111,30 @@ const AdminContentPage = () => {
 		}
 	};
 
-	const fetchEpisodes = async (search = "") => {
+	const fetchEpisodes = async (search = "", seriesFilter = "") => {
 		try {
 			setLoading(true);
-			const data = await contentService.getAllEpisodes({ per_page: 100, search });
+			const params = { per_page: 100 };
+			if (search) params.search = search;
+			if (seriesFilter) params.webseries_id = seriesFilter;
+			const data = await contentService.getAllEpisodes(params);
 			setEpisodes(data.episodes);
 		} catch (error) {
 			console.error("Failed to fetch episodes:", error);
 			alert("Failed to fetch episodes");
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	const fetchWebSeries = async (search = "") => {
+		try {
+			setLoading(true);
+			const data = await seriesService.getAllSeries({ search, per_page: 100 });
+			setWebSeries(data.series || []);
+		} catch (error) {
+			console.error("Failed to fetch web series:", error);
+			alert("Failed to fetch web series");
 		} finally {
 			setLoading(false);
 		}
@@ -139,10 +166,12 @@ const AdminContentPage = () => {
 		}
 	};
 
-	const fetchFeedback = async (search = "") => {
+	const fetchFeedback = async (search = "", seriesFilter = "") => {
 		try {
 			setLoading(true);
-			const data = await contentService.getAllFeedback({ search });
+			const params = { search };
+			if (seriesFilter) params.webseries_id = seriesFilter;
+			const data = await contentService.getAllFeedback(params);
 			setFeedback(data.feedback);
 		} catch (error) {
 			console.error("Failed to fetch feedback:", error);
@@ -165,10 +194,12 @@ const AdminContentPage = () => {
 		}
 	};
 
-	const fetchTelecasts = async (search = "") => {
+	const fetchTelecasts = async (search = "", seriesFilter = "") => {
 		try {
 			setLoading(true);
-			const data = await contentService.getAllTelecasts({ search });
+			const params = { search };
+			if (seriesFilter) params.webseries_id = seriesFilter;
+			const data = await contentService.getAllTelecasts(params);
 			setTelecasts(data.telecasts || []);
 		} catch (error) {
 			console.error("Failed to fetch telecasts:", error);
@@ -252,10 +283,32 @@ const AdminContentPage = () => {
 		setFormData((prev) => ({ ...prev, [name]: value }));
 	};
 
+	const handleDeleteWebSeries = async (seriesId) => {
+		if (window.confirm("Are you sure you want to delete this series? This will also delete all related episodes and feedback.")) {
+			try {
+				await seriesService.deleteSeries(seriesId);
+				alert("Delete Successful.");
+				fetchWebSeries(seriesSearch);
+			} catch (error) {
+				console.error("Failed to delete series:", error);
+				alert("Delete failed: " + (error.error || error.message || "Unknown error"));
+			}
+		}
+	};
+
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		try {
-			if (activeTab === "episodes") {
+			if (activeTab === "webseries") {
+				if (modalMode === "create") {
+					await seriesService.createSeries(formData);
+					alert("Web series created successfully");
+				} else {
+					await seriesService.updateSeries(currentItem.webseries_id, formData);
+					alert("Web series updated successfully");
+				}
+				fetchWebSeries(seriesSearch);
+			} else if (activeTab === "episodes") {
 				if (modalMode === "create") {
 					await contentService.createEpisode(formData);
 					alert("Episode created successfully");
@@ -263,7 +316,7 @@ const AdminContentPage = () => {
 					await contentService.updateEpisode(currentItem.episode_id, formData);
 					alert("Episode updated successfully");
 				}
-				fetchEpisodes(episodeSearch);
+				fetchEpisodes(episodeSearch, episodeSeriesFilter);
 			} else if (activeTab === "production") {
 				if (modalMode === "create") {
 					await contentService.createProductionHouse(formData);
@@ -286,6 +339,9 @@ const AdminContentPage = () => {
 				if (modalMode === "create") {
 					await contentService.createAffiliation(formData);
 					alert("Affiliation created successfully");
+				} else {
+					await contentService.updateAffiliation(currentItem.producer_id, currentItem.house_id, formData);
+					alert("Affiliation updated successfully");
 				}
 				fetchAffiliations();
 			} else if (activeTab === "telecasts") {
@@ -296,7 +352,7 @@ const AdminContentPage = () => {
 					await contentService.updateTelecast(currentItem.telecast_id, formData);
 					alert("Telecast updated successfully");
 				}
-				fetchTelecasts();
+				fetchTelecasts(telecastSearch, telecastSeriesFilter);
 			} else if (activeTab === "contracts") {
 				if (modalMode === "create") {
 					await contentService.createContract(formData);
@@ -334,7 +390,7 @@ const AdminContentPage = () => {
 			try {
 				await contentService.deleteEpisode(episodeId);
 				alert("Delete Successful.");
-				fetchEpisodes(episodeSearch);
+				fetchEpisodes(episodeSearch, episodeSeriesFilter);
 			} catch (error) {
 				console.error("Failed to delete episode:", error);
 				alert("Delete failed: " + (error.error || error.message || "Unknown error"));
@@ -373,7 +429,7 @@ const AdminContentPage = () => {
 			try {
 				await contentService.deleteFeedback(feedbackId);
 				alert("Delete Successful.");
-				fetchFeedback(feedbackSearch);
+				fetchFeedback(feedbackSearch, feedbackSeriesFilter);
 			} catch (error) {
 				console.error("Failed to delete feedback:", error);
 				alert("Delete failed: " + (error.error || error.message || "Unknown error"));
@@ -386,12 +442,32 @@ const AdminContentPage = () => {
 	};
 
 	const handleEpisodeSearchClick = () => {
-		fetchEpisodes(episodeSearch);
+		fetchEpisodes(episodeSearch, episodeSeriesFilter);
 	};
 
 	const handleEpisodeSearchKeyPress = (e) => {
 		if (e.key === "Enter") {
-			fetchEpisodes(episodeSearch);
+			fetchEpisodes(episodeSearch, episodeSeriesFilter);
+		}
+	};
+
+	const handleEpisodeSeriesFilterChange = (e) => {
+		const value = e.target.value;
+		setEpisodeSeriesFilter(value);
+		fetchEpisodes(episodeSearch, value);
+	};
+
+	const handleSeriesSearchInputChange = (e) => {
+		setSeriesSearch(e.target.value);
+	};
+
+	const handleSeriesSearchClick = () => {
+		fetchWebSeries(seriesSearch);
+	};
+
+	const handleSeriesSearchKeyPress = (e) => {
+		if (e.key === "Enter") {
+			fetchWebSeries(seriesSearch);
 		}
 	};
 
@@ -428,13 +504,19 @@ const AdminContentPage = () => {
 	};
 
 	const handleFeedbackSearchClick = () => {
-		fetchFeedback(feedbackSearch);
+		fetchFeedback(feedbackSearch, feedbackSeriesFilter);
 	};
 
 	const handleFeedbackSearchKeyPress = (e) => {
 		if (e.key === "Enter") {
-			fetchFeedback(feedbackSearch);
+			fetchFeedback(feedbackSearch, feedbackSeriesFilter);
 		}
+	};
+
+	const handleFeedbackSeriesFilterChange = (e) => {
+		const value = e.target.value;
+		setFeedbackSeriesFilter(value);
+		fetchFeedback(feedbackSearch, value);
 	};
 
 	const handleDeleteAffiliation = async (item) => {
@@ -455,7 +537,7 @@ const AdminContentPage = () => {
 			try {
 				await contentService.deleteTelecast(telecastId);
 				alert("Delete Successful.");
-				fetchTelecasts();
+				fetchTelecasts(telecastSearch, telecastSeriesFilter);
 			} catch (error) {
 				console.error("Failed to delete telecast:", error);
 				alert("Delete failed: " + (error.error || error.message || "Unknown error"));
@@ -522,13 +604,19 @@ const AdminContentPage = () => {
 	};
 
 	const handleTelecastSearchClick = () => {
-		fetchTelecasts(telecastSearch);
+		fetchTelecasts(telecastSearch, telecastSeriesFilter);
 	};
 
 	const handleTelecastSearchKeyPress = (e) => {
 		if (e.key === "Enter") {
-			fetchTelecasts(telecastSearch);
+			fetchTelecasts(telecastSearch, telecastSeriesFilter);
 		}
+	};
+
+	const handleTelecastSeriesFilterChange = (e) => {
+		const value = e.target.value;
+		setTelecastSeriesFilter(value);
+		fetchTelecasts(telecastSearch, value);
 	};
 
 	const handleSubtitleSearchInputChange = (e) => {
@@ -602,6 +690,9 @@ const AdminContentPage = () => {
 
 				<div className="admin-content">
 					<div className="admin-tabs">
+						<button className={`tab-button ${activeTab === "webseries" ? "active" : ""}`} onClick={() => setActiveTab("webseries")}>
+							<MovieIcon /> Web Series
+						</button>
 						<button className={`tab-button ${activeTab === "episodes" ? "active" : ""}`} onClick={() => setActiveTab("episodes")}>
 							<LiveTvIcon /> Episodes
 						</button>
@@ -637,12 +728,91 @@ const AdminContentPage = () => {
 						</div>
 					)}
 
+					{/* Web Series Tab */}
+					{activeTab === "webseries" && !loading && (
+						<div className="admin-table-container">
+							<div className="table-header">
+								<h2>Web Series List (Total {webSeries.length})</h2>
+								<div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+									<div className="search-container">
+										<input type="text" placeholder="Search Web Series..." className="search-input" value={seriesSearch} onChange={handleSeriesSearchInputChange} onKeyPress={handleSeriesSearchKeyPress} />
+										<button className="btn btn-primary" onClick={handleSeriesSearchClick}>
+											<SearchIcon /> Search
+										</button>
+									</div>
+									{permissions.canCreateSeries && (
+										<button className="btn btn-primary" onClick={openCreateModal}>
+											<AddIcon /> Add Web Series
+										</button>
+									)}
+								</div>
+							</div>
+
+							{webSeries.length > 0 ? (
+								<table className="admin-table">
+									<thead>
+										<tr>
+											<th>Series ID</th>
+											<th>Title</th>
+											<th>Type</th>
+											<th>Episodes</th>
+											<th>Production House</th>
+											<th>Rating</th>
+											{(permissions.canEditSeries || permissions.canDeleteSeries) && <th>Actions</th>}
+										</tr>
+									</thead>
+									<tbody>
+										{webSeries.map((series) => (
+											<tr key={series.webseries_id}>
+												<td>{series.webseries_id}</td>
+												<td>{series.title}</td>
+												<td>{series.type}</td>
+												<td>{series.num_episodes}</td>
+												<td>{series.house_id}</td>
+												<td>{series.rating || "N/A"}</td>
+												{(permissions.canEditSeries || permissions.canDeleteSeries) && (
+													<td className="action-buttons">
+														{permissions.canEditSeries && (
+															<button className="btn-icon" title="Edit" onClick={() => openEditModal(series)}>
+																<EditIcon />
+															</button>
+														)}
+														{permissions.canDeleteSeries && (
+															<button className="btn-icon" title="Delete" onClick={() => handleDeleteWebSeries(series.webseries_id)} style={{ color: "#f44336" }}>
+																<DeleteIcon />
+															</button>
+														)}
+													</td>
+												)}
+											</tr>
+										))}
+									</tbody>
+								</table>
+							) : (
+								<div className="empty-admin-state">
+									<MovieIcon style={{ fontSize: 64, opacity: 0.3 }} />
+									<p>No Web Series Data</p>
+								</div>
+							)}
+						</div>
+					)}
+
 					{/* Episodes Tab */}
 					{activeTab === "episodes" && !loading && (
 						<div className="admin-table-container">
 							<div className="table-header">
 								<h2>Episode List (Total {episodes.length})</h2>
-								<div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+								<div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
+									<div className="search-container">
+										<select className="search-input" value={episodeSeriesFilter} onChange={handleEpisodeSeriesFilterChange} style={{ minWidth: "200px" }}>
+											<option value="">All Series</option>
+											{seriesList.map((series) => (
+												<option key={series.webseries_id} value={series.webseries_id}>
+													{series.title}
+												</option>
+											))}
+										</select>
+									</div>
 									<div className="search-container">
 										<input type="text" placeholder="Search Episodes..." className="search-input" value={episodeSearch} onChange={handleEpisodeSearchInputChange} onKeyPress={handleEpisodeSearchKeyPress} />
 										<button className="btn btn-primary" onClick={handleEpisodeSearchClick}>
@@ -853,11 +1023,23 @@ const AdminContentPage = () => {
 						<div className="admin-table-container">
 							<div className="table-header">
 								<h2>Total Feedback (Total {feedback.length})</h2>
-								<div className="search-container">
-									<input type="text" placeholder="Search Feedback..." className="search-input" value={feedbackSearch} onChange={handleFeedbackSearchInputChange} onKeyPress={handleFeedbackSearchKeyPress} />
-									<button className="btn btn-primary" onClick={handleFeedbackSearchClick}>
-										<SearchIcon /> Search
-									</button>
+								<div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
+									<div className="search-container">
+										<select className="search-input" value={feedbackSeriesFilter} onChange={handleFeedbackSeriesFilterChange} style={{ minWidth: "200px" }}>
+											<option value="">All Series</option>
+											{seriesList.map((series) => (
+												<option key={series.webseries_id} value={series.webseries_id}>
+													{series.title}
+												</option>
+											))}
+										</select>
+									</div>
+									<div className="search-container">
+										<input type="text" placeholder="Search Feedback..." className="search-input" value={feedbackSearch} onChange={handleFeedbackSearchInputChange} onKeyPress={handleFeedbackSearchKeyPress} />
+										<button className="btn btn-primary" onClick={handleFeedbackSearchClick}>
+											<SearchIcon /> Search
+										</button>
+									</div>
 								</div>
 							</div>
 
@@ -935,7 +1117,7 @@ const AdminContentPage = () => {
 											<th>Production House Name</th>
 											<th>Start Date</th>
 											<th>End Date</th>
-											{permissions.canDeleteProducer && <th>Actions</th>}
+											{(permissions.canEditProducer || permissions.canDeleteProducer) && <th>Actions</th>}
 										</tr>
 									</thead>
 									<tbody>
@@ -947,11 +1129,18 @@ const AdminContentPage = () => {
 												<td>{item.house_name || "N/A"}</td>
 												<td>{item.start_date}</td>
 												<td>{item.end_date || "Present"}</td>
-												{permissions.canDeleteProducer && (
+												{(permissions.canEditProducer || permissions.canDeleteProducer) && (
 													<td className="action-buttons">
-														<button className="btn-icon" title="Delete" onClick={() => handleDeleteAffiliation(item)} style={{ color: "#f44336" }}>
-															<DeleteIcon />
-														</button>
+														{permissions.canEditProducer && (
+															<button className="btn-icon" title="Edit" onClick={() => openEditModal(item)}>
+																<EditIcon />
+															</button>
+														)}
+														{permissions.canDeleteProducer && (
+															<button className="btn-icon" title="Delete" onClick={() => handleDeleteAffiliation(item)} style={{ color: "#f44336" }}>
+																<DeleteIcon />
+															</button>
+														)}
 													</td>
 												)}
 											</tr>
@@ -972,7 +1161,17 @@ const AdminContentPage = () => {
 						<div className="admin-table-container">
 							<div className="table-header">
 								<h2>Telecast Records (Total {telecasts.length})</h2>
-								<div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+								<div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
+									<div className="search-container">
+										<select className="search-input" value={telecastSeriesFilter} onChange={handleTelecastSeriesFilterChange} style={{ minWidth: "200px" }}>
+											<option value="">All Series</option>
+											{seriesList.map((series) => (
+												<option key={series.webseries_id} value={series.webseries_id}>
+													{series.title}
+												</option>
+											))}
+										</select>
+									</div>
 									<div className="search-container">
 										<input type="text" placeholder="Search Telecast Records..." className="search-input" value={telecastSearch} onChange={handleTelecastSearchInputChange} onKeyPress={handleTelecastSearchKeyPress} />
 										<button className="btn btn-primary" onClick={handleTelecastSearchClick}>
@@ -1061,7 +1260,7 @@ const AdminContentPage = () => {
 									<thead>
 										<tr>
 											<th>Contract ID</th>
-											<th>Episode ID</th>
+											<th>Series ID</th>
 											<th>Series Title</th>
 											<th>Start Date</th>
 											<th>End Date</th>
@@ -1133,7 +1332,7 @@ const AdminContentPage = () => {
 								<table className="admin-table">
 									<thead>
 										<tr>
-											<th>Episode ID</th>
+											<th>Series ID</th>
 											<th>Series Title</th>
 											<th>Language</th>
 											{permissions.canDeleteSeries && <th>Actions</th>}
@@ -1237,6 +1436,7 @@ const AdminContentPage = () => {
 								<div className="modal-header">
 									<h2>
 										{modalMode === "create" ? "Add" : "Edit"}
+										{activeTab === "webseries" && " Web Series"}
 										{activeTab === "episodes" && " Episode"}
 										{activeTab === "production" && " Production House"}
 										{activeTab === "producers" && " Producer"}
@@ -1252,6 +1452,46 @@ const AdminContentPage = () => {
 								</div>
 
 								<form onSubmit={handleSubmit} className="modal-form">
+									{/* Web Series Form */}
+									{activeTab === "webseries" && (
+										<>
+											<div className="form-group">
+												<label>Series Title *</label>
+												<input type="text" name="title" value={formData.title || ""} onChange={handleFormChange} required placeholder="Enter series title" />
+											</div>
+											<div className="form-group">
+												<label>Type *</label>
+												<select name="type" value={formData.type || ""} onChange={handleFormChange} required>
+													<option value="">Please select a type</option>
+													<option value="Drama">Drama</option>
+													<option value="Comedy">Comedy</option>
+													<option value="Action">Action</option>
+													<option value="Sci-Fi">Sci-Fi</option>
+													<option value="Horror">Horror</option>
+													<option value="Romance">Romance</option>
+													<option value="Thriller">Thriller</option>
+													<option value="Fantasy">Fantasy</option>
+													<option value="Documentary">Documentary</option>
+												</select>
+											</div>
+											<div className="form-group">
+												<label>Production House *</label>
+												<select name="house_id" value={formData.house_id || ""} onChange={handleFormChange} required>
+													<option value="">Please select a production house</option>
+													{productionHouses.map((house) => (
+														<option key={house.house_id} value={house.house_id}>
+															{house.name}
+														</option>
+													))}
+												</select>
+											</div>
+											<div className="form-group">
+												<label>Number of Episodes (Read Only)</label>
+												<input type="number" name="num_episodes" value={formData.num_episodes || ""} readOnly placeholder="Auto-calculated from episodes" />
+											</div>
+										</>
+									)}
+
 									{/* Episode Form */}
 									{activeTab === "episodes" && (
 										<>
@@ -1362,7 +1602,7 @@ const AdminContentPage = () => {
 										<>
 											<div className="form-group">
 												<label>Producer *</label>
-												<select name="producer_id" value={formData.producer_id || ""} onChange={handleFormChange} required>
+												<select name="producer_id" value={formData.producer_id || ""} onChange={handleFormChange} required disabled={modalMode === "edit"}>
 													<option value="">Please select a producer</option>
 													{producers.map((p) => (
 														<option key={p.producer_id} value={p.producer_id}>
@@ -1370,10 +1610,11 @@ const AdminContentPage = () => {
 														</option>
 													))}
 												</select>
+												{modalMode === "edit" && <small style={{ color: "#888" }}>Producer cannot be changed when editing</small>}
 											</div>
 											<div className="form-group">
 												<label>Production House *</label>
-												<select name="house_id" value={formData.house_id || ""} onChange={handleFormChange} required>
+												<select name="house_id" value={formData.house_id || ""} onChange={handleFormChange} required disabled={modalMode === "edit"}>
 													<option value="">Please select a production house</option>
 													{productionHouses.map((h) => (
 														<option key={h.house_id} value={h.house_id}>
@@ -1381,6 +1622,7 @@ const AdminContentPage = () => {
 														</option>
 													))}
 												</select>
+												{modalMode === "edit" && <small style={{ color: "#888" }}>Production house cannot be changed when editing</small>}
 											</div>
 											<div className="form-group">
 												<label>Start Date *</label>

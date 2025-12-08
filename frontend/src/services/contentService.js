@@ -125,6 +125,11 @@ export const createAffiliation = async (data) => {
 	return response.data;
 };
 
+export const updateAffiliation = async (producerId, houseId, data) => {
+	const response = await api.put(`/relations/producer-affiliations/${producerId}/${houseId}`, data);
+	return response.data;
+};
+
 export const deleteAffiliation = async (producerId, houseId) => {
 	const response = await api.delete(`/relations/producer-affiliations/${producerId}/${houseId}`);
 	return response.data;
@@ -133,9 +138,9 @@ export const deleteAffiliation = async (producerId, houseId) => {
 // ==================== Telecast ====================
 
 export const getAllTelecasts = async (params = {}) => {
-	const { page = 1, per_page = 100, episode_id = "", search = "" } = params;
+	const { page = 1, per_page = 100, episode_id = "", webseries_id = "", search = "" } = params;
 	const response = await api.get("/relations/telecasts", {
-		params: { page, per_page, episode_id, search },
+		params: { page, per_page, episode_id, webseries_id, search },
 	});
 	return response.data;
 };

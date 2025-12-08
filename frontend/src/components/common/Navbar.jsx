@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../store/slices/authSlice";
 import SearchIcon from "@mui/icons-material/Search";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import NotificationsIcon from "@mui/icons-material/Notifications";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import "./Navbar.css";
 
@@ -82,7 +81,6 @@ const Navbar = () => {
 
 					{isAuthenticated ? (
 						<>
-							<NotificationsIcon className="navbar-icon" />
 							<div className="navbar-profile" onMouseEnter={() => setShowProfile(true)} onMouseLeave={() => setShowProfile(false)}>
 								<AccountCircleIcon className="navbar-icon" />
 								<ArrowDropDownIcon className="navbar-icon-small" />

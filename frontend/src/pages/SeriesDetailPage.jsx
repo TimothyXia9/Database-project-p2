@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchSeriesById } from "../store/slices/seriesSlice";
 import { fetchFeedbackBySeries, createFeedback, clearSubmitSuccess, clearError } from "../store/slices/feedbackSlice";
+import feedbackService from "../services/feedbackService";
 import Navbar from "../components/common/Navbar";
 import usePermissions from "../hooks/usePermissions";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
@@ -105,6 +106,20 @@ const SeriesDetailPage = () => {
 			comments: feedback.feedback_text,
 		});
 		setShowFeedbackForm(true);
+	};
+
+	const handleDeleteFeedback = async (feedbackId) => {
+		if (window.confirm("Are you sure you want to delete this review? This action cannot be undone.")) {
+			try {
+				await feedbackService.deleteFeedback(feedbackId);
+				alert("Review deleted successfully");
+				dispatch(fetchFeedbackBySeries(id));
+			} catch (error) {
+				console.error("Failed to delete feedback:", error);
+				const errorMessage = error.error || error.message || "Unknown error";
+				alert(`Failed to delete review: ${errorMessage}`);
+			}
+		}
 	};
 
 	if (loading) {
@@ -312,6 +327,10 @@ const SeriesDetailPage = () => {
 													<button className="review-action-btn" onClick={() => handleEditFeedback(feedback)}>
 														<EditIcon />
 														Edit
+													</button>
+													<button className="review-action-btn review-action-delete" onClick={() => handleDeleteFeedback(feedback.feedback_id)}>
+														<DeleteIcon />
+														Delete
 													</button>
 												</div>
 											)}
