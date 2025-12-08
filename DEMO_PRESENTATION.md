@@ -462,7 +462,7 @@ def get_series_list():
 
 Improve query performance for frequently accessed data patterns》
 
-**7 Indexes Created:**
+**6 Indexes Created:**
 
 ```sql
 -- Composite Index: Search + Filter (used when filtering by title AND type)
@@ -486,7 +486,6 @@ CREATE INDEX idx_telecast_dates ON telecast(episode_id, start_date, end_date);
 -- Affiliation Date Range: Finding current producers
 CREATE INDEX idx_affiliation_dates ON producer_affiliation(house_id, start_date, end_date);
 -- Foreign Key Optimization: JOIN performance
--- Auto-indexes on foreign key columns (webseries_id, episode_id, account_id)
 ```
 
 **Actual Performance Test Results (Tested on real database):**
