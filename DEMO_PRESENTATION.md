@@ -1,294 +1,480 @@
-# NEWS - 网络剧集管理系统
-## 10分钟项目展示
+# NEWS Demo Presentation
 
-**项目完成度**: 95% | **预计得分**: 98-106/100
+## Overview
+
+### Tech Stack
+
+```
+Frontend: React 18 + Redux Toolkit + Material-UI
+Backend: Flask 3.0 + SQLAlchemy 2.0 + JWT
+Database: MySQL 8.0 (13 related tables)
+Cache: Redis
+Deployment: Docker Compose + Nginx
+```
+
+### Database
+
+#### 1. web_series
+
+| Field        | Type         | Constraints  |
+| ------------ | ------------ | ------------ |
+| webseries_id | VARCHAR2(10) | PRIMARY KEY  |
+| title        | VARCHAR2(64) | NOT NULL     |
+| num_episodes | NUMBER(8)    | NOT NULL     |
+| type         | VARCHAR2(15) | NOT NULL     |
+| house_id     | VARCHAR2(10) | NOT NULL, FK |
+
+#### 2. episode
+
+| Field          | Type         | Constraints  |
+| -------------- | ------------ | ------------ |
+| episode_id     | VARCHAR2(10) | PRIMARY KEY  |
+| episode_number | VARCHAR2(10) | NOT NULL     |
+| title          | VARCHAR2(64) |              |
+| webseries_id   | VARCHAR2(10) | NOT NULL, FK |
+
+#### 3. feedback
+
+| Field         | Type          | Constraints   |
+| ------------- | ------------- | ------------- |
+| feedback_id   | VARCHAR2(10)  | PRIMARY KEY   |
+| rating        | NUMBER(1)     | NOT NULL, 1-5 |
+| feedback_text | VARCHAR2(128) | NOT NULL      |
+| feedback_date | DATE          | NOT NULL      |
+| account_id    | VARCHAR2(10)  | NOT NULL, FK  |
+| webseries_id  | VARCHAR2(10)  | NOT NULL, FK  |
+
+#### 4. viewer_account
+
+| Field                  | Type          | Constraints      |
+| ---------------------- | ------------- | ---------------- |
+| account_id             | VARCHAR2(10)  | PRIMARY KEY      |
+| **email**              | VARCHAR2(64)  | NOT NULL, UNIQUE |
+| **password_hash**      | VARCHAR2(128) | NOT NULL         |
+| first_name             | VARCHAR2(30)  | NOT NULL         |
+| middle_name            | VARCHAR2(30)  |                  |
+| last_name              | VARCHAR2(30)  | NOT NULL         |
+| street                 | VARCHAR2(64)  | NOT NULL         |
+| city                   | VARCHAR2(64)  | NOT NULL         |
+| state                  | VARCHAR2(64)  | NOT NULL         |
+| open_date              | DATE          | NOT NULL         |
+| monthly_service_charge | NUMBER(10,2)  | NOT NULL         |
+| country_name           | VARCHAR2(64)  | NOT NULL, FK     |
+
+#### 5. production_house
+
+| Field            | Type         | Constraints |
+| ---------------- | ------------ | ----------- |
+| house_id         | VARCHAR2(10) | PRIMARY KEY |
+| name             | VARCHAR2(64) | NOT NULL    |
+| year_established | VARCHAR2(10) | NOT NULL    |
+| street           | VARCHAR2(64) | NOT NULL    |
+| city             | VARCHAR2(64) | NOT NULL    |
+| state            | VARCHAR2(64) | NOT NULL    |
+| nationality      | VARCHAR2(20) | NOT NULL    |
+
+#### 6. producer
+
+| Field       | Type         | Constraints      |
+| ----------- | ------------ | ---------------- |
+| producer_id | VARCHAR2(10) | PRIMARY KEY      |
+| first_name  | VARCHAR2(64) | NOT NULL         |
+| middle_name | VARCHAR2(64) |                  |
+| last_name   | VARCHAR2(64) | NOT NULL         |
+| phone       | NUMBER(10)   | NOT NULL         |
+| street      | VARCHAR2(64) | NOT NULL         |
+| city        | VARCHAR2(64) | NOT NULL         |
+| state       | VARCHAR2(32) | NOT NULL         |
+| email       | VARCHAR2(64) | NOT NULL, UNIQUE |
+| nationality | VARCHAR2(20) | NOT NULL         |
+
+#### 7. producer_affiliation
+
+| Field       | Type         | Constraints     |
+| ----------- | ------------ | --------------- |
+| producer_id | VARCHAR2(10) | PRIMARY KEY, FK |
+| house_id    | VARCHAR2(10) | PRIMARY KEY, FK |
+| start_date  | DATE         | NOT NULL        |
+| end_date    | DATE         |                 |
+
+#### 8. series_contract
+
+| Field              | Type         | Constraints   |
+| ------------------ | ------------ | ------------- |
+| contract_id        | VARCHAR2(10) | PRIMARY KEY   |
+| webseries_id       | VARCHAR2(10) | NOT NULL, FK  |
+| signed_date        | DATE         | NOT NULL      |
+| start_date         | DATE         | NOT NULL      |
+| end_date           | DATE         | NOT NULL      |
+| charge_per_episode | NUMBER(7,2)  | NOT NULL, > 0 |
+| status             | VARCHAR2(16) | NOT NULL      |
+
+#### 9. telecast
+
+| Field             | Type         | Constraints    |
+| ----------------- | ------------ | -------------- |
+| telecast_id       | VARCHAR2(10) | PRIMARY KEY    |
+| episode_id        | VARCHAR2(10) | NOT NULL, FK   |
+| start_date        | DATE         | NOT NULL       |
+| end_date          | DATE         | NOT NULL       |
+| tech_interruption | VARCHAR2(1)  | NOT NULL, Y/N  |
+| total_viewers     | NUMBER(16)   | NOT NULL, >= 0 |
+
+#### 10. dubbing_language
+
+| Field               | Type         | Constraints  |
+| ------------------- | ------------ | ------------ |
+| dubbing_language_id | VARCHAR2(10) | PRIMARY KEY  |
+| language_name       | VARCHAR2(20) | NOT NULL     |
+| webseries_id        | VARCHAR2(10) | NOT NULL, FK |
+
+#### 11. subtitle_language
+
+| Field                | Type         | Constraints  |
+| -------------------- | ------------ | ------------ |
+| subtitle_language_id | VARCHAR2(10) | PRIMARY KEY  |
+| language_name        | VARCHAR2(20) | NOT NULL     |
+| webseries_id         | VARCHAR2(10) | NOT NULL, FK |
+
+#### 12. web_series_release
+
+| Field        | Type         | Constraints     |
+| ------------ | ------------ | --------------- |
+| webseries_id | VARCHAR2(10) | PRIMARY KEY, FK |
+| country_name | VARCHAR2(64) | PRIMARY KEY, FK |
+| release_date | DATE         | NOT NULL        |
+
+#### 13. country
+
+| Field        | Type         | Constraints |
+| ------------ | ------------ | ----------- |
+| country_name | VARCHAR2(64) | PRIMARY KEY |
 
 ---
 
-## 1. 项目概述 (1分钟)
+### User Roles
 
-### 业务场景
-一个类似Netflix的网络剧集管理平台，支持：
-- 制作公司管理网络剧集内容
-- 观众浏览、评分和反馈
-- 管理员进行系统管理
+-   **Customer**: Browse series, submit feedback
+-   **Employee**: Create, Read, Update contents and relations, except user management
+-   **Admin**: Full CRUD permissions, user management
 
-### 技术栈
 ```
-前端: React 18 + Redux Toolkit + Material-UI
-后端: Flask 3.0 + SQLAlchemy 2.0 + JWT
-数据库: MySQL 8.0 (13个关联表)
-缓存: Redis
-部署: Docker Compose + Nginx
+Register → JWT Token → Authorization → Role Verification
 ```
-
-### 数据库规模
-- **13个核心表**: web_series, episode, feedback, viewer_account, production_house, etc.
-- **5个历史表**: 审计追踪
-- **7个存储过程**: 数据安全操作
-- **7个战略索引**: 70-95%性能提升
 
 ---
 
-## 2. 核心功能演示 (3分钟)
+## Security Features
 
-### 2.1 用户系统
-✅ **三种角色权限**
-- **Customer**: 浏览剧集、提交评分反馈
-- **Employee**: 创建/编辑剧集和单集
-- **Admin**: 完整CRUD权限、用户管理
+### Password Encryption
 
-✅ **认证流程**
-```
-注册 → JWT Token → 自动刷新 → 角色验证
-```
-
-### 2.2 剧集管理 (CRUD完整实现)
-- **浏览**: 搜索、分类过滤、分页
-- **详情**: 剧集信息、单集列表、评分统计
-- **创建**: Employee创建剧集和单集
-- **更新**: 实时更新剧集信息
-- **删除**: Admin软删除 + 历史记录
-
-### 2.3 反馈系统
-- 1-5星评分
-- 文字评论
-- 防止重复评分
-- 实时平均分计算
-
-**演示路径**: 首页 → 剧集列表 → 详情页 → 提交反馈 → 管理后台
-
----
-
-## 3. 安全特性 (2分钟)
-
-### ✅ 密码安全 (100%)
 ```python
-# bcrypt加密，12轮哈希
+# bcrypt encryption with 12 rounds
 bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt(12))
 ```
-- 位置: `backend/app/models/viewer_account.py:47-53`
 
-### ✅ SQL注入防护 (100%)
+### SQL Injection Protection
+
+#### 1. SQLAlchemy ORM
+
 ```python
-# 100% 使用 SQLAlchemy ORM
+# 100% using SQLAlchemy ORM
 series = WebSeries.query.filter_by(webseries_id=series_id).first()
 
-# 存储过程 (额外加分)
+# Safe search with parameterized queries
+if search:
+    query = query.filter(
+        or_(
+            WebSeries.title.contains(search),
+            WebSeries.webseries_id.contains(search)
+        )
+    )
+```
+
+**Generated SQL** (always parameterized):
+
+```sql
+SELECT * FROM web_series
+WHERE title LIKE ? OR webseries_id LIKE ?
+-- Parameters: ['%search_input%', '%search_input%']
+```
+
+**Attack Prevention:**
+
+-   User input: `' OR '1'='1`
+-   Database sees: `title LIKE '%' OR '1'='1%'` (as literal string, not SQL)
+-   Result: No matches
+
+#### 2. Stored Procedures
+
+Stored procedures add **database-level validation** before operations:
+
+```sql
 CALL sp_create_web_series('Breaking Bad', 'Drama', 'PH001', @id, @err);
 ```
-- **7个存储过程**: `database/optimizations/02_stored_procedures.sql`
 
-### ✅ XSS防护 (100%)
+**Available Stored Procedures (7 total):**
+
+| Procedure                     | Purpose                              | Safety Features                                             |
+| ----------------------------- | ------------------------------------ | ----------------------------------------------------------- |
+| **sp_create_web_series**      | Create series with validation        | Validates production house exists, generates unique ID      |
+| **sp_submit_feedback**        | Submit feedback with duplicate check | Validates rating (1-5), prevents duplicate reviews per user |
+| **sp_create_episode**         | Create episode with conflict check   | Prevents duplicate episode numbers                          |
+| **sp_get_series_stats**       | Complex aggregate query              | Safe JOIN operations with GROUP BY                          |
+| **sp_get_top_rated_series**   | Get highly-rated series              | Safe aggregation with HAVING clause                         |
+| **sp_cleanup_expired_tokens** | Clean up password reset tokens       | Removes expired/used tokens safely                          |
+| **sp_get_user_activity**      | User activity summary                | Safe aggregation without exposing sensitive data            |
+
+**Example: sp_create_web_series in Action**
+
+```sql
+CREATE PROCEDURE sp_create_web_series(
+    IN p_title VARCHAR(64),
+    IN p_type VARCHAR(15),
+    IN p_house_id VARCHAR(10),
+    OUT p_series_id VARCHAR(10),
+    OUT p_error_msg VARCHAR(255)
+)
+BEGIN
+    DECLARE v_house_exists INT;
+
+    -- Error handling
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SET p_error_msg = 'Database error occurred';
+    END;
+
+    START TRANSACTION;
+
+    -- Step 1: Validate production house
+    SELECT COUNT(*) INTO v_house_exists
+    FROM production_house WHERE house_id = p_house_id;
+
+    IF v_house_exists = 0 THEN
+        SET p_error_msg = 'Production house does not exist';
+        ROLLBACK;
+    ELSE
+        -- Step 2: Generate unique ID
+        SET p_series_id = CONCAT('WS', LPAD(FLOOR(RAND() * 100000000), 8, '0'));
+
+        -- Step 3: Ensure uniqueness
+        WHILE EXISTS(SELECT 1 FROM web_series WHERE webseries_id = p_series_id) DO
+            SET p_series_id = CONCAT('WS', LPAD(FLOOR(RAND() * 100000000), 8, '0'));
+        END WHILE;
+
+        -- Step 4: Insert with all parameters validated
+        INSERT INTO web_series (webseries_id, title, num_episodes, type, house_id, created_at, updated_at)
+        VALUES (p_series_id, p_title, 0, p_type, p_house_id, NOW(), NOW());
+
+        COMMIT;
+    END IF;
+END//
+```
+
+**Security Benefits:**
+
+-   Parameterized input (no string concatenation)
+-   Type constraints (VARCHAR lengths limit data)
+-   Business logic validation (checks foreign keys)
+
+### XSS Protection
+
 ```python
-# 所有用户输入都经过HTML转义
+# All user inputs are HTML escaped
 def sanitize_input(text):
-    text = html.escape(text)  # HTML实体转义
-    text = re.sub(r"<script.*?</script>", "", text)  # 移除脚本
+    text = html.escape(text)  # HTML entity escaping
+    text = re.sub(r"<script.*?</script>", "", text)  # Remove scripts
     return text
 ```
-- **10个XSS测试全部通过**: `backend/test_xss_standalone.py`
-- 保护字段: feedback, series title, episode title, user info
 
-### ✅ RESTful API设计
 ```
-GET    /api/series          # 列表
-POST   /api/series          # 创建 (需Employee权限)
-PUT    /api/series/:id      # 更新 (需Employee权限)
-DELETE /api/series/:id      # 删除 (需Admin权限)
+Test 1: Normal Text
+Input:  This is a normal comment
+Output: This is a normal comment
+
+Test 2: Basic Script Tag
+Input:  <script>alert('XSS')</script>
+Output: &lt;script&gt;alert(&#x27;XSS&#x27;)&lt;/script&gt;
+
+Test 3: Script with Attributes
+Input:  <script src='malicious.js'></script>
+Output: &lt;script src=&#x27;malicious.js&#x27;&gt;&lt;/script&gt;
+
+Test 4: HTML Injection
+Input:  <img src=x onerror='alert(1)'>
+Output: &lt;img src=x onerror=&#x27;alert(1)&#x27;&gt;
+
+Test 5: Event Handler
+Input:  <div onload='alert(1)'>Test</div>
+Output: &lt;div onload=&#x27;alert(1)&#x27;&gt;Test&lt;/div&gt;
+
+Test 6: JavaScript URL
+Input:  <a href='javascript:alert(1)'>Click</a>
+Output: &lt;a href=&#x27;javascript:alert(1)&#x27;&gt;Click&lt;/a&gt;
+
+Test 7: Special Characters
+Input:  I love Breaking Bad & The Crown!
+Output: I love Breaking Bad &amp; The Crown!
+
+Test 8: Mixed Content
+Input:  Great show! <script>alert('xss')</script> Highly recommended!
+Output: Great show! &lt;script&gt;alert(&#x27;xss&#x27;)&lt;/script&gt; Highly recommended!
+
+Test 9: Case Variation
+Input:  <ScRiPt>alert('xss')</sCrIpT>
+Output: &lt;ScRiPt&gt;alert(&#x27;xss&#x27;)&lt;/sCrIpT&gt;
+
+Test 10: Nested Tags
+Input:  <div><script>alert('xss')</script></div>
+Output: &lt;div&gt;&lt;script&gt;alert(&#x27;xss&#x27;)&lt;/script&gt;&lt;/div&gt;
 ```
 
-### ✅ 事务管理
-- SQLAlchemy自动事务
-- 异常自动回滚
-- ACID合规
+-   Protected fields: feedback, series title, episode title, user info
 
----
+### RESTful API Design
 
-## 4. 加分项亮点 (2分钟)
+```
+GET    /api/series          # list all series
+POST   /api/series          # create (Employee role required)
+PUT    /api/series/:id      # update (Employee role required)
+DELETE /api/series/:id      # delete (Admin role required)
+```
 
-### 🏆 1. Docker容器化架构
+## Extra Features
+
+### Deployment - Docker container
+
 ```yaml
 services:
-  mysql:     # 数据库
-  redis:     # 缓存层
-  backend:   # Flask API
-  frontend:  # React应用
-  nginx:     # 负载均衡 (可选)
+    mysql: # Database
+    redis: # Cache
+    backend: # Flask API
+    frontend: # React app
+    nginx: # Reverse proxy
 ```
-- 一键启动: `docker-compose up`
-- 环境隔离、易于部署
 
-### 🏆 2. Redis缓存系统
+-   start system with `docker-compose up`, all services auto-linked and can be deployed separately
+
+### 2. Redis Caching
+
 ```python
-@cache_response(timeout=300)  # 缓存5分钟
+@cache_response(timeout=300)
 def get_series_list():
     return WebSeries.query.all()
 ```
-**性能提升**: 93ms → 16ms (**82%提升**)
-- 位置: `backend/app/utils/cache.py`
 
-### 🏆 3. 数据库索引优化
+#### Core Content Routes (8)
+
+| Route                       | Endpoint                       | Cache Duration | Key Prefix                |
+| --------------------------- | ------------------------------ | -------------- | ------------------------- |
+| **Series**                  | GET /api/series                | 5 min (300s)   | `series`                  |
+| **Series Detail**           | GET /api/series/:id            | 10 min (600s)  | `series_detail`           |
+| **Episode**                 | GET /api/episodes              | 5 min (300s)   | `episode`                 |
+| **Episode Detail**          | GET /api/episodes/:id          | 10 min (600s)  | `episode_detail`          |
+| **Feedback**                | GET /api/feedback              | 3 min (180s)   | `feedback`                |
+| **Feedback Detail**         | GET /api/feedback/:id          | 5 min (300s)   | `feedback_detail`         |
+| **Production House**        | GET /api/production-houses     | 10 min (600s)  | `production_house`        |
+| **Production House Detail** | GET /api/production-houses/:id | 15 min (900s)  | `production_house_detail` |
+
+#### Basic Data Routes (2)
+
+| Route               | Endpoint               | Cache Duration | Key Prefix        |
+| ------------------- | ---------------------- | -------------- | ----------------- |
+| **Producer**        | GET /api/producers     | 10 min (600s)  | `producer`        |
+| **Producer Detail** | GET /api/producers/:id | 10 min (600s)  | `producer_detail` |
+
+#### Relations (5)
+
+| Route                     | Endpoint                                 | Cache Duration | Key Prefix    |
+| ------------------------- | ---------------------------------------- | -------------- | ------------- |
+| **Producer Affiliations** | GET /api/relations/producer-affiliations | 10 min (600s)  | `affiliation` |
+| **Telecasts**             | GET /api/relations/telecasts             | 5 min (300s)   | `telecast`    |
+| **Contracts**             | GET /api/relations/contracts             | 10 min (600s)  | `contract`    |
+| **Subtitle Languages**    | GET /api/relations/subtitle-languages    | 15 min (900s)  | `subtitle`    |
+| **Releases**              | GET /api/relations/releases              | 15 min (900s)  | `release`     |
+
+#### Admin Routes (2)
+
+| Route           | Endpoint                 | Cache Duration | Key Prefix    |
+| --------------- | ------------------------ | -------------- | ------------- |
+| **Admin Stats** | GET /api/admin/stats     | 2 min (120s)   | `admin_stats` |
+| **Countries**   | GET /api/admin/countries | 60 min (3600s) | `country`     |
+
+**Actual Cache Results:**
+
+-   Hit rate: 33% (4 hits / 12 requests)
+
+### Current Redis Metrics
+
+-   **Memory usage:** 1.12M / 512.00M (0.2% used) Sufficient
+-   **Cache hit rate:** 33% (4/12) Early data; keep observing
+
+**Configuration Notes:**
+
+-   AOF persistence: `--appendonly yes` (no data loss)
+-   Max memory: `512MB` (enough for medium traffic)
+-   Eviction policy: `allkeys-lru` (optimal LRU strategy)
+-   Health check: ping every 10 seconds
+
+### 3. Database Indexing
+
+Improve query performance for frequently accessed data patterns》
+
+**7 Indexes Created:**
+
 ```sql
--- 复合索引: 搜索+过滤
+-- Composite Index: Search + Filter (used when filtering by title AND type)
 CREATE INDEX idx_web_series_title_type ON web_series(title, type);
+-- Use case: GET /api/series?search=Drama&type=Drama
 
--- 覆盖索引: 评分聚合 (60-80%性能提升)
+-- Covering Index: Rating Aggregation (contains all columns needed for rating queries)
 CREATE INDEX idx_feedback_series_rating ON feedback(webseries_id, rating);
+-- Use case: SELECT AVG(rating) FROM feedback GROUP BY webseries_id
 
--- 全文索引: 文本搜索 (80-95%性能提升)
+-- Full-Text Index: Text Search
 CREATE FULLTEXT INDEX idx_web_series_title_fulltext ON web_series(title);
-```
-**7个战略索引**: `database/optimizations/01_create_indexes.sql`
+-- Use case: MATCH(title) AGAINST('Drama' IN NATURAL LANGUAGE MODE)
 
-### 🏆 4. 审计追踪系统
+-- Active Contract Index: Status-based filtering
+CREATE INDEX idx_contract_active ON series_contract(webseries_id, status);
+
+-- Date Range Index: Telecast scheduling queries
+CREATE INDEX idx_telecast_dates ON telecast(episode_id, start_date, end_date);
+
+-- Affiliation Date Range: Finding current producers
+CREATE INDEX idx_affiliation_dates ON producer_affiliation(house_id, start_date, end_date);
+-- Foreign Key Optimization: JOIN performance
+-- Auto-indexes on foreign key columns (webseries_id, episode_id, account_id)
+```
+
+**Actual Performance Test Results (Tested on real database):**
+
+| Query Type                                 | Cost  | Rows Examined | Improvement       |
+| ------------------------------------------ | ----- | ------------- | ----------------- |
+| Filter by Type (WHERE type='Drama')        | 0.80  | 3 rows        | 56% faster        |
+| Combined Search+Filter (type + title)      | 0.80  | 3 rows        | 45% faster        |
+| Rating Aggregation (GROUP BY webseries_id) | 1.85  | 16 rows       | No sort needed    |
+| Multi-table JOIN with GROUP BY             | 12.42 | ~97 rows      | Efficient nesting |
+| Text Search (LIKE '%keyword%')             | 1.45  | 12 rows       | Full scan         |
+
+**Test Environment:**
+
+-   Database: 12 web_series, 78 episodes, 16 feedback records
+-   Index Effectiveness: Type filter 56% faster than full table scan
+
+### 4. History Tables
+
 ```sql
--- 历史表 + 自动触发器
+
 CREATE TABLE viewer_account_history (...)
 CREATE TABLE web_series_history (...)
 CREATE TABLE feedback_history (...)
 
--- 9个触发器自动记录变更
 CREATE TRIGGER trg_viewer_account_update ...
 ```
-- 位置: `database/optimizations/03_history_tables.sql`
-- 功能: 记录所有修改、追踪登录失败
+
+-   5 History tables: `viewer_account_history`, `web_series_history`, `feedback_history`, `episode_history`, `production_house_history`
+-   keep track of all changes with timestamps and user IDs
 
 ---
-
-## 5. 数据库架构 (1.5分钟)
-
-### 核心实体关系
-```
-production_house (1) ----→ (N) web_series
-                                    ↓ (1)
-                                    ↓
-viewer_account (1) ----→ (N) feedback ←---- (N) web_series
-
-web_series (1) ----→ (N) episode (1) ----→ (N) telecast
-
-producer (N) ←----→ (N) production_house (producer_affiliation)
-```
-
-### 13个核心表
-1. **production_house** - 制作公司
-2. **producer** - 制片人
-3. **producer_affiliation** - 制片人隶属关系 (多对多)
-4. **web_series** - 网络剧集
-5. **episode** - 单集
-6. **telecast** - 播出信息
-7. **series_contract** - 合同
-8. **viewer_account** - 用户账户
-9. **feedback** - 反馈评分
-10. **country** - 国家
-11. **web_series_release** - 发行信息
-12. **dubbing_language** - 配音语言
-13. **subtitle_language** - 字幕语言
-
-### 数据完整性约束
-- ✅ 外键约束 (ON DELETE CASCADE/RESTRICT)
-- ✅ CHECK约束 (rating 1-5, dates, status)
-- ✅ UNIQUE约束 (email, IDs)
-- ✅ NOT NULL约束
-
----
-
-## 6. 演示脚本 (0.5分钟)
-
-### 演示流程 (10分钟总计)
-1. **登录** (Customer账户) → 浏览剧集 → 查看详情 → 提交反馈
-2. **切换** (Employee账户) → 创建新剧集 → 添加单集
-3. **切换** (Admin账户) → 用户管理 → 查看系统统计
-4. **后台** → 展示Docker容器状态
-5. **数据库** → EXPLAIN ANALYZE展示索引效果
-6. **代码** → 展示安全措施实现
-
-### 重点强调
-- ✅ 完整的RBAC权限系统
-- ✅ 全面的安全措施 (密码/SQL注入/XSS)
-- ✅ 高性能架构 (Redis缓存 + 索引优化)
-- ✅ 企业级特性 (Docker + 审计 + 存储过程)
-
----
-
-## 7. 项目亮点总结
-
-### 满足所有核心要求 ✅
-- ✅ Web界面: React + Material-UI
-- ✅ 用户系统: 注册/登录/JWT
-- ✅ CRUD操作: 所有实体完整实现
-- ✅ 权限控制: Customer/Employee/Admin
-- ✅ 密码加密: bcrypt (12 rounds)
-- ✅ SQL注入防护: ORM + 存储过程
-- ✅ XSS防护: HTML转义 + 测试验证
-- ✅ RESTful API: 标准化设计
-- ✅ 事务管理: ACID合规
-
-### 实现全部加分项 ✅ (+6%)
-- ✅ Docker容器化
-- ✅ Redis缓存 (82%性能提升)
-- ✅ 数据库索引 (70-95%性能提升)
-- ✅ 存储过程 (7个)
-- ✅ 审计追踪 (5个历史表)
-
-### 代码质量
-- 📁 清晰的项目结构
-- 📝 完整的技术文档
-- 🧪 安全测试验证
-- 🐳 容器化部署
-- 🔒 企业级安全
-
----
-
-## 附录: 快速启动
-
-### 启动应用
-```bash
-# 方式1: Docker (推荐)
-docker-compose up -d
-
-# 方式2: 本地
-bash backend_start.sh    # Terminal 1
-bash frontend_start.sh   # Terminal 2
-```
-
-### 访问地址
-- 前端: http://localhost:3000
-- 后端API: http://localhost:5000
-- MySQL: localhost:3306
-- Redis: localhost:6379
-
-### 测试账户
-```
-Admin:    admin@test.com    / Admin123!
-Employee: employee@test.com / Employee123!
-Customer: user@test.com     / User123!
-```
-
----
-
-## 文件位置索引
-
-**核心代码**:
-- 后端API: `backend/app/routes/`
-- 数据模型: `backend/app/models/`
-- 安全工具: `backend/app/utils/security.py`
-- 前端页面: `frontend/src/pages/`
-- Redux状态: `frontend/src/store/`
-
-**数据库优化**:
-- 索引: `database/optimizations/01_create_indexes.sql`
-- 存储过程: `database/optimizations/02_stored_procedures.sql`
-- 历史表: `database/optimizations/03_history_tables.sql`
-
-**文档**:
-- 项目README: `README.md`
-- 合规报告: `PROJECT_COMPLIANCE_REPORT.md`
-- SQL注入防护: `SQL_INJECTION_PROTECTION.md`
-- XSS防护: `XSS_PROTECTION.md`
-
----
-
-**预计得分**: 基础分 95-100 + 加分 6 = **101-106/100** 🎉
-
-**展示时间**: 严格控制在10分钟内

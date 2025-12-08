@@ -17,6 +17,7 @@ from app.models.series_contract import SeriesContract
 from app.models.subtitle_language import SubtitleLanguage
 from app.models.web_series_release import WebSeriesRelease
 from app.utils.security import generate_id
+from app.utils.cache import cache_response, invalidate_cache
 from datetime import datetime
 
 relations_bp = Blueprint("relations", __name__)
@@ -26,8 +27,9 @@ relations_bp = Blueprint("relations", __name__)
 
 
 @relations_bp.route("/producer-affiliations", methods=["GET"])
+@cache_response(timeout=600, key_prefix='affiliation')
 def get_all_affiliations():
-    """Get all producer affiliations"""
+    """Get all producer affiliations (cached for 10 minutes)"""
     try:
         from app.models.producer import Producer
         from app.models.production_house import ProductionHouse
@@ -100,6 +102,7 @@ def get_all_affiliations():
 
 @relations_bp.route("/producer-affiliations", methods=["POST"])
 @jwt_required()
+@invalidate_cache(['affiliation:*'])
 def create_affiliation():
     """Create producer affiliation (Employee/Admin only)"""
     try:
@@ -158,6 +161,7 @@ def create_affiliation():
     "/producer-affiliations/<producer_id>/<house_id>", methods=["PUT"]
 )
 @jwt_required()
+@invalidate_cache(['affiliation:*'])
 def update_affiliation(producer_id, house_id):
     """Update producer affiliation (Employee/Admin only)"""
     try:
@@ -212,6 +216,7 @@ def update_affiliation(producer_id, house_id):
     "/producer-affiliations/<producer_id>/<house_id>", methods=["DELETE"]
 )
 @jwt_required()
+@invalidate_cache(['affiliation:*'])
 def delete_affiliation(producer_id, house_id):
     """Delete producer affiliation (Admin only)"""
     try:
@@ -244,8 +249,9 @@ def delete_affiliation(producer_id, house_id):
 
 
 @relations_bp.route("/telecasts", methods=["GET"])
+@cache_response(timeout=300, key_prefix='telecast')
 def get_all_telecasts():
-    """Get all telecasts"""
+    """Get all telecasts (cached for 5 minutes)"""
     try:
         from app.models.episode import Episode
 
@@ -311,6 +317,7 @@ def get_all_telecasts():
 
 @relations_bp.route("/telecasts", methods=["POST"])
 @jwt_required()
+@invalidate_cache(['telecast:*'])
 def create_telecast():
     """Create telecast (Employee/Admin only)"""
     try:
@@ -357,6 +364,7 @@ def create_telecast():
 
 @relations_bp.route("/telecasts/<telecast_id>", methods=["PUT"])
 @jwt_required()
+@invalidate_cache(['telecast:*'])
 def update_telecast(telecast_id):
     """Update telecast (Employee/Admin only)"""
     try:
@@ -399,6 +407,7 @@ def update_telecast(telecast_id):
 
 @relations_bp.route("/telecasts/<telecast_id>", methods=["DELETE"])
 @jwt_required()
+@invalidate_cache(['telecast:*'])
 def delete_telecast(telecast_id):
     """Delete telecast (Admin only)"""
     try:
@@ -425,8 +434,9 @@ def delete_telecast(telecast_id):
 
 
 @relations_bp.route("/contracts", methods=["GET"])
+@cache_response(timeout=600, key_prefix='contract')
 def get_all_contracts():
-    """Get all series contracts"""
+    """Get all series contracts (cached for 10 minutes)"""
     try:
         from app.models.web_series import WebSeries
 
@@ -484,6 +494,7 @@ def get_all_contracts():
 
 @relations_bp.route("/contracts", methods=["POST"])
 @jwt_required()
+@invalidate_cache(['contract:*'])
 def create_contract():
     """Create series contract (Employee/Admin only)"""
     try:
@@ -536,6 +547,7 @@ def create_contract():
 
 @relations_bp.route("/contracts/<contract_id>", methods=["PUT"])
 @jwt_required()
+@invalidate_cache(['contract:*'])
 def update_contract(contract_id):
     """Update series contract (Employee/Admin only)"""
     try:
@@ -583,6 +595,7 @@ def update_contract(contract_id):
 
 @relations_bp.route("/contracts/<contract_id>", methods=["DELETE"])
 @jwt_required()
+@invalidate_cache(['contract:*'])
 def delete_contract(contract_id):
     """Delete series contract (Admin only)"""
     try:
@@ -609,8 +622,9 @@ def delete_contract(contract_id):
 
 
 @relations_bp.route("/subtitle-languages", methods=["GET"])
+@cache_response(timeout=900, key_prefix='subtitle')
 def get_all_subtitle_languages():
-    """Get all subtitle languages"""
+    """Get all subtitle languages (cached for 15 minutes)"""
     try:
         from app.models.web_series import WebSeries
 
@@ -666,6 +680,7 @@ def get_all_subtitle_languages():
 
 @relations_bp.route("/subtitle-languages", methods=["POST"])
 @jwt_required()
+@invalidate_cache(['subtitle:*'])
 def create_subtitle_language():
     """Create subtitle language (Employee/Admin only)"""
     try:
@@ -722,6 +737,7 @@ def create_subtitle_language():
     "/subtitle-languages/<webseries_id>/<language>", methods=["DELETE"]
 )
 @jwt_required()
+@invalidate_cache(['subtitle:*'])
 def delete_subtitle_language(webseries_id, language):
     """Delete subtitle language (Admin only)"""
     try:
@@ -754,8 +770,9 @@ def delete_subtitle_language(webseries_id, language):
 
 
 @relations_bp.route("/releases", methods=["GET"])
+@cache_response(timeout=900, key_prefix='release')
 def get_all_releases():
-    """Get all web series releases"""
+    """Get all web series releases (cached for 15 minutes)"""
     try:
         from app.models.web_series import WebSeries
 
@@ -813,6 +830,7 @@ def get_all_releases():
 
 @relations_bp.route("/releases", methods=["POST"])
 @jwt_required()
+@invalidate_cache(['release:*'])
 def create_release():
     """Create web series release (Employee/Admin only)"""
     try:
@@ -870,6 +888,7 @@ def create_release():
 
 @relations_bp.route("/releases/<webseries_id>/<country_name>", methods=["PUT"])
 @jwt_required()
+@invalidate_cache(['release:*'])
 def update_release(webseries_id, country_name):
     """Update web series release (Employee/Admin only)"""
     try:
@@ -909,6 +928,7 @@ def update_release(webseries_id, country_name):
 
 @relations_bp.route("/releases/<webseries_id>/<country_name>", methods=["DELETE"])
 @jwt_required()
+@invalidate_cache(['release:*'])
 def delete_release(webseries_id, country_name):
     """Delete web series release (Admin only)"""
     try:
