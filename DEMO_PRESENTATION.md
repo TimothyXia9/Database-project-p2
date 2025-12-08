@@ -305,6 +305,8 @@ END//
 
 ### XSS Protection
 
+#### Backend Protection (Python/Flask)
+
 ```python
 # All user inputs are HTML escaped
 def sanitize_input(text):
@@ -313,49 +315,63 @@ def sanitize_input(text):
     return text
 ```
 
-```
-Test 1: Normal Text
-Input:  This is a normal comment
-Output: This is a normal comment
+**Test Results:**
 
-Test 2: Basic Script Tag
+```
 Input:  <script>alert('XSS')</script>
 Output: &lt;script&gt;alert(&#x27;XSS&#x27;)&lt;/script&gt;
 
-Test 3: Script with Attributes
-Input:  <script src='malicious.js'></script>
-Output: &lt;script src=&#x27;malicious.js&#x27;&gt;&lt;/script&gt;
-
-Test 4: HTML Injection
 Input:  <img src=x onerror='alert(1)'>
 Output: &lt;img src=x onerror=&#x27;alert(1)&#x27;&gt;
 
-Test 5: Event Handler
-Input:  <div onload='alert(1)'>Test</div>
-Output: &lt;div onload=&#x27;alert(1)&#x27;&gt;Test&lt;/div&gt;
-
-Test 6: JavaScript URL
-Input:  <a href='javascript:alert(1)'>Click</a>
-Output: &lt;a href=&#x27;javascript:alert(1)&#x27;&gt;Click&lt;/a&gt;
-
-Test 7: Special Characters
 Input:  I love Breaking Bad & The Crown!
 Output: I love Breaking Bad &amp; The Crown!
-
-Test 8: Mixed Content
-Input:  Great show! <script>alert('xss')</script> Highly recommended!
-Output: Great show! &lt;script&gt;alert(&#x27;xss&#x27;)&lt;/script&gt; Highly recommended!
-
-Test 9: Case Variation
-Input:  <ScRiPt>alert('xss')</sCrIpT>
-Output: &lt;ScRiPt&gt;alert(&#x27;xss&#x27;)&lt;/sCrIpT&gt;
-
-Test 10: Nested Tags
-Input:  <div><script>alert('xss')</script></div>
-Output: &lt;div&gt;&lt;script&gt;alert(&#x27;xss&#x27;)&lt;/script&gt;&lt;/div&gt;
 ```
 
--   Protected fields: feedback, series title, episode title, user info
+#### Frontend Protection (React)
+
+**1. React Auto-Escaping (Primary Defense)**
+
+React automatically escapes all content in JSX curly braces:
+
+```jsx
+// Series Display - All user content is auto-escaped
+function SeriesRow({ series }) {
+	return (
+		<div>
+			<h3>{item.title}</h3> {/* Auto-escaped */}
+			<span>{item.type}</span> {/* Auto-escaped */}
+		</div>
+	);
+}
+
+// Feedback Display - Auto-escaped
+function FeedbackCard({ feedback }) {
+	return (
+		<div>
+			<p>{feedback.feedback_text}</p> {/* Auto-escaped */}
+		</div>
+	);
+}
+```
+
+**Example:**
+
+```
+User inputs: <script>alert('XSS')</script>
+React renders: &lt;script&gt;alert('XSS')&lt;/script&gt; (as plain text)
+```
+
+**Protection Strategy:**
+
+| Layer      | Method          | Implementation                       |
+| ---------- | --------------- | ------------------------------------ |
+| Backend    | `html.escape()` | Escape all HTML entities             |
+| Frontend   | React JSX       | Auto-escape all `{variable}` content |
+| Input      | `maxLength`     | Limit input to 128 characters        |
+| Validation | `.trim()`       | Remove leading/trailing whitespace   |
+
+**Protected Fields:** feedback text, series title, episode title, user names, addresses
 
 ### RESTful API Design
 
@@ -501,5 +517,3 @@ CREATE TRIGGER trg_viewer_account_update ...
 
 -   5 History tables: `viewer_account_history`, `web_series_history`, `feedback_history`, `episode_history`, `production_house_history`
 -   keep track of all changes with timestamps and user IDs
-
----
