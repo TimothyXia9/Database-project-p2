@@ -460,7 +460,7 @@ def get_series_list():
 
 ### 3. Database Indexing
 
-Improve query performance for frequently accessed data patterns》
+Improve query performance for frequently accessed data patterns
 
 **6 Indexes Created:**
 
