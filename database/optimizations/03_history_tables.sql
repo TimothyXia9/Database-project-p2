@@ -75,7 +75,7 @@ CREATE TABLE feedback_history (
     account_id VARCHAR(10),
     webseries_id VARCHAR(10),
     rating INT,
-    review TEXT,
+    feedback_text VARCHAR(128),
     moderation_status VARCHAR(20) COMMENT 'approved, flagged, removed',
 
     INDEX idx_feedback_history (feedback_id, changed_at),
@@ -254,11 +254,11 @@ FOR EACH ROW
 BEGIN
     INSERT INTO feedback_history (
         feedback_id, operation, changed_by,
-        account_id, webseries_id, rating, review, moderation_status
+        account_id, webseries_id, rating, feedback_text, moderation_status
     )
     VALUES (
         NEW.feedback_id, 'INSERT', @current_user_id,
-        NEW.account_id, NEW.webseries_id, NEW.rating, NEW.review, 'approved'
+        NEW.account_id, NEW.webseries_id, NEW.rating, NEW.feedback_text, 'approved'
     );
 END//
 
@@ -269,11 +269,11 @@ FOR EACH ROW
 BEGIN
     INSERT INTO feedback_history (
         feedback_id, operation, changed_by,
-        account_id, webseries_id, rating, review, moderation_status
+        account_id, webseries_id, rating, feedback_text, moderation_status
     )
     VALUES (
         NEW.feedback_id, 'UPDATE', @current_user_id,
-        NEW.account_id, NEW.webseries_id, NEW.rating, NEW.review, 'modified'
+        NEW.account_id, NEW.webseries_id, NEW.rating, NEW.feedback_text, 'modified'
     );
 END//
 
@@ -284,11 +284,11 @@ FOR EACH ROW
 BEGIN
     INSERT INTO feedback_history (
         feedback_id, operation, changed_by,
-        account_id, webseries_id, rating, review, moderation_status
+        account_id, webseries_id, rating, feedback_text, moderation_status
     )
     VALUES (
         OLD.feedback_id, 'DELETE', @current_user_id,
-        OLD.account_id, OLD.webseries_id, OLD.rating, OLD.review, 'removed'
+        OLD.account_id, OLD.webseries_id, OLD.rating, OLD.feedback_text, 'removed'
     );
 END//
 
