@@ -23,6 +23,7 @@ const SeriesDetailPage = () => {
 	const { permissions, isLoggedIn } = usePermissions();
 	const [selectedTab, setSelectedTab] = useState("episodes");
 	const [showFeedbackForm, setShowFeedbackForm] = useState(false);
+	const [editingFeedbackId, setEditingFeedbackId] = useState(null);
 	const [feedbackData, setFeedbackData] = useState({
 		rating: 5,
 		comments: "",
@@ -36,6 +37,7 @@ const SeriesDetailPage = () => {
 	useEffect(() => {
 		if (submitSuccess) {
 			setShowFeedbackForm(false);
+			setEditingFeedbackId(null);
 			setFeedbackData({ rating: 5, comments: "" });
 			dispatch(clearSubmitSuccess());
 			dispatch(fetchFeedbackBySeries(id));
@@ -62,7 +64,7 @@ const SeriesDetailPage = () => {
 		}
 	};
 
-	const handleSubmitFeedback = (e) => {
+	const handleSubmitFeedback = async (e) => {
 		e.preventDefault();
 		if (!isLoggedIn) {
 			navigate("/login");
@@ -81,16 +83,33 @@ const SeriesDetailPage = () => {
 		}
 
 		const submissionData = {
-			webseries_id: id,
 			rating: parseInt(feedbackData.rating),
 			feedback_text: feedbackData.comments.trim(),
 		};
 
 		console.log("Submitting feedback:", submissionData);
+		console.log("Editing mode:", !!editingFeedbackId);
 		console.log("Current user:", user);
-		console.log("JWT token exists:", !!localStorage.getItem("access_token"));
 
-		dispatch(createFeedback(submissionData));
+		try {
+			if (editingFeedbackId) {
+				// Update existing feedback
+				await feedbackService.updateFeedback(editingFeedbackId, submissionData);
+				alert("Review updated successfully");
+				setShowFeedbackForm(false);
+				setEditingFeedbackId(null);
+				setFeedbackData({ rating: 5, comments: "" });
+				dispatch(fetchFeedbackBySeries(id));
+			} else {
+				// Create new feedback
+				submissionData.webseries_id = id;
+				dispatch(createFeedback(submissionData));
+			}
+		} catch (error) {
+			console.error("Failed to submit feedback:", error);
+			const errorMessage = error.error || error.message || "Unknown error";
+			alert(`Failed to submit review: ${errorMessage}`);
+		}
 	};
 
 	const handleFeedbackChange = (e) => {
@@ -101,6 +120,7 @@ const SeriesDetailPage = () => {
 	};
 
 	const handleEditFeedback = (feedback) => {
+		setEditingFeedbackId(feedback.feedback_id);
 		setFeedbackData({
 			rating: feedback.rating,
 			comments: feedback.feedback_text,
@@ -249,7 +269,14 @@ const SeriesDetailPage = () => {
 							{permissions.canSubmitFeedback && (
 								<div className="feedback-submit-section">
 									{!showFeedbackForm ? (
-										<button className="btn btn-primary" onClick={() => setShowFeedbackForm(true)}>
+										<button
+											className="btn btn-primary"
+											onClick={() => {
+												setEditingFeedbackId(null);
+												setFeedbackData({ rating: 5, comments: "" });
+												setShowFeedbackForm(true);
+											}}
+										>
 											Write Review
 										</button>
 									) : (
@@ -275,9 +302,18 @@ const SeriesDetailPage = () => {
 											</div>
 											<div className="form-actions">
 												<button type="submit" className="btn btn-primary" disabled={feedbackLoading}>
-													{feedbackLoading ? "Submitting..." : "Submit Review"}
+													{feedbackLoading ? "Submitting..." : (editingFeedbackId ? "Update Review" : "Submit Review")}
 												</button>
-												<button type="button" className="btn btn-secondary" onClick={() => setShowFeedbackForm(false)} disabled={feedbackLoading}>
+												<button
+													type="button"
+													className="btn btn-secondary"
+													onClick={() => {
+														setShowFeedbackForm(false);
+														setEditingFeedbackId(null);
+														setFeedbackData({ rating: 5, comments: "" });
+													}}
+													disabled={feedbackLoading}
+												>
 													Cancel
 												</button>
 											</div>
