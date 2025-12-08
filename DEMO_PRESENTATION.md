@@ -16,139 +16,164 @@ Deployment: Docker Compose + Nginx
 
 #### 1. web_series
 
-| Field        | Type         | Constraints  |
-| ------------ | ------------ | ------------ |
-| webseries_id | VARCHAR2(10) | PRIMARY KEY  |
-| title        | VARCHAR2(64) | NOT NULL     |
-| num_episodes | NUMBER(8)    | NOT NULL     |
-| type         | VARCHAR2(15) | NOT NULL     |
-| house_id     | VARCHAR2(10) | NOT NULL, FK |
+| Field          | Type        | Constraints  |
+| -------------- | ----------- | ------------ |
+| webseries_id   | VARCHAR(10) | PRIMARY KEY  |
+| title          | VARCHAR(64) | NOT NULL     |
+| num_episodes   | INT         | NOT NULL     |
+| type           | VARCHAR(15) | NOT NULL     |
+| house_id       | VARCHAR(10) | NOT NULL, FK |
+| **created_at** | TIMESTAMP   | NOT NULL     |
+| **updated_at** | TIMESTAMP   | NOT NULL     |
 
 #### 2. episode
 
-| Field          | Type         | Constraints  |
-| -------------- | ------------ | ------------ |
-| episode_id     | VARCHAR2(10) | PRIMARY KEY  |
-| episode_number | VARCHAR2(10) | NOT NULL     |
-| title          | VARCHAR2(64) |              |
-| webseries_id   | VARCHAR2(10) | NOT NULL, FK |
+| Field          | Type        | Constraints  |
+| -------------- | ----------- | ------------ |
+| episode_id     | VARCHAR(10) | PRIMARY KEY  |
+| episode_number | VARCHAR(10) | NOT NULL     |
+| title          | VARCHAR(64) |              |
+| webseries_id   | VARCHAR(10) | NOT NULL, FK |
+| **created_at** | TIMESTAMP   | NOT NULL     |
+| **updated_at** | TIMESTAMP   | NOT NULL     |
 
 #### 3. feedback
 
-| Field         | Type          | Constraints   |
-| ------------- | ------------- | ------------- |
-| feedback_id   | VARCHAR2(10)  | PRIMARY KEY   |
-| rating        | NUMBER(1)     | NOT NULL, 1-5 |
-| feedback_text | VARCHAR2(128) | NOT NULL      |
-| feedback_date | DATE          | NOT NULL      |
-| account_id    | VARCHAR2(10)  | NOT NULL, FK  |
-| webseries_id  | VARCHAR2(10)  | NOT NULL, FK  |
+| Field          | Type         | Constraints          |
+| -------------- | ------------ | -------------------- |
+| feedback_id    | VARCHAR(10)  | PRIMARY KEY          |
+| rating         | TINYINT      | NOT NULL, CHECK(1-5) |
+| feedback_text  | VARCHAR(128) | NOT NULL             |
+| feedback_date  | DATE         | NOT NULL             |
+| account_id     | VARCHAR(10)  | NOT NULL, FK         |
+| webseries_id   | VARCHAR(10)  | NOT NULL, FK         |
+| **created_at** | TIMESTAMP    | NOT NULL             |
+| **updated_at** | TIMESTAMP    | NOT NULL             |
 
 #### 4. viewer_account
 
 | Field                  | Type          | Constraints      |
 | ---------------------- | ------------- | ---------------- |
-| account_id             | VARCHAR2(10)  | PRIMARY KEY      |
-| **email**              | VARCHAR2(64)  | NOT NULL, UNIQUE |
-| **password_hash**      | VARCHAR2(128) | NOT NULL         |
-| first_name             | VARCHAR2(30)  | NOT NULL         |
-| middle_name            | VARCHAR2(30)  |                  |
-| last_name              | VARCHAR2(30)  | NOT NULL         |
-| street                 | VARCHAR2(64)  | NOT NULL         |
-| city                   | VARCHAR2(64)  | NOT NULL         |
-| state                  | VARCHAR2(64)  | NOT NULL         |
+| account_id             | VARCHAR(10)   | PRIMARY KEY      |
+| **email**              | VARCHAR(64)   | NOT NULL, UNIQUE |
+| **password_hash**      | VARCHAR(128)  | NOT NULL         |
+| **role**               | VARCHAR(16)   | NOT NULL         |
+| first_name             | VARCHAR(30)   | NOT NULL         |
+| middle_name            | VARCHAR(30)   |                  |
+| last_name              | VARCHAR(30)   | NOT NULL         |
+| street                 | VARCHAR(64)   | NOT NULL         |
+| city                   | VARCHAR(64)   | NOT NULL         |
+| state                  | VARCHAR(64)   | NOT NULL         |
 | open_date              | DATE          | NOT NULL         |
-| monthly_service_charge | NUMBER(10,2)  | NOT NULL         |
-| country_name           | VARCHAR2(64)  | NOT NULL, FK     |
+| monthly_service_charge | DECIMAL(10,2) | NOT NULL         |
+| country_name           | VARCHAR(64)   | NOT NULL, FK     |
+| **created_at**         | TIMESTAMP     | NOT NULL         |
+| **updated_at**         | TIMESTAMP     | NOT NULL         |
 
 #### 5. production_house
 
-| Field            | Type         | Constraints |
-| ---------------- | ------------ | ----------- |
-| house_id         | VARCHAR2(10) | PRIMARY KEY |
-| name             | VARCHAR2(64) | NOT NULL    |
-| year_established | VARCHAR2(10) | NOT NULL    |
-| street           | VARCHAR2(64) | NOT NULL    |
-| city             | VARCHAR2(64) | NOT NULL    |
-| state            | VARCHAR2(64) | NOT NULL    |
-| nationality      | VARCHAR2(20) | NOT NULL    |
+| Field            | Type        | Constraints |
+| ---------------- | ----------- | ----------- |
+| house_id         | VARCHAR(10) | PRIMARY KEY |
+| name             | VARCHAR(64) | NOT NULL    |
+| year_established | VARCHAR(10) | NOT NULL    |
+| street           | VARCHAR(64) | NOT NULL    |
+| city             | VARCHAR(64) | NOT NULL    |
+| state            | VARCHAR(64) | NOT NULL    |
+| nationality      | VARCHAR(20) | NOT NULL    |
+| **created_at**   | TIMESTAMP   | NOT NULL    |
+| **updated_at**   | TIMESTAMP   | NOT NULL    |
 
 #### 6. producer
 
-| Field       | Type         | Constraints      |
-| ----------- | ------------ | ---------------- |
-| producer_id | VARCHAR2(10) | PRIMARY KEY      |
-| first_name  | VARCHAR2(64) | NOT NULL         |
-| middle_name | VARCHAR2(64) |                  |
-| last_name   | VARCHAR2(64) | NOT NULL         |
-| phone       | NUMBER(10)   | NOT NULL         |
-| street      | VARCHAR2(64) | NOT NULL         |
-| city        | VARCHAR2(64) | NOT NULL         |
-| state       | VARCHAR2(32) | NOT NULL         |
-| email       | VARCHAR2(64) | NOT NULL, UNIQUE |
-| nationality | VARCHAR2(20) | NOT NULL         |
+| Field          | Type        | Constraints      |
+| -------------- | ----------- | ---------------- |
+| producer_id    | VARCHAR(10) | PRIMARY KEY      |
+| first_name     | VARCHAR(64) | NOT NULL         |
+| middle_name    | VARCHAR(64) |                  |
+| last_name      | VARCHAR(64) | NOT NULL         |
+| phone          | VARCHAR(15) | NOT NULL         |
+| street         | VARCHAR(64) | NOT NULL         |
+| city           | VARCHAR(64) | NOT NULL         |
+| state          | VARCHAR(32) | NOT NULL         |
+| email          | VARCHAR(64) | NOT NULL, UNIQUE |
+| nationality    | VARCHAR(20) | NOT NULL         |
+| **created_at** | TIMESTAMP   | NOT NULL         |
+| **updated_at** | TIMESTAMP   | NOT NULL         |
 
 #### 7. producer_affiliation
 
-| Field       | Type         | Constraints     |
-| ----------- | ------------ | --------------- |
-| producer_id | VARCHAR2(10) | PRIMARY KEY, FK |
-| house_id    | VARCHAR2(10) | PRIMARY KEY, FK |
-| start_date  | DATE         | NOT NULL        |
-| end_date    | DATE         |                 |
+| Field          | Type        | Constraints     |
+| -------------- | ----------- | --------------- |
+| producer_id    | VARCHAR(10) | PRIMARY KEY, FK |
+| house_id       | VARCHAR(10) | PRIMARY KEY, FK |
+| start_date     | DATE        | NOT NULL        |
+| end_date       | DATE        |                 |
+| **created_at** | TIMESTAMP   | NOT NULL        |
+| **updated_at** | TIMESTAMP   | NOT NULL        |
 
 #### 8. series_contract
 
 | Field              | Type         | Constraints   |
 | ------------------ | ------------ | ------------- |
-| contract_id        | VARCHAR2(10) | PRIMARY KEY   |
-| webseries_id       | VARCHAR2(10) | NOT NULL, FK  |
+| contract_id        | VARCHAR(10)  | PRIMARY KEY   |
+| webseries_id       | VARCHAR(10)  | NOT NULL, FK  |
 | signed_date        | DATE         | NOT NULL      |
 | start_date         | DATE         | NOT NULL      |
 | end_date           | DATE         | NOT NULL      |
-| charge_per_episode | NUMBER(7,2)  | NOT NULL, > 0 |
-| status             | VARCHAR2(16) | NOT NULL      |
+| charge_per_episode | DECIMAL(7,2) | NOT NULL, > 0 |
+| status             | VARCHAR(16)  | NOT NULL      |
+| **created_at**     | TIMESTAMP    | NOT NULL      |
+| **updated_at**     | TIMESTAMP    | NOT NULL      |
 
 #### 9. telecast
 
-| Field             | Type         | Constraints    |
-| ----------------- | ------------ | -------------- |
-| telecast_id       | VARCHAR2(10) | PRIMARY KEY    |
-| episode_id        | VARCHAR2(10) | NOT NULL, FK   |
-| start_date        | DATE         | NOT NULL       |
-| end_date          | DATE         | NOT NULL       |
-| tech_interruption | VARCHAR2(1)  | NOT NULL, Y/N  |
-| total_viewers     | NUMBER(16)   | NOT NULL, >= 0 |
+| Field             | Type        | Constraints    |
+| ----------------- | ----------- | -------------- |
+| telecast_id       | VARCHAR(10) | PRIMARY KEY    |
+| episode_id        | VARCHAR(10) | NOT NULL, FK   |
+| start_date        | DATE        | NOT NULL       |
+| end_date          | DATE        | NOT NULL       |
+| tech_interruption | CHAR(1)     | NOT NULL, Y/N  |
+| total_viewers     | BIGINT      | NOT NULL, >= 0 |
+| **created_at**    | TIMESTAMP   | NOT NULL       |
+| **updated_at**    | TIMESTAMP   | NOT NULL       |
 
 #### 10. dubbing_language
 
-| Field               | Type         | Constraints  |
-| ------------------- | ------------ | ------------ |
-| dubbing_language_id | VARCHAR2(10) | PRIMARY KEY  |
-| language_name       | VARCHAR2(20) | NOT NULL     |
-| webseries_id        | VARCHAR2(10) | NOT NULL, FK |
+| Field               | Type        | Constraints  |
+| ------------------- | ----------- | ------------ |
+| dubbing_language_id | VARCHAR(10) | PRIMARY KEY  |
+| language_name       | VARCHAR(20) | NOT NULL     |
+| webseries_id        | VARCHAR(10) | NOT NULL, FK |
+| **created_at**      | TIMESTAMP   | NOT NULL     |
+| **updated_at**      | TIMESTAMP   | NOT NULL     |
 
 #### 11. subtitle_language
 
-| Field                | Type         | Constraints  |
-| -------------------- | ------------ | ------------ |
-| subtitle_language_id | VARCHAR2(10) | PRIMARY KEY  |
-| language_name        | VARCHAR2(20) | NOT NULL     |
-| webseries_id         | VARCHAR2(10) | NOT NULL, FK |
+| Field                | Type        | Constraints  |
+| -------------------- | ----------- | ------------ |
+| subtitle_language_id | VARCHAR(10) | PRIMARY KEY  |
+| language_name        | VARCHAR(20) | NOT NULL     |
+| webseries_id         | VARCHAR(10) | NOT NULL, FK |
+| **created_at**       | TIMESTAMP   | NOT NULL     |
+| **updated_at**       | TIMESTAMP   | NOT NULL     |
 
 #### 12. web_series_release
 
-| Field        | Type         | Constraints     |
-| ------------ | ------------ | --------------- |
-| webseries_id | VARCHAR2(10) | PRIMARY KEY, FK |
-| country_name | VARCHAR2(64) | PRIMARY KEY, FK |
-| release_date | DATE         | NOT NULL        |
+| Field          | Type        | Constraints     |
+| -------------- | ----------- | --------------- |
+| webseries_id   | VARCHAR(10) | PRIMARY KEY, FK |
+| country_name   | VARCHAR(64) | PRIMARY KEY, FK |
+| release_date   | DATE        | NOT NULL        |
+| **created_at** | TIMESTAMP   | NOT NULL        |
+| **updated_at** | TIMESTAMP   | NOT NULL        |
 
 #### 13. country
 
-| Field        | Type         | Constraints |
-| ------------ | ------------ | ----------- |
-| country_name | VARCHAR2(64) | PRIMARY KEY |
+| Field        | Type        | Constraints |
+| ------------ | ----------- | ----------- |
+| country_name | VARCHAR(64) | PRIMARY KEY |
 
 ---
 
@@ -264,7 +289,7 @@ BEGIN
         END WHILE;
 
         -- Step 4: Insert with all parameters validated
-        INSERT INTO web_series (webseries_id, title, num_episodes, type, house_id, created_at, updated_at)
+        INSERT INTO web_series (webseries_id, title, num_episodes, type, house_id, **created_at**, **updated_at**)
         VALUES (p_series_id, p_title, 0, p_type, p_house_id, NOW(), NOW());
 
         COMMIT;
