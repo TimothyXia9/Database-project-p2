@@ -113,3 +113,17 @@ export const deleteFeedback = async (feedbackId) => {
 	const response = await api.delete(`/feedback/${feedbackId}`);
 	return response.data;
 };
+
+// ==================== History Tables ====================
+
+export const getRecentHistory = async (limit = 50) => {
+	const response = await api.get("/admin/history/recent", {
+		params: { limit },
+	});
+	return response.data;
+};
+
+export const getHistoryStats = async () => {
+	const response = await api.get("/admin/history/stats");
+	return response.data;
+};

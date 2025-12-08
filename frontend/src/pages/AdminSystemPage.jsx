@@ -16,6 +16,8 @@ const AdminSystemPage = () => {
 	const [stats, setStats] = useState(null);
 	const [countries, setCountries] = useState([]);
 	const [logs, setLogs] = useState([]);
+	const [history, setHistory] = useState([]);
+	const [historyStats, setHistoryStats] = useState(null);
 	const [loading, setLoading] = useState(true);
 	const [activeTab, setActiveTab] = useState("stats");
 
@@ -23,6 +25,7 @@ const AdminSystemPage = () => {
 		fetchStats();
 		fetchCountries();
 		fetchLogs();
+		fetchHistory();
 	}, []);
 
 	const fetchStats = async () => {
@@ -52,6 +55,16 @@ const AdminSystemPage = () => {
 			setLogs(data.logs);
 		} catch (error) {
 			console.error("Failed to fetch logs:", error);
+		}
+	};
+
+	const fetchHistory = async () => {
+		try {
+			const [historyData, statsData] = await Promise.all([adminService.getRecentHistory(50), adminService.getHistoryStats()]);
+			setHistory(historyData.history || []);
+			setHistoryStats(statsData);
+		} catch (error) {
+			console.error("Failed to fetch history:", error);
 		}
 	};
 
@@ -139,12 +152,10 @@ const AdminSystemPage = () => {
 						<button className={`tab-button ${activeTab === "stats" ? "active" : ""}`} onClick={() => setActiveTab("stats")}>
 							<StorageIcon /> System Stats
 						</button>
-						<button className={`tab-button ${activeTab === "countries" ? "active" : ""}`} onClick={() => setActiveTab("countries")}>
-							<PublicIcon /> Country Management
+						<button className={`tab-button ${activeTab === "history" ? "active" : ""}`} onClick={() => setActiveTab("history")}>
+							<HistoryIcon /> Change History
 						</button>
-						<button className={`tab-button ${activeTab === "maintenance" ? "active" : ""}`} onClick={() => setActiveTab("maintenance")}>
-							<BackupIcon /> Database Maintenance
-						</button>
+
 						<button className={`tab-button ${activeTab === "logs" ? "active" : ""}`} onClick={() => setActiveTab("logs")}>
 							<HistoryIcon /> System Logs
 						</button>
@@ -239,28 +250,55 @@ const AdminSystemPage = () => {
 						</div>
 					)}
 
-					{activeTab === "maintenance" && (
-						<div className="maintenance-section">
-							<h2>数据库维护</h2>
+					{activeTab === "history" && (
+						<div className="history-section">
+							<h2>Change History</h2>
 
-							<div className="maintenance-actions">
-								<div className="maintenance-card">
-									<StorageIcon style={{ fontSize: 48 }} />
-									<h3>数据库优化</h3>
-									<p>清理和优化数据库，提高查询性能</p>
-									<button className="btn btn-secondary" onClick={handleVacuum}>
-										执行优化
-									</button>
+							{historyStats && (
+								<div className="history-stats">
+									<div className="stat-box">
+										<h3>{historyStats.total_records.accounts}</h3>
+										<p>Account Changes</p>
+									</div>
+									<div className="stat-box">
+										<h3>{historyStats.total_records.series}</h3>
+										<p>Series Changes</p>
+									</div>
+									<div className="stat-box">
+										<h3>{historyStats.total_records.feedback}</h3>
+										<p>Feedback Changes</p>
+									</div>
+									<div className="stat-box highlight">
+										<h3>{historyStats.last_24h.accounts + historyStats.last_24h.series + historyStats.last_24h.feedback}</h3>
+										<p>Changes (Last 24h)</p>
+									</div>
 								</div>
+							)}
 
-								<div className="maintenance-card">
-									<BackupIcon style={{ fontSize: 48 }} />
-									<h3>数据库备份</h3>
-									<p>创建数据库完整备份</p>
-									<button className="btn btn-primary" onClick={handleBackup}>
-										创建备份
-									</button>
-								</div>
+							<div className="history-list">
+								{history.length > 0 ? (
+									history.map((record) => (
+										<div key={`${record.entity_type}-${record.id}`} className="history-item">
+											<div className={`history-operation history-operation-${record.operation.toLowerCase()}`}>{record.operation}</div>
+											<div className="history-content">
+												<div className="history-header">
+													<span className="history-type">{record.entity_type}</span>
+													<span className="history-id">{record.entity_id}</span>
+												</div>
+												<p className="history-details">{record.details}</p>
+												<div className="history-meta">
+													<span className="history-timestamp">{new Date(record.changed_at).toLocaleString("zh-CN")}</span>
+													{record.changed_by && <span className="history-user">by {record.changed_by}</span>}
+												</div>
+											</div>
+										</div>
+									))
+								) : (
+									<div className="empty-admin-state">
+										<HistoryIcon style={{ fontSize: 64, opacity: 0.3 }} />
+										<p>No History Records</p>
+									</div>
+								)}
 							</div>
 						</div>
 					)}

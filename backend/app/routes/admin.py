@@ -495,6 +495,173 @@ def backup_database():
         return jsonify({"error": "Backup failed", "message": str(e)}), 500
 
 
+# ==================== History Tables ====================
+
+
+@admin_bp.route("/history/recent", methods=["GET"])
+@admin_required
+def get_recent_history():
+    """Get recent changes from all history tables"""
+    try:
+        limit = request.args.get("limit", 50, type=int)
+
+        # Query each history table
+        account_history = db.session.execute(
+            db.text("""
+                SELECT
+                    history_id,
+                    account_id as entity_id,
+                    operation,
+                    changed_by,
+                    changed_at,
+                    'Account' as entity_type,
+                    CONCAT(first_name, ' ', last_name, ' (', email, ')') as details
+                FROM viewer_account_history
+                ORDER BY changed_at DESC
+                LIMIT :limit
+            """),
+            {"limit": limit}
+        ).fetchall()
+
+        series_history = db.session.execute(
+            db.text("""
+                SELECT
+                    history_id,
+                    webseries_id as entity_id,
+                    operation,
+                    changed_by,
+                    changed_at,
+                    'Series' as entity_type,
+                    title as details
+                FROM web_series_history
+                ORDER BY changed_at DESC
+                LIMIT :limit
+            """),
+            {"limit": limit}
+        ).fetchall()
+
+        feedback_history = db.session.execute(
+            db.text("""
+                SELECT
+                    history_id,
+                    feedback_id as entity_id,
+                    operation,
+                    changed_by,
+                    changed_at,
+                    'Feedback' as entity_type,
+                    CONCAT('Rating: ', rating, '/5') as details
+                FROM feedback_history
+                ORDER BY changed_at DESC
+                LIMIT :limit
+            """),
+            {"limit": limit}
+        ).fetchall()
+
+        # Combine and sort all history
+        all_history = []
+
+        for row in account_history:
+            all_history.append({
+                "id": row[0],
+                "entity_id": row[1],
+                "operation": row[2],
+                "changed_by": row[3],
+                "changed_at": row[4].isoformat() if row[4] else None,
+                "entity_type": row[5],
+                "details": row[6]
+            })
+
+        for row in series_history:
+            all_history.append({
+                "id": row[0],
+                "entity_id": row[1],
+                "operation": row[2],
+                "changed_by": row[3],
+                "changed_at": row[4].isoformat() if row[4] else None,
+                "entity_type": row[5],
+                "details": row[6]
+            })
+
+        for row in feedback_history:
+            all_history.append({
+                "id": row[0],
+                "entity_id": row[1],
+                "operation": row[2],
+                "changed_by": row[3],
+                "changed_at": row[4].isoformat() if row[4] else None,
+                "entity_type": row[5],
+                "details": row[6]
+            })
+
+        # Sort by changed_at descending
+        all_history.sort(key=lambda x: x["changed_at"] or "", reverse=True)
+
+        return jsonify({
+            "history": all_history[:limit],
+            "total": len(all_history)
+        }), 200
+
+    except Exception as e:
+        return jsonify({"error": "Failed to fetch history", "message": str(e)}), 500
+
+
+@admin_bp.route("/history/stats", methods=["GET"])
+@admin_required
+def get_history_stats():
+    """Get history statistics"""
+    try:
+        # Count records in each history table
+        account_count = db.session.execute(
+            db.text("SELECT COUNT(*) FROM viewer_account_history")
+        ).scalar()
+
+        series_count = db.session.execute(
+            db.text("SELECT COUNT(*) FROM web_series_history")
+        ).scalar()
+
+        feedback_count = db.session.execute(
+            db.text("SELECT COUNT(*) FROM feedback_history")
+        ).scalar()
+
+        # Get recent activity counts (last 24 hours)
+        account_recent = db.session.execute(
+            db.text("""
+                SELECT COUNT(*) FROM viewer_account_history
+                WHERE changed_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR)
+            """)
+        ).scalar()
+
+        series_recent = db.session.execute(
+            db.text("""
+                SELECT COUNT(*) FROM web_series_history
+                WHERE changed_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR)
+            """)
+        ).scalar()
+
+        feedback_recent = db.session.execute(
+            db.text("""
+                SELECT COUNT(*) FROM feedback_history
+                WHERE changed_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR)
+            """)
+        ).scalar()
+
+        return jsonify({
+            "total_records": {
+                "accounts": account_count or 0,
+                "series": series_count or 0,
+                "feedback": feedback_count or 0
+            },
+            "last_24h": {
+                "accounts": account_recent or 0,
+                "series": series_recent or 0,
+                "feedback": feedback_recent or 0
+            }
+        }), 200
+
+    except Exception as e:
+        return jsonify({"error": "Failed to fetch history stats", "message": str(e)}), 500
+
+
 # ==================== Cache Management ====================
 
 

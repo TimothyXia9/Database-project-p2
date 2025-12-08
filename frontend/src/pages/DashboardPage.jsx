@@ -43,20 +43,8 @@ const DashboardPage = () => {
 						</div>
 
 						<nav className="dashboard-nav">
-							<Link to="/account" className="nav-item">
-								<AccountCircleIcon />
-								<span>Account Settings</span>
-							</Link>
-							<Link to="/my-feedback" className="nav-item">
-								<RateReviewIcon />
-								<span>My Feedback</span>
-							</Link>
 							{permissions.canAccessAdmin && (
 								<>
-									<Link to="/admin/series" className="nav-item">
-										<MovieIcon />
-										<span>Webseries Management</span>
-									</Link>
 									<Link to="/admin/content" className="nav-item">
 										<BusinessIcon />
 										<span>Content Management</span>
