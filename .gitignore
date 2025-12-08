@@ -33,3 +33,32 @@ Thumbs.db
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# SSL Certificates and Keys
+ssl/*.pem
+ssl/*.key
+ssl/*.crt
+ssl/*.csr
+ssl/*.p12
+ssl/*.pfx
+*.pem
+*.key
+*.crt
+*.csr
+*.p12
+*.pfx
+
+# Secrets and Environment
+.env
+.env.*
+!.env.example
+secrets/
+*.secret
+
+# Database
+*.sql
+*.db
+*.sqlite
+*.sqlite3
+mysql_data/
+redis_data/
