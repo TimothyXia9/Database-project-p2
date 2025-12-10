@@ -56,7 +56,6 @@ secrets/
 *.secret
 
 # Database
-*.sql
 *.db
 *.sqlite
 *.sqlite3
