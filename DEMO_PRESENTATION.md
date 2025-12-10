@@ -57,7 +57,7 @@ Deployment: Docker Compose + Nginx
 | account_id             | VARCHAR(10)   | PRIMARY KEY      |
 | **email**              | VARCHAR(64)   | NOT NULL, UNIQUE |
 | **password_hash**      | VARCHAR(128)  | NOT NULL         |
-| **role**               | VARCHAR(16)   | NOT NULL         |
+| **account_type**       | VARCHAR(16)   | NOT NULL         |
 | first_name             | VARCHAR(30)   | NOT NULL         |
 | middle_name            | VARCHAR(30)   |                  |
 | last_name              | VARCHAR(30)   | NOT NULL         |
